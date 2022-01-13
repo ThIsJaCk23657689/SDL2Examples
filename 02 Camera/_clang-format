@@ -1,0 +1,46 @@
+BasedOnStyle: Chromium
+Language: Cpp
+Standard: Cpp11
+
+UseTab: Never
+IndentWidth: 4
+ColumnLimit: 120
+PointerAlignment: Left
+
+AllowShortBlocksOnASingleLine: Never
+AllowShortCaseLabelsOnASingleLine: false
+AllowShortFunctionsOnASingleLine: Inline
+AllowShortIfStatementsOnASingleLine: WithoutElse
+AllowShortLoopsOnASingleLine: false
+AlwaysBreakTemplateDeclarations: Yes
+AlignAfterOpenBracket: Align
+AlignOperands: DontAlign
+AlignTrailingComments: true
+BinPackArguments: false
+BinPackParameters: false
+BreakBeforeBinaryOperators: None
+Cpp11BracedListStyle: false
+IndentCaseLabels: true
+KeepEmptyLinesAtTheStartOfBlocks: false
+NamespaceIndentation: All
+#ForEachMacros: [TEST_CASE, SECTION]
+#PenaltyReturnTypeOnItsOwnLine: 1000
+SpaceAfterTemplateKeyword: false
+SpaceBeforeCpp11BracedList: true
+#DeriveLineEnding: false
+#UseCRLF: false
+
+BreakBeforeBraces: Attach
+BreakConstructorInitializers: AfterColon
+
+SpacesInParentheses: false
+SpacesInAngles:  Never
+SpaceInEmptyParentheses: false
+SpacesInCStyleCastParentheses: false
+SpaceBeforeAssignmentOperators: true
+ContinuationIndentWidth: 4
+ConstructorInitializerAllOnOneLineOrOnePerLine: true
+ConstructorInitializerIndentWidth: 4
+SpaceBeforeCtorInitializerColon: true
+SpaceBeforeInheritanceColon: true
+AccessModifierOffset: -4
