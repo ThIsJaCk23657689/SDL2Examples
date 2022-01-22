@@ -3,6 +3,8 @@
 #include <SDL.h>
 #include <imgui.h>
 
+#include <string>
+
 struct UI {
     UI(SDL_Window* window, SDL_GLContext glContext);
 

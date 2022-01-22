@@ -246,7 +246,42 @@ void UI::WindowsRender() {
             }
 
             if (ImGui::BeginTabItem("Lighting"))  {
-                ImGui::SliderFloat3("Ambient", glm::value_ptr(my_world.my_light->Ambient), 0.0f, 1.0f);
+
+                if (ImGui::TreeNode("Directional Light")) {
+                    ImGui::Checkbox("Enable", &my_world.my_directional_light->Enable);
+                    ImGui::SliderFloat3("Direction", glm::value_ptr(my_world.my_directional_light->Direction), -50.0f, 50.0f);
+                    if (ImGui::ColorEdit3("Color##Direction", glm::value_ptr(my_world.my_directional_light->Color))) {
+                        my_world.my_directional_light->UpdateColor();
+                    }
+                    ImGui::TreePop();
+                }
+                ImGui::Spacing();
+
+                if (ImGui::TreeNode("Spotlight")) {
+                    ImGui::Checkbox("Enable", &my_world.my_spotlight->Enable);
+                    ImGui::SliderFloat3("Position", glm::value_ptr(my_world.my_spotlight->Position), -50.0f, 50.0f);
+                    ImGui::SliderFloat3("Direction", glm::value_ptr(my_world.my_spotlight->Direction), -1.0f, 1.0f);
+                    if (ImGui::ColorEdit3("Color", glm::value_ptr(my_world.my_spotlight->Color))) {
+                        my_world.my_spotlight->UpdateColor();
+                    }
+                    ImGui::DragFloatRange2("Cutoff", &my_world.my_spotlight->Cutoff, &my_world.my_spotlight->OuterCutoff, 1.0f, 1.0f, 90.0f);
+                    ImGui::TreePop();
+                }
+                ImGui::Spacing();
+
+                for (int i = 0; i < my_world.my_point_lights.size(); ++i) {
+                    if (ImGui::TreeNode(std::string("Point Lights " + std::to_string(i)).c_str())) {
+                        ImGui::Checkbox("Enable", &my_world.my_point_lights[i]->Enable);
+                        ImGui::SliderFloat3("Position", glm::value_ptr(my_world.my_point_lights[i]->Position), -50.0f, 50.0f);
+                        if (ImGui::ColorEdit3("Color", glm::value_ptr(my_world.my_point_lights[i]->Color))) {
+                            my_world.my_point_lights[i]->UpdateColor();
+                        }
+                        ImGui::TreePop();
+                    }
+                    ImGui::Spacing();
+                }
+
+                ImGui::SliderFloat("Shininess", &my_world.shininess, 1.0f, 512.0f);
                 ImGui::EndTabItem();
             }
 

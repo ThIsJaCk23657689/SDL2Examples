@@ -29,10 +29,10 @@ std::vector<SDL_Event> events = {};
 int window_width = 800;
 int window_height = 600;
 SDL_Window* window = nullptr;
-ScreenMode current_screen_mode = ScreenMode::Divide;
+ScreenMode current_screen_mode = ScreenMode::Prspct;
 
 std::unique_ptr<UI> my_ui = nullptr;
-//std::unique_ptr<Shader> my_shader = nullptr;
+std::unique_ptr<Shader> my_shader = nullptr;
 std::unique_ptr<Shader> alpha_shader = nullptr;
 std::unique_ptr<Shader> lighting_shader = nullptr;
 std::unique_ptr<MatrixStack> model = nullptr;
@@ -115,7 +115,7 @@ int main(int argc, char** argv) {
     my_ui = std::make_unique<UI>(window, glContext);
 
     // 建立 Shader Program
-    // my_shader = std::make_unique<Shader>("assets/shaders/basic.vert", "assets/shaders/basic.frag");
+    my_shader = std::make_unique<Shader>("assets/shaders/basic.vert", "assets/shaders/basic.frag");
     alpha_shader = std::make_unique<Shader>("assets/shaders/alpha.vert", "assets/shaders/alpha.frag");
     lighting_shader = std::make_unique<Shader>("assets/shaders/lighting.vert", "assets/shaders/lighting.frag");
 
@@ -139,7 +139,7 @@ int main(int argc, char** argv) {
         Update(delta_time);
 
         // 清除快取
-        glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         if (current_screen_mode == ScreenMode::Divide) {
@@ -211,8 +211,8 @@ void OnWindowEvent(const SDL_WindowEvent& e) {
 
 void OnKeyDownEvent(const SDL_KeyboardEvent& e) {
     switch (e.keysym.sym) {
-        case SDLK_TAB:
-            my_world.my_camera->ToggleMouseControl();
+        case SDLK_f:
+            my_world.my_spotlight->Enable = !my_world.my_spotlight->Enable;
             break;
         case SDLK_x:
             my_world.drawaxes = !my_world.drawaxes;
@@ -294,6 +294,9 @@ void GlobalEvents(const SDL_Event &event) {
                 if (event.key.keysym.mod & KMOD_CTRL) {
                     is_quit = true;
                 }
+            }
+            if (event.key.keysym.sym == SDLK_TAB) {
+                my_world.my_camera->ToggleMouseControl();
             }
             break;
         case SDL_WINDOWEVENT:
@@ -415,15 +418,41 @@ void UpdateViewVolumeVertices() {
 
     // 更新頂點資料
     my_world.view_volume->vertices = {
-        lbn.x, lbn.y, lbn.z,
-        rbn.x, rbn.y, rbn.z,
-        rtn.x, rtn.y, rtn.z,
-        ltn.x, ltn.y, ltn.z,
+        // Front
+        Vertex { { lbn.x, lbn.y, lbn.z }, {  0.0f,  0.0f,  1.0f } },
+        Vertex { { rbn.x, rbn.y, rbn.z }, {  0.0f,  0.0f,  1.0f } },
+        Vertex { { rtn.x, rtn.y, rtn.z }, {  0.0f,  0.0f,  1.0f } },
+        Vertex { { ltn.x, ltn.y, ltn.z }, {  0.0f,  0.0f,  1.0f } },
 
-        lbf.x, lbf.y, lbf.z,
-        rbf.x, rbf.y, rbf.z,
-        rtf.x, rtf.y, rtf.z,
-        ltf.x, ltf.y, ltf.z,
+        // Left
+        Vertex { { lbf.x, lbf.y, lbf.z }, { -1.0f,  0.0f,  0.0f } },
+        Vertex { { lbn.x, lbn.y, lbn.z }, { -1.0f,  0.0f,  0.0f } },
+        Vertex { { ltn.x, ltn.y, ltn.z }, { -1.0f,  0.0f,  0.0f } },
+        Vertex { { ltf.x, ltf.y, ltf.z }, { -1.0f,  0.0f,  0.0f } },
+
+        // Back
+        Vertex { { lbf.x, lbf.y, lbf.z }, {  0.0f,  0.0f, -1.0f } },
+        Vertex { { ltf.x, ltf.y, ltf.z }, {  0.0f,  0.0f, -1.0f } },
+        Vertex { { rtf.x, rtf.y, rtf.z }, {  0.0f,  0.0f, -1.0f } },
+        Vertex { { rbf.x, rbf.y, rbf.z }, {  0.0f,  0.0f, -1.0f } },
+
+        // Right
+        Vertex { { rbn.x, rbn.y, rbn.z }, {  1.0f,  0.0f,  0.0f } },
+        Vertex { { rbf.x, rbf.y, rbf.z }, {  1.0f,  0.0f,  0.0f } },
+        Vertex { { rtf.x, rtf.y, rtf.z }, {  1.0f,  0.0f,  0.0f } },
+        Vertex { { rtn.x, rtn.y, rtn.z }, {  1.0f,  0.0f,  0.0f } },
+
+        // Top
+        Vertex { { ltn.x, ltn.y, ltn.z }, {  0.0f,  1.0f,  0.0f } },
+        Vertex { { rtn.x, rtn.y, rtn.z }, {  0.0f,  1.0f,  0.0f } },
+        Vertex { { rtf.x, rtf.y, rtf.z }, {  0.0f,  1.0f,  0.0f } },
+        Vertex { { ltf.x, ltf.y, ltf.z }, {  0.0f,  1.0f,  0.0f } },
+
+        // Bottom
+        Vertex { { lbn.x, lbn.y, lbn.z }, {  0.0f, -1.0f,  0.0f } },
+        Vertex { { lbf.x, lbf.y, lbf.z }, {  0.0f, -1.0f,  0.0f } },
+        Vertex { { rbf.x, rbf.y, rbf.z }, {  0.0f, -1.0f,  0.0f } },
+        Vertex { { rbn.x, rbn.y, rbn.z }, {  0.0f, -1.0f,  0.0f } },
     };
 
     // 別忘記要告訴 vbo 要重新讀取頂點資料
@@ -456,12 +485,74 @@ void Render(const std::unique_ptr<Camera>& current_camera, float dt) {
     glm::mat4 view = current_camera->View();
     glm::mat4 projection = current_camera->Projection();
 
+    my_shader->Use();
+    my_shader->SetMat4("view", view);
+    my_shader->SetMat4("projection", projection);
+
+    if (my_world.my_directional_light->Enable) {
+        model->Push();
+        model->Save(glm::translate(model->Top(), my_world.my_directional_light->Direction * -1.0f));
+        my_shader->SetVec3("objectColor", my_world.my_directional_light->Color);
+        my_shader->SetMat4("model", model->Top());
+        my_world.my_sphere->Draw();
+        model->Pop();
+    }
+
+    for (int i = 0; i < my_world.my_point_lights.size(); ++i) {
+        if (my_world.my_point_lights[i]->Enable) {
+            model->Push();
+            model->Save(glm::translate(model->Top(), my_world.my_point_lights[i]->Position));
+            my_shader->SetVec3("objectColor", my_world.my_point_lights[i]->Color);
+            my_shader->SetMat4("model", model->Top());
+            my_world.my_sphere->Draw();
+            model->Pop();
+        }
+    }
+
+    my_world.my_spotlight->Position = my_world.my_camera->Position;
+    my_world.my_spotlight->Direction = my_world.my_camera->Front;
+
     lighting_shader->Use();
     lighting_shader->SetMat4("view", view);
     lighting_shader->SetMat4("projection", projection);
+    lighting_shader->SetBool("useLighting", true);
+    lighting_shader->SetBool("useBlinnPhong", true);
 
     // Setting Lighting
-    lighting_shader->SetVec3("lights[0].ambient", my_world.my_light->Ambient);
+    lighting_shader->SetFloat("shininess", my_world.shininess);
+    lighting_shader->SetVec3("viewPos", current_camera->Position);
+
+    lighting_shader->SetVec3("lights[0].direction", my_world.my_directional_light->Direction);
+    lighting_shader->SetVec3("lights[0].ambient", my_world.my_directional_light->Ambient);
+    lighting_shader->SetVec3("lights[0].diffuse", my_world.my_directional_light->Diffuse);
+    lighting_shader->SetVec3("lights[0].specular", my_world.my_directional_light->Specular);
+    lighting_shader->SetBool("lights[0].enable", my_world.my_directional_light->Enable);
+    lighting_shader->SetInt( "lights[0].caster", my_world.my_directional_light->Caster);
+
+    lighting_shader->SetVec3("lights[1].position", my_world.my_spotlight->Position);
+    lighting_shader->SetVec3("lights[1].direction", my_world.my_spotlight->Direction);
+    lighting_shader->SetVec3("lights[1].ambient", my_world.my_spotlight->Ambient);
+    lighting_shader->SetVec3("lights[1].diffuse", my_world.my_spotlight->Diffuse);
+    lighting_shader->SetVec3("lights[1].specular", my_world.my_spotlight->Specular);
+    lighting_shader->SetFloat("lights[1].constant", my_world.my_spotlight->Constant);
+    lighting_shader->SetFloat("lights[1].linear", my_world.my_spotlight->Linear);
+    lighting_shader->SetFloat("lights[1].quadratic", my_world.my_spotlight->Quadratic);
+    lighting_shader->SetFloat("lights[1].cutoff", glm::cos(glm::radians(my_world.my_spotlight->Cutoff)));
+    lighting_shader->SetFloat("lights[1].outerCutoff", glm::cos(glm::radians(my_world.my_spotlight->OuterCutoff)));
+    lighting_shader->SetBool("lights[1].enable", my_world.my_spotlight->Enable);
+    lighting_shader->SetInt("lights[1].caster", my_world.my_spotlight->Caster);
+
+    for (int i = 0; i < my_world.my_point_lights.size(); ++i) {
+        lighting_shader->SetVec3("lights[" + std::to_string(i + 2) + "].position", my_world.my_point_lights[i]->Position);
+        lighting_shader->SetVec3("lights[" + std::to_string(i + 2) + "].ambient", my_world.my_point_lights[i]->Ambient);
+        lighting_shader->SetVec3("lights[" + std::to_string(i + 2) + "].diffuse", my_world.my_point_lights[i]->Diffuse);
+        lighting_shader->SetVec3("lights[" + std::to_string(i + 2) + "].specular", my_world.my_point_lights[i]->Specular);
+        lighting_shader->SetFloat("lights[" + std::to_string(i + 2) + "].constant", my_world.my_point_lights[i]->Constant);
+        lighting_shader->SetFloat("lights[" + std::to_string(i + 2) + "].linear", my_world.my_point_lights[i]->Linear);
+        lighting_shader->SetFloat("lights[" + std::to_string(i + 2) + "].quadratic", my_world.my_point_lights[i]->Quadratic);
+        lighting_shader->SetBool("lights[" + std::to_string(i + 2) + "].enable", my_world.my_point_lights[i]->Enable);
+        lighting_shader->SetInt("lights[" + std::to_string(i + 2) + "].caster", my_world.my_point_lights[i]->Caster);
+    }
 
     model->Push();
     model->Save(glm::translate(model->Top(), my_world.my_camera->Position));

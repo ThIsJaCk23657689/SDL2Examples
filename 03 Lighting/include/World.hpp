@@ -29,8 +29,12 @@ struct World {
     std::unique_ptr<Camera> ortho_y_camera = nullptr;
     std::unique_ptr<Camera> ortho_z_camera = nullptr;
 
+    float shininess = 4.0f;
+
     // Lighting
-    std::unique_ptr<Light> my_light = nullptr;
+    std::unique_ptr<Light> my_directional_light = nullptr;
+    std::array<std::unique_ptr<Light>, 6> my_point_lights = { nullptr };
+    std::unique_ptr<Light> my_spotlight = nullptr;
 
     float speed = 50.0f;
     bool drawaxes = false;

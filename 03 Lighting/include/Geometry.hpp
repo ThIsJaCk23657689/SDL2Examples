@@ -1,13 +1,20 @@
 #pragma once
 
+#include "Vertex.hpp"
+
 #include <glad/glad.h>
 #include <vector>
 
 constexpr float PI = 3.14159265359f;
 
+enum Attributes : int {
+    Position = 0,
+    Normal,
+};
+
 struct Geometry {
     GLuint vao, vbo, ebo;
-    std::vector<GLfloat> vertices;
+    std::vector<Vertex> vertices;
     std::vector<GLuint> indices;
 
     Geometry() = default;

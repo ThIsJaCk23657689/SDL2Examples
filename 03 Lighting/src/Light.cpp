@@ -1,15 +1,62 @@
 #include "Light.hpp"
 
-Light::Light(glm::vec3 pos, glm::vec3 color) :
-    Entity(pos) {
-    Ambient = color * 0.12f;
-    Diffuse = color * 0.7f;
-    Specular = glm::vec3(0.4f, 0.4f, 0.4f);
+// Directional Light
+Light::Light(glm::vec4 dir, bool enable) :
+    Position(-dir),
+    Direction(dir),
+    Ambient(0.12f),
+    Diffuse(0.76f),
+    Specular(0.4f),
+    Color(1.0f),
+    Constant(1.0f),
+    Linear(0.0f),
+    Quadratic(0.0f),
+    Cutoff(0.0f),
+    OuterCutoff(0.0f),
+    Enable(enable),
+    Caster(LightCaster::Directional){}
+
+// Point Light
+Light::Light(glm::vec3 pos, bool enable) :
+    Position(pos),
+    Direction(0.0f),
+    Ambient(0.12f),
+    Diffuse(0.76f),
+    Specular(0.4f),
+    Color(1.0f),
+    Constant(1.0f),
+    Linear(0.09f),
+    Quadratic(0.0032f),
+    Cutoff(0.0f),
+    OuterCutoff(0.0f),
+    Enable(enable),
+    Caster(LightCaster::Point){}
+
+// Spotlight
+Light::Light(glm::vec3 pos, glm::vec3 dir, bool enable) :
+    Position(pos),
+    Direction(dir),
+    Ambient(0.12f),
+    Diffuse(0.76f),
+    Specular(0.4f),
+    Color(1.0f),
+    Constant(1.0f),
+    Linear(0.09f),
+    Quadratic(0.0032f),
+    Cutoff(12.0f),
+    OuterCutoff(30.0f),
+    Enable(enable),
+    Caster(LightCaster::Spot){}
+
+void Light::UpdateColor() {
+    Ambient = Color * 0.12f;
+    Diffuse = Color * 0.76f;
+    Specular = Color * 0.4f;
 }
 
-Light::Light(glm::vec3 pos, glm::vec4 color) :
-    Entity(pos) {
-    Ambient = glm::vec3(color.r, color.g, color.b) * 0.12f * color.a;
-    Diffuse = glm::vec3(color.r, color.g, color.b) * 0.7f * color.a;
-    Specular = glm::vec3(0.4f, 0.4f, 0.4f) * color.a;;
+void Light::UpdateColor(glm::vec3 color) {
+    Color = color;
+    Ambient = Color * 0.12f;
+    Diffuse = Color * 0.76f;
+    Specular = Color * 0.4f;
 }
