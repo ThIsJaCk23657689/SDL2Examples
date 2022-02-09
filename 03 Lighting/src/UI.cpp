@@ -282,6 +282,7 @@ void UI::WindowsRender() {
                 }
 
                 ImGui::SliderFloat("Shininess", &my_world.shininess, 1.0f, 512.0f);
+                ImGui::SliderFloat("HDR Exposure", &my_world.hdr_exposure, 0.0f, 2.0f);
                 ImGui::EndTabItem();
             }
 

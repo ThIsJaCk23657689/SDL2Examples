@@ -9,7 +9,8 @@ constexpr float PI = 3.14159265359f;
 
 enum Attributes : int {
     Position = 0,
-    Normal,
+    Normal = 1,
+    Texture = 2
 };
 
 struct Geometry {

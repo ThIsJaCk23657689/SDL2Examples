@@ -8,6 +8,8 @@
 #include "Entity.hpp"
 #include "Cube.hpp"
 #include "Sphere.hpp"
+#include "Screen.hpp"
+
 #include "Camera.hpp"
 #include "Light.hpp"
 
@@ -16,6 +18,7 @@ struct World {
     std::unique_ptr<Sphere> my_sphere = nullptr;
     std::unique_ptr<Cube> my_cube = nullptr;
     std::unique_ptr<Cube> view_volume = nullptr;
+    std::unique_ptr<Screen> my_screen = nullptr;
 
     // Entity (For movement)
     std::unique_ptr<Entity> sun = nullptr;
@@ -39,6 +42,7 @@ struct World {
     float speed = 50.0f;
     bool drawaxes = false;
     bool culling = false;
+    float hdr_exposure = 1.0f;
 
     void create();
     // void destroy();

@@ -37,9 +37,10 @@ find_package(SDL2 REQUIRED)
 find_package(glm REQUIRED)
 find_package(glad REQUIRED)
 find_package(imgui REQUIRED)
+find_path(STB_INCLUDE_DIRS "stb.h")
 
 # 指定標頭檔資料夾、找尋所有原始檔、並將【原始碼】加入到【執行檔目標】中
-target_include_directories(${MY_EXECUTABLE} PRIVATE "include")
+target_include_directories(${MY_EXECUTABLE} PRIVATE "include" ${STB_INCLUDE_DIRS})
 file(GLOB MY_SOURCE CONFIGURE_DEPENDS "src/*.cpp")
 target_sources(${MY_EXECUTABLE} PRIVATE ${MY_SOURCE})
 
