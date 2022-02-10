@@ -46,5 +46,5 @@ void World::create() {
     my_point_lights[2]->UpdateColor(glm::vec3(0.082f, 1.0f, 0.082f));
     my_point_lights[3]->UpdateColor(glm::vec3(0.82f, 0.0f, 1.0f));
     my_point_lights[4]->UpdateColor(glm::vec3(1.0f, 0.82f, 0.0f));
-    my_point_lights[5]->UpdateColor(glm::vec3(1.0f, 1.0f, 1.0f));
+    my_point_lights[5]->UpdateColor(glm::vec3(10.0f, 10.0f, 10.0f));
 }

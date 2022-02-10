@@ -51,9 +51,6 @@ void UI::MenuBarRender() {
     if (ImGui::BeginMainMenuBar()) {
         if (ImGui::BeginMenu("Edit##menubar-edit")) {
             ImGui::MenuItem("Camera Info", nullptr, &Windows.CameraInfo.Visible);
-            ImGui::MenuItem("Projection Info", nullptr, &Windows.ProjectionInfo.Visible);
-            ImGui::MenuItem("Lightning Info", nullptr, &Windows.LightningInfo.Visible);
-            ImGui::MenuItem("Settings", nullptr, &Windows.Settings.Visible);
             ImGui::EndMenu();
         }
 
@@ -75,28 +72,21 @@ void UI::MenuBarRender() {
 }
 
 void UI::WindowsRender() {
+    Windows.About.WindowFlags = ImGuiWindowFlags_NoResize;
 
-    CameraInfoRender();
-    ProjectionInfoRender();
-    LightningInfoRender();
-    SettingsRender();
-    AboutRender();
-
-#ifndef NDEBUG
-    // Demo Window Render
-    if (Windows.Demo.Visible) {
-        ImGui::ShowDemoWindow(&Windows.Demo.Visible);
-    }
-#endif
-}
-
-void UI::CameraInfoRender() {
     // Camera Info Window Render
     if (Windows.CameraInfo.Visible) {
-        ImGui::SetNextWindowSize(ImVec2(300, 250), ImGuiCond_Once);
+        ImGui::SetNextWindowSize(ImVec2(350, 200), ImGuiCond_Once);
         ImGui::Begin("Camera Info", &Windows.CameraInfo.Visible, Windows.CameraInfo.WindowFlags);
-
         if (ImGui::BeginTabBar("TabBar##Window_CameraInfo")) {
+            if (ImGui::BeginTabItem("Settings")) {
+                ImGui::Text("Application average %.3f ms/frame (%.1f FPS)",
+                            1000.0f / ImGui::GetIO().Framerate,
+                            ImGui::GetIO().Framerate);
+                ImGui::Checkbox("Draw Axes ", &my_world.drawaxes);
+                ImGui::Checkbox("Back Face Culling", &my_world.culling);
+                ImGui::EndTabItem();
+            }
 
             if (ImGui::BeginTabItem("Camera")) {
                 ImGui::Text("Position = (%.2f, %.2f, %.2f)",
@@ -107,6 +97,8 @@ void UI::CameraInfoRender() {
                             my_world.my_camera->Velocity.x,
                             my_world.my_camera->Velocity.y,
                             my_world.my_camera->Velocity.z);
+                // ImGui::Text("Acceleration = (%.2f, %.2f, %.2f)", my_world.my_camera->Acceleration.x,
+                // my_world.my_camera->Acceleration.y, my_world.my_camera->Acceleration.z);
                 ImGui::Text("Front = (%.2f, %.2f, %.2f)",
                             my_world.my_camera->Front.x,
                             my_world.my_camera->Front.y,
@@ -145,21 +137,8 @@ void UI::CameraInfoRender() {
                 ImGui::EndTabItem();
             }
 
-            ImGui::EndTabBar();
-        }
-        ImGui::End();
-    }
-}
-
-void UI::ProjectionInfoRender() {
-    // Projection Window Render
-    if (Windows.ProjectionInfo.Visible) {
-        ImGui::SetNextWindowSize(ImVec2(450, 180), ImGuiCond_Once);
-        ImGui::Begin("Projection Info", &Windows.ProjectionInfo.Visible, Windows.ProjectionInfo.WindowFlags);
-        if (ImGui::BeginTabBar("TabBar##Window_ProjectionInfo")) {
-
             if (ImGui::BeginTabItem("Projection")) {
-                ImGui::Text("Parameters:");
+                ImGui::Text("Parameters");
                 ImGui::BulletText("FoV = %.2f deg, Aspect = %.2f", my_world.my_camera->Zoom, my_world.my_camera->AspectRatio());
                 ImGui::DragFloatRange2("Near / Far", &my_world.my_camera->frustum.near, &my_world.my_camera->frustum.far, 1.0f, 0.1f, 500.0f);
                 ImGui::Spacing();
@@ -182,10 +161,6 @@ void UI::ProjectionInfoRender() {
                 }
                 ImGui::Spacing();
 
-                ImGui::EndTabItem();
-            }
-
-            if (ImGui::BeginTabItem("ViewVolume")) {
                 glm::vec4 temp_lbn = my_world.my_camera->nearPlaneVertex[0];
                 glm::vec4 temp_rbn = my_world.my_camera->nearPlaneVertex[1];
                 glm::vec4 temp_rtn = my_world.my_camera->nearPlaneVertex[2];
@@ -270,33 +245,32 @@ void UI::ProjectionInfoRender() {
                 ImGui::EndTabItem();
             }
 
-            ImGui::EndTabBar();
-        }
-        ImGui::End();
-    }
-}
+            if (ImGui::BeginTabItem("Lighting"))  {
 
-void UI::LightningInfoRender() {
-    // Lightning Window Render
-    if (Windows.LightningInfo.Visible) {
-        ImGui::SetNextWindowSize(ImVec2(400, 180), ImGuiCond_Once);
-        ImGui::Begin("Lightning Info", &Windows.LightningInfo.Visible, Windows.LightningInfo.WindowFlags);
-        ImGui::SliderFloat("Shininess", &my_world.shininess, 1.0f, 512.0f);
-        ImGui::Spacing();
-        if (ImGui::BeginTabBar("TabBar##Window_LightningInfo")) {
-
-            if (ImGui::BeginTabItem("Directional Light"))  {
-                ImGui::Checkbox("Enable", &my_world.my_directional_light->Enable);
-                ImGui::SliderFloat3("Direction", glm::value_ptr(my_world.my_directional_light->Direction), -50.0f, 50.0f);
-                if (ImGui::ColorEdit3("Color##Direction", glm::value_ptr(my_world.my_directional_light->Color))) {
-                    my_world.my_directional_light->UpdateColor();
+                if (ImGui::TreeNode("Directional Light")) {
+                    ImGui::Checkbox("Enable", &my_world.my_directional_light->Enable);
+                    ImGui::SliderFloat3("Direction", glm::value_ptr(my_world.my_directional_light->Direction), -50.0f, 50.0f);
+                    if (ImGui::ColorEdit3("Color##Direction", glm::value_ptr(my_world.my_directional_light->Color))) {
+                        my_world.my_directional_light->UpdateColor();
+                    }
+                    ImGui::TreePop();
                 }
-                ImGui::EndTabItem();
-            }
+                ImGui::Spacing();
 
-            if (ImGui::BeginTabItem("Point Lights"))  {
+                if (ImGui::TreeNode("Spotlight")) {
+                    ImGui::Checkbox("Enable", &my_world.my_spotlight->Enable);
+                    ImGui::SliderFloat3("Position", glm::value_ptr(my_world.my_spotlight->Position), -50.0f, 50.0f);
+                    ImGui::SliderFloat3("Direction", glm::value_ptr(my_world.my_spotlight->Direction), -1.0f, 1.0f);
+                    if (ImGui::ColorEdit3("Color", glm::value_ptr(my_world.my_spotlight->Color))) {
+                        my_world.my_spotlight->UpdateColor();
+                    }
+                    ImGui::DragFloatRange2("Cutoff", &my_world.my_spotlight->Cutoff, &my_world.my_spotlight->OuterCutoff, 1.0f, 1.0f, 90.0f);
+                    ImGui::TreePop();
+                }
+                ImGui::Spacing();
+
                 for (int i = 0; i < my_world.my_point_lights.size(); ++i) {
-                    if (ImGui::TreeNode(std::string("Point Light " + std::to_string(i)).c_str())) {
+                    if (ImGui::TreeNode(std::string("Point Lights " + std::to_string(i)).c_str())) {
                         ImGui::Checkbox("Enable", &my_world.my_point_lights[i]->Enable);
                         ImGui::SliderFloat3("Position", glm::value_ptr(my_world.my_point_lights[i]->Position), -50.0f, 50.0f);
                         if (ImGui::ColorEdit3("Color", glm::value_ptr(my_world.my_point_lights[i]->Color))) {
@@ -306,17 +280,9 @@ void UI::LightningInfoRender() {
                     }
                     ImGui::Spacing();
                 }
-                ImGui::EndTabItem();
-            }
 
-            if (ImGui::BeginTabItem("SpotLight"))  {
-                ImGui::Checkbox("Enable", &my_world.my_spotlight->Enable);
-                ImGui::SliderFloat3("Position", glm::value_ptr(my_world.my_spotlight->Position), -50.0f, 50.0f);
-                ImGui::SliderFloat3("Direction", glm::value_ptr(my_world.my_spotlight->Direction), -1.0f, 1.0f);
-                if (ImGui::ColorEdit3("Color", glm::value_ptr(my_world.my_spotlight->Color))) {
-                    my_world.my_spotlight->UpdateColor();
-                }
-                ImGui::DragFloatRange2("Cutoff", &my_world.my_spotlight->Cutoff, &my_world.my_spotlight->OuterCutoff, 1.0f, 1.0f, 90.0f);
+                ImGui::SliderFloat("Shininess", &my_world.shininess, 1.0f, 512.0f);
+                ImGui::SliderFloat("HDR Exposure", &my_world.hdr_exposure, 0.0f, 2.0f);
                 ImGui::EndTabItem();
             }
 
@@ -324,33 +290,14 @@ void UI::LightningInfoRender() {
         }
         ImGui::End();
     }
-}
-
-void UI::SettingsRender() {
-    // Settings Window Render
-    if (Windows.Settings.Visible) {
-        ImGui::SetNextWindowSize(ImVec2(380, 150), ImGuiCond_Once);
-        ImGui::Begin("Settings", &Windows.Settings.Visible, Windows.Settings.WindowFlags);
-        ImGui::Text("Application average %.3f ms/frame (%.1f FPS)",
-                    1000.0f / ImGui::GetIO().Framerate,
-                    ImGui::GetIO().Framerate);
-        ImGui::Checkbox("Draw Axes ", &my_world.drawaxes);
-        ImGui::Checkbox("Back Face Culling", &my_world.culling);
-        ImGui::End();
-    }
-}
-
-void UI::AboutRender() {
-    Windows.About.WindowFlags = ImGuiWindowFlags_NoResize;
 
     // About Window Render
     if (Windows.About.Visible) {
         ImGui::Begin("About##Window_About", &Windows.About.Visible, Windows.About.WindowFlags);
         ImGui::SetWindowFontScale(1.2f);
-        ImGui::Text("SDL2 Example - 03 Lightning");
+        ImGui::Text("NTOU OpenGL Template - Camera");
         ImGui::SetWindowFontScale(1.0f);
         if (ImGui::BeginTabBar("TabBar##Window_About")) {
-
             if (ImGui::BeginTabItem("About##About")) {
                 ImGui::BeginChild("Child##AboutAbout", Windows.About.ChildSize, true);
                 ImGui::TextWrapped(
@@ -359,7 +306,7 @@ void UI::AboutRender() {
                     "Developed at:\n"
                     "National Taiwan Ocean University\n"
                     "\n"
-                    "Copyright 2022, NTOU CSE 503 Authors\n");
+                    "Copyright 2021, NTOU CSE 503 Authors\n");
                 ImGui::EndChild();
                 ImGui::EndTabItem();
             }
@@ -378,7 +325,7 @@ void UI::AboutRender() {
                 ImGui::Text("glad\nVersion 0.1.34\n");
                 ImGui::Text(" ");
                 ImGui::Separator();
-                ImGui::Text("glm\nVersion %d.%d.%d.%d\n", GLM_VERSION_MAJOR, GLM_VERSION_MINOR, GLM_VERSION_PATCH, GLM_VERSION_REVISION);
+                ImGui::Text("glm\nVersion 0.9.9.8\n");
                 ImGui::Text(" ");
                 ImGui::Separator();
                 ImGui::Text(
@@ -401,4 +348,11 @@ void UI::AboutRender() {
         }
         ImGui::End();
     }
+
+#ifndef NDEBUG
+    // Demo Window Render
+    if (Windows.Demo.Visible) {
+        ImGui::ShowDemoWindow(&Windows.Demo.Visible);
+    }
+#endif
 }

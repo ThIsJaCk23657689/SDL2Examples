@@ -8,6 +8,9 @@
 
 #include "MatrixStack.hpp"
 #include "Shader.hpp"
+#include "FrameBuffer.hpp"
+#include "Texture2D.hpp"
+#include "RenderBuffer.hpp"
 #include "UI.hpp"
 #include "World.hpp"
 
@@ -35,7 +38,12 @@ std::unique_ptr<UI> my_ui = nullptr;
 std::unique_ptr<Shader> my_shader = nullptr;
 std::unique_ptr<Shader> alpha_shader = nullptr;
 std::unique_ptr<Shader> lighting_shader = nullptr;
+std::unique_ptr<Shader> screen_shader = nullptr;
 std::unique_ptr<MatrixStack> model = nullptr;
+
+std::unique_ptr<FrameBuffer> my_framebuffer = nullptr;
+std::unique_ptr<Texture2D> my_screen_texture = nullptr;
+std::unique_ptr<RenderBuffer> my_renderbuffer = nullptr;
 
 // 事件處理相關
 void OnWindowEvent(const SDL_WindowEvent& e);
@@ -81,7 +89,7 @@ int main(int argc, char** argv) {
     // 建立視窗
     const auto flags = SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI;
     window = SDL_CreateWindow(
-        "SDL2 Example - 03 Lightning", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, window_width, window_height, flags);
+        "OpenGL with SDL2!", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, window_width, window_height, flags);
     if (window == nullptr) {
         std::cout << "SDL_CreateWindow Error: " << SDL_GetError() << std::endl;
         SDL_Quit();
@@ -108,7 +116,6 @@ int main(int argc, char** argv) {
 
     // 設定 gl
     glEnable(GL_DEPTH_TEST);
-    glEnable(GL_MULTISAMPLE);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -119,12 +126,28 @@ int main(int argc, char** argv) {
     my_shader = std::make_unique<Shader>("assets/shaders/basic.vert", "assets/shaders/basic.frag");
     alpha_shader = std::make_unique<Shader>("assets/shaders/alpha.vert", "assets/shaders/alpha.frag");
     lighting_shader = std::make_unique<Shader>("assets/shaders/lighting.vert", "assets/shaders/lighting.frag");
+    screen_shader = std::make_unique<Shader>("assets/shaders/screen.vert", "assets/shaders/screen.frag");
 
     // 建立 Model Matrix Stack
     model = std::make_unique<MatrixStack>();
 
     // 建立世界（相機、形狀等等都在這邊初始化）
     my_world.create();
+
+
+    // 建立 Framebuffer
+    my_framebuffer = std::make_unique<FrameBuffer>();
+
+    // 建立 Texture
+    my_screen_texture = std::make_unique<Texture2D>(window_width, window_height);
+
+    // 綁定 Texture 到 Framebuffer 上
+    my_framebuffer->BindTexture2D(my_screen_texture);
+
+    // 建立 Renderbuffer
+    my_renderbuffer = std::make_unique<RenderBuffer>(window_width, window_height);
+    my_framebuffer->BindRenderBuffer(my_renderbuffer);
+    my_framebuffer->CheckComplete();
 
     // 遊戲主迴圈
     while (!is_quit) {
@@ -140,8 +163,10 @@ int main(int argc, char** argv) {
         Update(delta_time);
 
         // 清除快取
+        my_framebuffer->Bind();
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glEnable(GL_DEPTH_TEST);
 
         if (current_screen_mode == ScreenMode::Divide) {
             // 分割畫面時
@@ -188,6 +213,19 @@ int main(int argc, char** argv) {
                     break;
             }
         }
+
+        my_framebuffer->UnBind();
+        glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
+        glDisable(GL_DEPTH_TEST);
+        my_world.my_camera->viewport = { 0, 0, window_width, window_height };
+        SetViewPort(my_world.my_camera);
+        screen_shader->Use();
+        screen_shader->SetFloat("exposure", my_world.hdr_exposure);
+        screen_shader->SetInt("screenTexture", 0);
+        my_screen_texture->Bind();
+        my_world.my_screen->Draw();
+        my_screen_texture->UnBind();
 
         // 繪製 Imgui
         my_ui->Render();
@@ -470,10 +508,6 @@ void Update(float dt) {
     UpdateViewVolumeVertices();
 
     my_world.earth->yaw += my_world.speed * dt;
-
-    // 更新聚光燈位置以及方向 (與第一人稱相機同步)
-    my_world.my_spotlight->Position = my_world.my_camera->Position;
-    my_world.my_spotlight->Direction = my_world.my_camera->Front;
 }
 
 void Render(const std::unique_ptr<Camera>& current_camera, float dt) {
@@ -495,7 +529,6 @@ void Render(const std::unique_ptr<Camera>& current_camera, float dt) {
     my_shader->SetMat4("view", view);
     my_shader->SetMat4("projection", projection);
 
-    // 繪製平行光
     if (my_world.my_directional_light->Enable) {
         model->Push();
         model->Save(glm::translate(model->Top(), my_world.my_directional_light->Direction * -1.0f));
@@ -505,7 +538,6 @@ void Render(const std::unique_ptr<Camera>& current_camera, float dt) {
         model->Pop();
     }
 
-    // 繪製點光源
     for (int i = 0; i < my_world.my_point_lights.size(); ++i) {
         if (my_world.my_point_lights[i]->Enable) {
             model->Push();
@@ -516,6 +548,9 @@ void Render(const std::unique_ptr<Camera>& current_camera, float dt) {
             model->Pop();
         }
     }
+
+    my_world.my_spotlight->Position = my_world.my_camera->Position;
+    my_world.my_spotlight->Direction = my_world.my_camera->Front;
 
     lighting_shader->Use();
     lighting_shader->SetMat4("view", view);

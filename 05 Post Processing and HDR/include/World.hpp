@@ -42,6 +42,7 @@ struct World {
     float speed = 50.0f;
     bool drawaxes = false;
     bool culling = false;
+    float hdr_exposure = 1.0f;
 
     void create();
     // void destroy();
