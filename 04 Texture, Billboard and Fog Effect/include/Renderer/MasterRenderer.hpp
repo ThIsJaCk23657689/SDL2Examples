@@ -1,0 +1,4 @@
+#ifndef MASTERRENDERER_HPP
+#define MASTERRENDERER_HPP
+
+#endif

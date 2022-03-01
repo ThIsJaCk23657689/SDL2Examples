@@ -33,38 +33,39 @@ struct Camera {
         float near;
         float far;
     } frustum;
-    std::vector <glm::vec4> nearPlaneVertex;
-    std::vector <glm::vec4> farPlaneVertex;
+    std::vector <glm::vec4> near_plane_vertex;
+    std::vector <glm::vec4> far_plane_vertex;
 
     float AspectRatio();
     glm::mat4 View();
     glm::mat4 Projection();
     glm::mat4 Orthogonal();
     glm::mat4 Perspective();
+    void SetViewPort();
 
     void ProcessKeyboard();
     void ProcessMouseMovement(bool constrain = true);
     void ProcessMouseScroll(float yoffset);
     void ToggleMouseControl();
     void Update(float dt);
-    void UpdateTargetPosition(glm::vec3 target);
+    void UpdateTargetPosition(glm::vec3 target_pos);
 
-    float Pitch, Yaw, Roll;
-    glm::vec3 Position;
-    glm::vec3 Velocity;
-    glm::vec3 Acceleration;
-    glm::vec3 WorldUp = glm::vec3(0.0f, 1.0f, 0.0f);
-    glm::vec3 Front;
-    glm::vec3 Right;
-    glm::vec3 Up;
-    glm::vec3 Target;
-    float Distance;
-    float MoveSpeed;
-    float MouseSensitivity;
-    float Zoom;
-    bool MouseControl;
-    bool IsPerspective;
-    bool FollowTarget;
+    float pitch, yaw;
+    glm::vec3 position;
+    glm::vec3 velocity;
+    glm::vec3 acceleration;
+    glm::vec3 world_up = glm::vec3(0.0f, 1.0f, 0.0f);
+    glm::vec3 front;
+    glm::vec3 right;
+    glm::vec3 up;
+    glm::vec3 target;
+    float distance;
+    float move_speed;
+    float mouse_sensitivity;
+    float zoom;
+    bool mouse_control;
+    bool is_perspective;
+    bool follow_target;
 
 private:
     void UpdateCameraVectors();

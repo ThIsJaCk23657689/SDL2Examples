@@ -7,6 +7,7 @@ out vec4 FragColor;
 in VS_OUT {
     vec3 FragPos;
     vec3 Normal;
+    vec2 TexCoord;
 } fs_in;
 
 struct Light {
@@ -30,10 +31,12 @@ struct Light {
 
 uniform float shininess;
 uniform vec3 objectColor;
+uniform sampler2D diffuse_texture;
 
 uniform vec3 viewPos;
 uniform bool useLighting;
 uniform bool useBlinnPhong;
+uniform bool useTexture;
 
 uniform Light lights[NUM_LIGHTS];
 
@@ -44,12 +47,14 @@ void main() {
     vec3 norm = normalize(fs_in.Normal);
     vec3 viewDir = normalize(viewPos - fs_in.Normal);
 
+    vec3 final_color = (useTexture) ? texture(diffuse_texture, fs_in.TexCoord).rgb : objectColor;
+
     // 計算光照
     vec3 illumination = vec3(0.0f);
     if (useLighting) {
         for (int i = 0; i < NUM_LIGHTS; i++ ) {
             if (lights[i].enable) {
-                illumination += CalcLight(lights[i], norm, viewDir, objectColor);
+                illumination += CalcLight(lights[i], norm, viewDir, final_color);
             }
         }
     }

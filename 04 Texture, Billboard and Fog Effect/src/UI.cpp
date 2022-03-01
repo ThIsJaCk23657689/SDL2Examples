@@ -5,7 +5,7 @@
 #include <imgui_impl_sdl.h>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "World.hpp"
+#include "State.hpp"
 
 UI::UI(SDL_Window* window, SDL_GLContext glContext) : WindowHandler(window), GLContext(glContext) {
     Create();
@@ -51,6 +51,9 @@ void UI::MenuBarRender() {
     if (ImGui::BeginMainMenuBar()) {
         if (ImGui::BeginMenu("Edit##menubar-edit")) {
             ImGui::MenuItem("Camera Info", nullptr, &Windows.CameraInfo.Visible);
+            ImGui::MenuItem("Projection Info", nullptr, &Windows.ProjectionInfo.Visible);
+            ImGui::MenuItem("Lightning Info", nullptr, &Windows.LightningInfo.Visible);
+            ImGui::MenuItem("Settings", nullptr, &Windows.Settings.Visible);
             ImGui::EndMenu();
         }
 
@@ -72,79 +75,96 @@ void UI::MenuBarRender() {
 }
 
 void UI::WindowsRender() {
-    Windows.About.WindowFlags = ImGuiWindowFlags_NoResize;
 
+    CameraInfoRender();
+    ProjectionInfoRender();
+    LightningInfoRender();
+    SettingsRender();
+    AboutRender();
+
+#ifndef NDEBUG
+    // Demo Window Render
+    if (Windows.Demo.Visible) {
+        ImGui::ShowDemoWindow(&Windows.Demo.Visible);
+    }
+#endif
+}
+
+void UI::CameraInfoRender() {
     // Camera Info Window Render
     if (Windows.CameraInfo.Visible) {
-        ImGui::SetNextWindowSize(ImVec2(350, 200), ImGuiCond_Once);
+        ImGui::SetNextWindowSize(ImVec2(300, 250), ImGuiCond_Once);
         ImGui::Begin("Camera Info", &Windows.CameraInfo.Visible, Windows.CameraInfo.WindowFlags);
+
         if (ImGui::BeginTabBar("TabBar##Window_CameraInfo")) {
-            if (ImGui::BeginTabItem("Settings")) {
-                ImGui::Text("Application average %.3f ms/frame (%.1f FPS)",
-                            1000.0f / ImGui::GetIO().Framerate,
-                            ImGui::GetIO().Framerate);
-                ImGui::Checkbox("Draw Axes ", &my_world.drawaxes);
-                ImGui::Checkbox("Back Face Culling", &my_world.culling);
-                ImGui::EndTabItem();
-            }
 
             if (ImGui::BeginTabItem("Camera")) {
                 ImGui::Text("Position = (%.2f, %.2f, %.2f)",
-                            my_world.my_camera->Position.x,
-                            my_world.my_camera->Position.y,
-                            my_world.my_camera->Position.z);
+                            state.world->my_camera->position.x,
+                            state.world->my_camera->position.y,
+                            state.world->my_camera->position.z);
                 ImGui::Text("Velocity = (%.2f, %.2f, %.2f)",
-                            my_world.my_camera->Velocity.x,
-                            my_world.my_camera->Velocity.y,
-                            my_world.my_camera->Velocity.z);
-                // ImGui::Text("Acceleration = (%.2f, %.2f, %.2f)", my_world.my_camera->Acceleration.x,
-                // my_world.my_camera->Acceleration.y, my_world.my_camera->Acceleration.z);
+                            state.world->my_camera->velocity.x,
+                            state.world->my_camera->velocity.y,
+                            state.world->my_camera->velocity.z);
                 ImGui::Text("Front = (%.2f, %.2f, %.2f)",
-                            my_world.my_camera->Front.x,
-                            my_world.my_camera->Front.y,
-                            my_world.my_camera->Front.z);
+                            state.world->my_camera->front.x,
+                            state.world->my_camera->front.y,
+                            state.world->my_camera->front.z);
                 ImGui::Text("Right = (%.2f, %.2f, %.2f)",
-                            my_world.my_camera->Right.x,
-                            my_world.my_camera->Right.y,
-                            my_world.my_camera->Right.z);
+                            state.world->my_camera->right.x,
+                            state.world->my_camera->right.y,
+                            state.world->my_camera->right.z);
                 ImGui::Text("Up = (%.2f, %.2f, %.2f)",
-                            my_world.my_camera->Up.x,
-                            my_world.my_camera->Up.y,
-                            my_world.my_camera->Up.z);
+                            state.world->my_camera->up.x,
+                            state.world->my_camera->up.y,
+                            state.world->my_camera->up.z);
                 ImGui::Text("World Up = (%.2f, %.2f, %.2f)",
-                            my_world.my_camera->WorldUp.x,
-                            my_world.my_camera->WorldUp.y,
-                            my_world.my_camera->WorldUp.z);
-                ImGui::Text("Pitch = %.2f deg", my_world.my_camera->Pitch);
-                ImGui::Text("Yaw = %.2f deg", my_world.my_camera->Yaw);
-                ImGui::Text("Roll = %.2f deg", my_world.my_camera->Roll);
+                            state.world->my_camera->world_up.x,
+                            state.world->my_camera->world_up.y,
+                            state.world->my_camera->world_up.z);
+                ImGui::Text("Pitch = %.2f deg", state.world->my_camera->pitch);
+                ImGui::Text("Yaw = %.2f deg", state.world->my_camera->yaw);
                 ImGui::EndTabItem();
             }
 
             if (ImGui::BeginTabItem("Otho Camera")) {
                 ImGui::Text("X Position = (%.2f, %.2f, %.2f)",
-                            my_world.ortho_x_camera->Position.x,
-                            my_world.ortho_x_camera->Position.y,
-                            my_world.ortho_x_camera->Position.z);
+                            state.world->ortho_x_camera->position.x,
+                            state.world->ortho_x_camera->position.y,
+                            state.world->ortho_x_camera->position.z);
                 ImGui::Text("Y Position = (%.2f, %.2f, %.2f)",
-                            my_world.ortho_y_camera->Position.x,
-                            my_world.ortho_y_camera->Position.y,
-                            my_world.ortho_y_camera->Position.z);
+                            state.world->ortho_y_camera->position.x,
+                            state.world->ortho_y_camera->position.y,
+                            state.world->ortho_y_camera->position.z);
                 ImGui::Text("Z Position = (%.2f, %.2f, %.2f)",
-                            my_world.ortho_z_camera->Position.x,
-                            my_world.ortho_z_camera->Position.y,
-                            my_world.ortho_z_camera->Position.z);
+                            state.world->ortho_z_camera->position.x,
+                            state.world->ortho_z_camera->position.y,
+                            state.world->ortho_z_camera->position.z);
                 ImGui::EndTabItem();
             }
 
+            ImGui::EndTabBar();
+        }
+        ImGui::End();
+    }
+}
+
+void UI::ProjectionInfoRender() {
+    // Projection Window Render
+    if (Windows.ProjectionInfo.Visible) {
+        ImGui::SetNextWindowSize(ImVec2(450, 180), ImGuiCond_Once);
+        ImGui::Begin("Projection Info", &Windows.ProjectionInfo.Visible, Windows.ProjectionInfo.WindowFlags);
+        if (ImGui::BeginTabBar("TabBar##Window_ProjectionInfo")) {
+
             if (ImGui::BeginTabItem("Projection")) {
-                ImGui::Text("Parameters");
-                ImGui::BulletText("FoV = %.2f deg, Aspect = %.2f", my_world.my_camera->Zoom, my_world.my_camera->AspectRatio());
-                ImGui::DragFloatRange2("Near / Far", &my_world.my_camera->frustum.near, &my_world.my_camera->frustum.far, 1.0f, 0.1f, 500.0f);
+                ImGui::Text("Parameters:");
+                ImGui::BulletText("FoV = %.2f deg, Aspect = %.2f", state.world->my_camera->zoom, state.world->my_camera->AspectRatio());
+                ImGui::DragFloatRange2("Near / Far", &state.world->my_camera->frustum.near, &state.world->my_camera->frustum.far, 1.0f, 0.1f, 500.0f);
                 ImGui::Spacing();
 
                 if (ImGui::TreeNode("Projection Matrix")) {
-                    glm::mat4 proj = my_world.my_camera->Projection();
+                    glm::mat4 proj = state.world->my_camera->Projection();
 
                     ImGui::Columns(4, "mycolumns");
                     ImGui::Separator();
@@ -161,14 +181,18 @@ void UI::WindowsRender() {
                 }
                 ImGui::Spacing();
 
-                glm::vec4 temp_lbn = my_world.my_camera->nearPlaneVertex[0];
-                glm::vec4 temp_rbn = my_world.my_camera->nearPlaneVertex[1];
-                glm::vec4 temp_rtn = my_world.my_camera->nearPlaneVertex[2];
-                glm::vec4 temp_ltn = my_world.my_camera->nearPlaneVertex[3];
-                glm::vec4 temp_lbf = my_world.my_camera->farPlaneVertex[0];
-                glm::vec4 temp_rbf = my_world.my_camera->farPlaneVertex[1];
-                glm::vec4 temp_rtf = my_world.my_camera->farPlaneVertex[2];
-                glm::vec4 temp_ltf = my_world.my_camera->farPlaneVertex[3];
+                ImGui::EndTabItem();
+            }
+
+            if (ImGui::BeginTabItem("ViewVolume")) {
+                glm::vec4 temp_lbn = state.world->my_camera->near_plane_vertex[0];
+                glm::vec4 temp_rbn = state.world->my_camera->near_plane_vertex[1];
+                glm::vec4 temp_rtn = state.world->my_camera->near_plane_vertex[2];
+                glm::vec4 temp_ltn = state.world->my_camera->near_plane_vertex[3];
+                glm::vec4 temp_lbf = state.world->my_camera->far_plane_vertex[0];
+                glm::vec4 temp_rbf = state.world->my_camera->far_plane_vertex[1];
+                glm::vec4 temp_rtf = state.world->my_camera->far_plane_vertex[2];
+                glm::vec4 temp_ltf = state.world->my_camera->far_plane_vertex[3];
 
                 if (ImGui::TreeNode("View Volume Vertices (World Coordinate)")) {
                     ImGui::BulletText("left-bottom-near: (%.2f, %.2f, %.2f, %.2f)", temp_lbn.x, temp_lbn.y, temp_lbn.z, temp_lbn.w);
@@ -183,7 +207,7 @@ void UI::WindowsRender() {
                 }
                 ImGui::Spacing();
 
-                glm::mat4 view = my_world.my_camera->View();
+                glm::mat4 view = state.world->my_camera->View();
                 temp_lbn = view * temp_lbn;
                 temp_rbn = view * temp_rbn;
                 temp_rtn = view * temp_rtn;
@@ -206,7 +230,7 @@ void UI::WindowsRender() {
                 }
                 ImGui::Spacing();
 
-                glm::mat4 proj = my_world.my_camera->Projection();
+                glm::mat4 proj = state.world->my_camera->Projection();
                 temp_lbn = proj * temp_lbn;
                 temp_rbn = proj * temp_rbn;
                 temp_rtn = proj * temp_rtn;
@@ -245,44 +269,53 @@ void UI::WindowsRender() {
                 ImGui::EndTabItem();
             }
 
-            if (ImGui::BeginTabItem("Lighting"))  {
+            ImGui::EndTabBar();
+        }
+        ImGui::End();
+    }
+}
 
-                if (ImGui::TreeNode("Directional Light")) {
-                    ImGui::Checkbox("Enable", &my_world.my_directional_light->Enable);
-                    ImGui::SliderFloat3("Direction", glm::value_ptr(my_world.my_directional_light->Direction), -50.0f, 50.0f);
-                    if (ImGui::ColorEdit3("Color##Direction", glm::value_ptr(my_world.my_directional_light->Color))) {
-                        my_world.my_directional_light->UpdateColor();
-                    }
-                    ImGui::TreePop();
+void UI::LightningInfoRender() {
+    // Lightning Window Render
+    if (Windows.LightningInfo.Visible) {
+        ImGui::SetNextWindowSize(ImVec2(400, 180), ImGuiCond_Once);
+        ImGui::Begin("Lightning Info", &Windows.LightningInfo.Visible, Windows.LightningInfo.WindowFlags);
+        ImGui::SliderFloat("Shininess", &state.world->shininess, 1.0f, 512.0f);
+        ImGui::Spacing();
+        if (ImGui::BeginTabBar("TabBar##Window_LightningInfo")) {
+
+            if (ImGui::BeginTabItem("Directional Light"))  {
+                ImGui::Checkbox("Enable", &state.world->my_directional_light->enable);
+                ImGui::SliderFloat3("Direction", glm::value_ptr(state.world->my_directional_light->direction), -50.0f, 50.0f);
+                if (ImGui::ColorEdit3("Color##Direction", glm::value_ptr(state.world->my_directional_light->color))) {
+                    state.world->my_directional_light->UpdateColor();
                 }
-                ImGui::Spacing();
+                ImGui::EndTabItem();
+            }
 
-                if (ImGui::TreeNode("Spotlight")) {
-                    ImGui::Checkbox("Enable", &my_world.my_spotlight->Enable);
-                    ImGui::SliderFloat3("Position", glm::value_ptr(my_world.my_spotlight->Position), -50.0f, 50.0f);
-                    ImGui::SliderFloat3("Direction", glm::value_ptr(my_world.my_spotlight->Direction), -1.0f, 1.0f);
-                    if (ImGui::ColorEdit3("Color", glm::value_ptr(my_world.my_spotlight->Color))) {
-                        my_world.my_spotlight->UpdateColor();
-                    }
-                    ImGui::DragFloatRange2("Cutoff", &my_world.my_spotlight->Cutoff, &my_world.my_spotlight->OuterCutoff, 1.0f, 1.0f, 90.0f);
-                    ImGui::TreePop();
-                }
-                ImGui::Spacing();
-
-                for (int i = 0; i < my_world.my_point_lights.size(); ++i) {
-                    if (ImGui::TreeNode(std::string("Point Lights " + std::to_string(i)).c_str())) {
-                        ImGui::Checkbox("Enable", &my_world.my_point_lights[i]->Enable);
-                        ImGui::SliderFloat3("Position", glm::value_ptr(my_world.my_point_lights[i]->Position), -50.0f, 50.0f);
-                        if (ImGui::ColorEdit3("Color", glm::value_ptr(my_world.my_point_lights[i]->Color))) {
-                            my_world.my_point_lights[i]->UpdateColor();
+            if (ImGui::BeginTabItem("Point Lights"))  {
+                for (int i = 0; i < state.world->my_point_lights.size(); ++i) {
+                    if (ImGui::TreeNode(std::string("Point Light " + std::to_string(i)).c_str())) {
+                        ImGui::Checkbox("Enable", &state.world->my_point_lights[i]->enable);
+                        ImGui::SliderFloat3("Position", glm::value_ptr(state.world->my_point_lights[i]->position), -50.0f, 50.0f);
+                        if (ImGui::ColorEdit3("Color", glm::value_ptr(state.world->my_point_lights[i]->color))) {
+                            state.world->my_point_lights[i]->UpdateColor();
                         }
                         ImGui::TreePop();
                     }
                     ImGui::Spacing();
                 }
+                ImGui::EndTabItem();
+            }
 
-                ImGui::SliderFloat("Shininess", &my_world.shininess, 1.0f, 512.0f);
-                ImGui::SliderFloat("HDR Exposure", &my_world.hdr_exposure, 0.0f, 2.0f);
+            if (ImGui::BeginTabItem("SpotLight"))  {
+                ImGui::Checkbox("Enable", &state.world->my_spotlight->enable);
+                ImGui::SliderFloat3("Position", glm::value_ptr(state.world->my_spotlight->position), -50.0f, 50.0f);
+                ImGui::SliderFloat3("Direction", glm::value_ptr(state.world->my_spotlight->direction), -1.0f, 1.0f);
+                if (ImGui::ColorEdit3("Color", glm::value_ptr(state.world->my_spotlight->color))) {
+                    state.world->my_spotlight->UpdateColor();
+                }
+                ImGui::DragFloatRange2("Cutoff", &state.world->my_spotlight->cutoff, &state.world->my_spotlight->outer_cutoff, 1.0f, 1.0f, 90.0f);
                 ImGui::EndTabItem();
             }
 
@@ -290,14 +323,33 @@ void UI::WindowsRender() {
         }
         ImGui::End();
     }
+}
+
+void UI::SettingsRender() {
+    // Settings Window Render
+    if (Windows.Settings.Visible) {
+        ImGui::SetNextWindowSize(ImVec2(380, 150), ImGuiCond_Once);
+        ImGui::Begin("Settings", &Windows.Settings.Visible, Windows.Settings.WindowFlags);
+        ImGui::Text("Application average %.3f ms/frame (%.1f FPS)",
+                    1000.0f / ImGui::GetIO().Framerate,
+                    ImGui::GetIO().Framerate);
+        ImGui::Checkbox("Draw Axes ", &state.world->draw_axes);
+        ImGui::Checkbox("Back Face Culling", &state.world->culling);
+        ImGui::End();
+    }
+}
+
+void UI::AboutRender() {
+    Windows.About.WindowFlags = ImGuiWindowFlags_NoResize;
 
     // About Window Render
     if (Windows.About.Visible) {
         ImGui::Begin("About##Window_About", &Windows.About.Visible, Windows.About.WindowFlags);
         ImGui::SetWindowFontScale(1.2f);
-        ImGui::Text("SDL2 Examples - 04 Texture, Billboard and Fog Effect");
+        ImGui::Text("SDL2 Examples - 03 Shading, Lightning and Material");
         ImGui::SetWindowFontScale(1.0f);
         if (ImGui::BeginTabBar("TabBar##Window_About")) {
+
             if (ImGui::BeginTabItem("About##About")) {
                 ImGui::BeginChild("Child##AboutAbout", Windows.About.ChildSize, true);
                 ImGui::TextWrapped(
@@ -306,7 +358,7 @@ void UI::WindowsRender() {
                     "Developed at:\n"
                     "National Taiwan Ocean University\n"
                     "\n"
-                    "Copyright 2021, NTOU CSE 503 Authors\n");
+                    "Copyright 2022, NTOU CSE 503 Authors\n");
                 ImGui::EndChild();
                 ImGui::EndTabItem();
             }
@@ -325,7 +377,7 @@ void UI::WindowsRender() {
                 ImGui::Text("glad\nVersion 0.1.34\n");
                 ImGui::Text(" ");
                 ImGui::Separator();
-                ImGui::Text("glm\nVersion 0.9.9.8\n");
+                ImGui::Text("glm\nVersion %d.%d.%d.%d\n", GLM_VERSION_MAJOR, GLM_VERSION_MINOR, GLM_VERSION_PATCH, GLM_VERSION_REVISION);
                 ImGui::Text(" ");
                 ImGui::Separator();
                 ImGui::Text(
@@ -348,11 +400,4 @@ void UI::WindowsRender() {
         }
         ImGui::End();
     }
-
-#ifndef NDEBUG
-    // Demo Window Render
-    if (Windows.Demo.Visible) {
-        ImGui::ShowDemoWindow(&Windows.Demo.Visible);
-    }
-#endif
 }
