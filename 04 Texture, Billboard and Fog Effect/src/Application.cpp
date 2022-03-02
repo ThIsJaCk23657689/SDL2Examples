@@ -94,12 +94,6 @@ void Application::Initialize() {
     // 輸出訊息
     Logger::ShowGLInfo();
 
-    // 設定 gl
-    glEnable(GL_DEPTH_TEST);
-    glEnable(GL_MULTISAMPLE);
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
     state.ui = std::make_unique<UI>(state.window->handler, state.context);
 
     game = std::make_unique<Game>();
@@ -121,9 +115,8 @@ void Application::Run() {
         // 更新數據
         game->Update(delta_time);
 
-        // 清除快取
-        glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        // 呼叫 renderer 來清除快取
+        game->RendererInit();
 
         if (game->current_screen_mode == ScreenMode::Divide) {
             // 分割畫面時

@@ -10,6 +10,8 @@
 #include "Geometry/3D/Sphere.hpp"
 #include "Geometry/2D/Screen.hpp"
 
+#include "Model/Model.hpp"
+
 #include "Camera.hpp"
 #include "Light/Light.hpp"
 
@@ -20,7 +22,12 @@ struct World {
     std::unique_ptr<Cube> view_volume = nullptr;
     std::unique_ptr<Screen> my_screen = nullptr;
 
+    // Model
+    std::unique_ptr<Model> planets = nullptr;
+    std::unique_ptr<Model> rick_roll_cube_model = nullptr;
+
     // Entity (For movement)
+    std::unique_ptr<Entity> rick_roll = nullptr;
     std::unique_ptr<Entity> sun = nullptr;
     std::unique_ptr<Entity> earth = nullptr;
     std::unique_ptr<Entity> moon = nullptr;

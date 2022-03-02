@@ -8,7 +8,7 @@ struct Texture2D {
     Texture2D();
     Texture2D(int screen_width, int screen_height);
 
-    void Bind() const;
+    void Bind(GLint texture_idx = GL_TEXTURE0) const;
     void UnBind() const;
     void Clear() const;
     void Generate(GLint internal_format, GLenum format, int image_width,int image_height, unsigned char* image, bool enable_mipmap = true);

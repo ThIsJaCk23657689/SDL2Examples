@@ -1,7 +1,6 @@
 #include "Game.hpp"
 
 #include "State.hpp"
-#include "Texture/TextureManager.hpp"
 
 Game::Game() {
     // TODO:: Create Shader
@@ -17,8 +16,14 @@ Game::Game() {
     state.world = std::make_unique<World>();
     state.world->create();
 
-    // TODO:: Create Textures
-    TextureManager::Initialize();
+    // Create Renderer
+    master_renderer = std::make_unique<MasterRenderer>();
+    entities_renderer = std::make_unique<EntitiesRenderer>();
+}
+
+void Game::RendererInit() {
+    master_renderer->Initialize();
+    entities_renderer->Initialize();
 }
 
 void Game::Update(float dt) {
@@ -29,10 +34,13 @@ void Game::Update(float dt) {
 
     state.world->UpdateViewVolumeVertices();
 
-    state.world->earth->yaw += state.world->speed * dt;
+    state.world->earth->rotate.y += state.world->speed * dt;
 
     state.world->my_spotlight->position = state.world->my_camera->position;
     state.world->my_spotlight->direction = state.world->my_camera->front;
+
+    state.world->rick_roll->UpdatePosition(glm::vec3(0.2f, 1.0f, 0.0f), dt);
+    state.world->rick_roll->UpdateRotation(glm::vec3(0.0f, 15.0f, 10.0f), dt);
 }
 
 void Game::Render(const std::unique_ptr<Camera>& current_camera, float dt) {
@@ -50,16 +58,14 @@ void Game::Render(const std::unique_ptr<Camera>& current_camera, float dt) {
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     }
 
-    // current_camera->viewport = { 0, 0, state.window->width, state.window->height };
     current_camera->SetViewPort();
-
     glm::mat4 view = current_camera->View();
     glm::mat4 projection = current_camera->Projection();
 
+    // Draw Light Ball
     basic_shader->Use();
     basic_shader->SetMat4("view", view);
     basic_shader->SetMat4("projection", projection);
-    
     if (state.world->my_directional_light->enable) {
         model->Push();
         model->Save(glm::translate(model->Top(), state.world->my_directional_light->direction * -1.0f));
@@ -68,7 +74,6 @@ void Game::Render(const std::unique_ptr<Camera>& current_camera, float dt) {
         state.world->my_sphere->Draw();
         model->Pop();
     }
-    
     for (int i = 0; i < state.world->my_point_lights.size(); ++i) {
         if (state.world->my_point_lights[i]->enable) {
             model->Push();
@@ -80,12 +85,14 @@ void Game::Render(const std::unique_ptr<Camera>& current_camera, float dt) {
         }
     }
 
+    // Draw Entities
     lighting_shader->Use();
     lighting_shader->SetMat4("view", view);
     lighting_shader->SetMat4("projection", projection);
     lighting_shader->SetBool("useLighting", true);
     lighting_shader->SetBool("useBlinnPhong", true);
     lighting_shader->SetBool("useTexture", false);
+    lighting_shader->SetInt("diffuse_texture", 0);
 
     // Setting Lighting
     lighting_shader->SetFloat("shininess", state.world->shininess);
@@ -123,6 +130,8 @@ void Game::Render(const std::unique_ptr<Camera>& current_camera, float dt) {
         lighting_shader->SetInt("lights[" + std::to_string(i + 2) + "].caster", state.world->my_point_lights[i]->caster);
     }
 
+
+
     model->Push();
     model->Save(glm::translate(model->Top(), state.world->my_camera->position));
     model->Save(glm::rotate(model->Top(), glm::radians(-state.world->my_camera->yaw), glm::vec3(0.0, 1.0, 0.0)));
@@ -144,21 +153,17 @@ void Game::Render(const std::unique_ptr<Camera>& current_camera, float dt) {
     state.world->my_cube->Draw();
     model->Pop();
 
+    // TODO:: Model Matrix
     lighting_shader->SetBool("useTexture", true);
-    lighting_shader->SetInt("diffuse_texture", 0);
-    glActiveTexture(GL_TEXTURE0);
-
-    model->Push();
-    model->Save(glm::translate(model->Top(), glm::vec3(0.0f, 25.0f, 0.0f)));
-    model->Save(glm::scale(model->Top(), glm::vec3(10.0f)));
-    TextureManager::GetTexture2D("Rick Roll").Bind();
-    lighting_shader->SetMat4("model", model->Top());
-    state.world->my_cube->Draw();
-    TextureManager::GetTexture2D("Rick Roll").UnBind();
-    model->Pop();
+    entities_renderer->Render(state.world->rick_roll.get(), lighting_shader.get());
     lighting_shader->SetBool("useTexture", false);
+    //    model->Push();
+    //    model->Save(glm::translate(model->Top(), glm::vec3(0.0f, 25.0f, 0.0f)));
+    //    model->Save(glm::scale(model->Top(), glm::vec3(10.0f)));
+    //    lighting_shader->SetMat4("model", model->Top());
+    //    state.world->my_cube->Draw();
+    //    model->Pop();
 
-    lighting_shader->Use();
     model->Push();
     model->Save(glm::translate(model->Top(), glm::vec3(0.0f, -50.0f, 0.0f)));
     model->Save(glm::scale(model->Top(), glm::vec3(100.0f)));
@@ -180,10 +185,10 @@ void Game::Render(const std::unique_ptr<Camera>& current_camera, float dt) {
     model->Pop();
 
     model->Push();
-    model->Save(glm::rotate(model->Top(), glm::radians(state.world->earth->yaw / 365.0f), glm::vec3(0.0, 1.0, 0.0)));
+    model->Save(glm::rotate(model->Top(), glm::radians(state.world->earth->rotate.y / 365.0f), glm::vec3(0.0, 1.0, 0.0)));
     model->Save(glm::translate(model->Top(), state.world->earth->position));
     model->Save(glm::rotate(model->Top(), glm::radians(23.5f), glm::vec3(1.0, 0.0, 0.0)));
-    model->Save(glm::rotate(model->Top(), glm::radians(state.world->earth->yaw), glm::vec3(0.0, 1.0, 0.0)));
+    model->Save(glm::rotate(model->Top(), glm::radians(state.world->earth->rotate.y), glm::vec3(0.0, 1.0, 0.0)));
     DrawAxes();
 
     model->Push();
@@ -194,7 +199,7 @@ void Game::Render(const std::unique_ptr<Camera>& current_camera, float dt) {
     model->Pop();
 
     model->Push();
-    model->Save(glm::rotate(model->Top(), glm::radians(state.world->earth->yaw / 48.0f), glm::vec3(0.0, 1.0, 0.0)));
+    model->Save(glm::rotate(model->Top(), glm::radians(state.world->earth->rotate.y / 48.0f), glm::vec3(0.0, 1.0, 0.0)));
     model->Save(glm::translate(model->Top(), state.world->moon->position));
     DrawAxes();
 
@@ -206,6 +211,8 @@ void Game::Render(const std::unique_ptr<Camera>& current_camera, float dt) {
     model->Pop();
     model->Pop();
     model->Pop();
+
+
 
     alpha_shader->Use();
     alpha_shader->SetMat4("view", view);

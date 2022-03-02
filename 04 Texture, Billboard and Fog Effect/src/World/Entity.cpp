@@ -1,34 +1,35 @@
 #include "World/Entity.hpp"
 
-Entity::Entity() :
-    position(glm::vec3(0.0f)),
-    velocity(glm::vec3(0.0f)),
-    acceleration(glm::vec3(0.0f)),
-    pitch(0.0f),
-    yaw(0.0f),
-    roll(0.0f),
-    scale(glm::vec3(1.0f)),
-    model(glm::mat4(1.0f)) {}
-
-Entity::Entity(glm::vec3 pos) :
+Entity::Entity(Model * const mod, glm::vec3 pos, glm::vec3 rot, glm::vec3 sca) :
+    model(mod),
     position(pos),
-    velocity(glm::vec3(0.0f)),
-    acceleration(glm::vec3(0.0f)),
-    pitch(0.0f),
-    yaw(0.0f),
-    roll(0.0f),
-    scale(glm::vec3(1.0f)),
-    model(glm::mat4(1.0f)) {}
+    velocity({0, 0, 0}),
+    acceleration({0, 0, 0}),
+    rotate(rot),
+    scale(sca),
+    model_matrix(glm::mat4(1.0f)) {}
 
-glm::mat4 Entity::GetModel(const glm::mat4& previous_matrix) {
-    model = previous_matrix;
-    model = glm::translate(model, position);
+glm::mat4 Entity::GetModelMatrix(const glm::mat4& previous_matrix) {
+    model_matrix = previous_matrix;
+    model_matrix = glm::translate(model_matrix, position);
 
-    model = glm::rotate(model, glm::radians(pitch), glm::vec3(1.0f, 0.0f, 0.0f));
-    model = glm::rotate(model, glm::radians(yaw), glm::vec3(0.0f, 1.0f, 0.0f));
-    model = glm::rotate(model, glm::radians(roll), glm::vec3(0.0f, 0.0f, 1.0f));
+    model_matrix = glm::rotate(model_matrix, glm::radians(rotate.x), glm::vec3(1.0f, 0.0f, 0.0f));
+    model_matrix = glm::rotate(model_matrix, glm::radians(rotate.y), glm::vec3(0.0f, 1.0f, 0.0f));
+    model_matrix = glm::rotate(model_matrix, glm::radians(rotate.z), glm::vec3(0.0f, 0.0f, 1.0f));
 
-    model = glm::scale(model, scale);
+    model_matrix = glm::scale(model_matrix, scale);
 
-    return model;
+    return model_matrix;
+}
+
+void Entity::Update(float dt) {
+
+}
+
+void Entity::UpdatePosition(glm::vec3 delta, float dt) {
+    position += delta * dt;
+}
+
+void Entity::UpdateRotation(glm::vec3 delta, float dt) {
+    rotate += delta * dt;
 }

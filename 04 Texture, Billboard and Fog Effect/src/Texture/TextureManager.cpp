@@ -9,7 +9,7 @@ std::map<std::string, Texture2D> TextureManager::texture2Ds;
 
 void TextureManager::Initialize() {
     // Create Textures (Note: All the textures which be used must create in this function)
-    TextureManager::CreateTexture2D("rickroll.png", "Rick Roll");
+    TextureManager::CreateTexture2D("rickroll.png", "RickRoll");
     TextureManager::CreateTexture2D("wall.jpg", "Wall");
     TextureManager::CreateTexture2D("awesomeface.png", "Face");
 

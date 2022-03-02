@@ -15,7 +15,8 @@ Texture2D::Texture2D(int screen_width, int screen_height) : id(0) {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 }
 
-void Texture2D::Bind() const {
+void Texture2D::Bind(GLint texture_idx) const {
+    glActiveTexture(texture_idx);
     glBindTexture(GL_TEXTURE_2D, id);
 }
 

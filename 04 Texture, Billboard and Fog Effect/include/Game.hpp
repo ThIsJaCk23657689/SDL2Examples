@@ -8,12 +8,15 @@
 
 #include "Config.hpp"
 #include "Camera.hpp"
+#include "Renderer/MasterRenderer.hpp"
+#include "Renderer/EntitiesRenderer.hpp"
 #include "Shader/Shader.hpp"
 #include "Util/MatrixStack.hpp"
 
 struct Game {
     Game();
 
+    void RendererInit();
     void Update(float dt);
     void Render(const std::unique_ptr<Camera>& current_camera, float dt);
 
@@ -43,6 +46,10 @@ private:
     std::unique_ptr<Shader> alpha_shader = nullptr;
     std::unique_ptr<Shader> lighting_shader = nullptr;
     std::unique_ptr<Shader> screen_shader = nullptr;
+
+    // Renderer
+    std::unique_ptr<MasterRenderer> master_renderer = nullptr;
+    std::unique_ptr<EntitiesRenderer> entities_renderer = nullptr;
 
     std::unique_ptr<MatrixStack> model = nullptr;
 };

@@ -1,9 +1,9 @@
-#ifndef MASTERRENDERER_HPP
-#define MASTERRENDERER_HPP
+#ifndef ENTITIESRENDERER_HPP
+#define ENTITIESRENDERER_HPP
 
 #include "Renderer.hpp"
 
-struct MasterRenderer : public Renderer {
+struct EntitiesRenderer : public Renderer {
     void Initialize() override;
     void Render(Entity * const entity, Shader * const shader) override;
 };
