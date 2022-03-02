@@ -13,7 +13,6 @@ void TextureManager::Initialize() {
     TextureManager::CreateTexture2D("wall.jpg", "Wall");
     TextureManager::CreateTexture2D("awesomeface.png", "Face");
 
-
     // TextureManager::GetTexture2D("Rick Roll").SetWrapParameters(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
     // TextureManager::GetTexture2D("Rick Roll").SetFilterParameters(GL_NEAREST_MIPMAP_NEAREST, GL_NEAREST);
 
@@ -52,7 +51,7 @@ Texture2D TextureManager::LoadTexture2DFromFile(const std::string &file_path) {
     unsigned char *image = stbi_load(file_path.c_str(), &width, &height, &nrChannels, 0);
 
     if (image) {
-        GLenum internal_format(-1);
+        GLint internal_format(-1);
         GLenum format(-1);
 
         switch (nrChannels) {

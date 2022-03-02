@@ -1,20 +1,19 @@
 #pragma once
 
 #include <glad/glad.h>
+#include <stb_image.h>
 #include <string>
 
 struct Texture2D {
-    unsigned int ID;
-
     Texture2D();
-    Texture2D(unsigned int screen_width, unsigned int screen_height);
-    ~Texture2D();
+    Texture2D(int screen_width, int screen_height);
 
-    void Clear() const;
     void Bind() const;
     void UnBind() const;
-    void Generate(GLenum internal_format, GLenum format, const int& image_width, const int& image_height, const unsigned char* image, bool enable_mipmap = true);
-    void SetWrapParameters(GLenum wrap_s, GLenum wrap_t) const;
-    void SetFilterParameters(GLenum min_filter, GLenum mag_filter) const;
+    void Clear() const;
+    void Generate(GLint internal_format, GLenum format, int image_width,int image_height, unsigned char* image, bool enable_mipmap = true);
+    void SetWrapParameters(GLint wrap_s, GLint wrap_t) const;
+    void SetFilterParameters(GLint min_filter, GLint mag_filter) const;
 
+    unsigned int id;
 };

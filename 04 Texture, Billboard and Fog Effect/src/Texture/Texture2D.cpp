@@ -1,49 +1,47 @@
 #include "Texture/Texture2D.hpp"
 
-Texture2D::Texture2D() {
-    glGenTextures(1, &ID);
-    glBindTexture(GL_TEXTURE_2D, ID);
+#include "Util/Logger.hpp"
+
+Texture2D::Texture2D() : id(0) {
+    glGenTextures(1, &id);
+    glBindTexture(GL_TEXTURE_2D, id);
 }
 
-Texture2D::Texture2D(unsigned int screen_width, unsigned int screen_height) {
-    glGenTextures(1, &ID);
-    glBindTexture(GL_TEXTURE_2D, ID);
+Texture2D::Texture2D(int screen_width, int screen_height) : id(0) {
+    glGenTextures(1, &id);
+    glBindTexture(GL_TEXTURE_2D, id);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, screen_width, screen_height, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 }
 
-Texture2D::~Texture2D() {
-    glDeleteTextures(1, &ID);
-}
-
-void Texture2D::Clear() const {
-    glDeleteTextures(1, &ID);
-}
-
 void Texture2D::Bind() const {
-    glBindTexture(GL_TEXTURE_2D, ID);
+    glBindTexture(GL_TEXTURE_2D, id);
 }
 
 void Texture2D::UnBind() const {
     glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-void Texture2D::SetWrapParameters(GLenum wrap_s, GLenum wrap_t) const {
+void Texture2D::Clear() const {
+    glDeleteTextures(1, &id);
+}
+
+void Texture2D::SetWrapParameters(GLint wrap_s, GLint wrap_t) const {
     Bind();
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrap_s);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrap_t);
     UnBind();
 }
 
-void Texture2D::SetFilterParameters(GLenum min_filter, GLenum mag_filter) const {
+void Texture2D::SetFilterParameters(GLint min_filter, GLint mag_filter) const {
     Bind();
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, min_filter);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, mag_filter);
     UnBind();
 }
 
-void Texture2D::Generate(GLenum internal_format, GLenum format, const int& image_width, const int& image_height, const unsigned char* image, bool enable_mipmap) {
+void Texture2D::Generate(GLint internal_format, GLenum format, int image_width,int image_height, unsigned char* image, bool enable_mipmap) {
     Bind();
     glTexImage2D(GL_TEXTURE_2D, 0, internal_format, image_width, image_height, 0, format, GL_UNSIGNED_BYTE, image);
 

@@ -146,11 +146,12 @@ void Game::Render(const std::unique_ptr<Camera>& current_camera, float dt) {
 
     lighting_shader->SetBool("useTexture", true);
     lighting_shader->SetInt("diffuse_texture", 0);
+    glActiveTexture(GL_TEXTURE0);
+
     model->Push();
     model->Save(glm::translate(model->Top(), glm::vec3(0.0f, 25.0f, 0.0f)));
     model->Save(glm::scale(model->Top(), glm::vec3(10.0f)));
-    glActiveTexture(GL_TEXTURE0);
-    TextureManager::GetTexture2D("Face").Bind();
+    TextureManager::GetTexture2D("Rick Roll").Bind();
     lighting_shader->SetMat4("model", model->Top());
     state.world->my_cube->Draw();
     TextureManager::GetTexture2D("Rick Roll").UnBind();
