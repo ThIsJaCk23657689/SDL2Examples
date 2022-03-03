@@ -91,8 +91,8 @@ GLuint Shader::CreateShader(const std::string& shader_filepath, ShaderType shade
         glGetShaderiv(shader_obj, GL_INFO_LOG_LENGTH, &len);
         log.resize(len);
         glGetShaderInfoLog(shader_obj, len, nullptr, log.data());
-        std::cerr << "[Error] " << log << std::endl;
-        exit(-1);
+        std::cerr << "[Error] On: " << shader_filepath << ": " << log << std::endl;
+        exit(-2);
     }
 
     return shader_obj;

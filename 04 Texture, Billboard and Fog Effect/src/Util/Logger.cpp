@@ -6,6 +6,7 @@
 #include <iostream>
 #include <ctime>
 #include <chrono>
+#include <mutex>
 
 void Logger::ShowMe() {
     std::cout << std::endl;
@@ -58,8 +59,8 @@ std::string Logger::GetTimestamp() {
     localtime_s(&tm_struct, &now);
 #else
     static std::mutex mtx;
-        std::lock_guard<std::mutex> lock(mtx);
-        tm_struct = *std::localtime(&now);
+    std::lock_guard<std::mutex> lock(mtx);
+    tm_struct = *std::localtime(&now);
 #endif
     char string_buffer[80];
     std::strftime(string_buffer, sizeof(string_buffer), "%F %T ", &tm_struct);

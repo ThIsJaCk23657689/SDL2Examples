@@ -31,13 +31,13 @@ void Sphere::GenerateVertices() {
     // 定義頂點（逆時針）與索引
     for (int i = 0; i <= m_latitude; ++i) {
         float theta = i * PI / m_latitude;
-        float sinTheta = sin(theta);
-        float cosTheta = cos(theta);
+        float sinTheta = std::sin(theta);
+        float cosTheta = std::cos(theta);
 
         for (int j = 0; j <= m_longitude; ++j) {
             float phi = j * 2.0f * PI / m_longitude;
-            float sinPhi = sin(phi);
-            float cosPhi = cos(phi);
+            float sinPhi = std::sin(phi);
+            float cosPhi = std::cos(phi);
 
             // vertices order must follow counter-clockwise rules.
             float x = sinPhi * sinTheta;

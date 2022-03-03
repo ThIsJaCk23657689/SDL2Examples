@@ -3,6 +3,7 @@
 #include "Geometry.hpp"
 
 #include <glad/glad.h>
+#include <cmath>
 #include <vector>
 
 struct Sphere : public Geometry {
