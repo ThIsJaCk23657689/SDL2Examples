@@ -5,14 +5,13 @@
 Game::Game() {
     // Create Shader
     basic_shader = std::make_unique<BasicShader>();
-    lighting_shader = std::make_unique<LightningShader>();
+    // lighting_shader = std::make_unique<LightningShader>();
     alpha_shader = std::make_unique<AlphaShader>();
     // screen_shader = std::make_unique<Shader>("assets/shaders/screen.vert", "assets/shaders/screen.frag");
 
     // Create Renderer
     master_renderer = std::make_unique<MasterRenderer>();
-    entities_renderer = std::make_unique<EntitiesRenderer>(lighting_shader.get());
-
+    // entities_renderer = std::make_unique<EntitiesRenderer>(lighting_shader.get());
 
     // TODO:: Model Matrix Stack
     model = std::make_unique<MatrixStack>();
@@ -24,7 +23,6 @@ Game::Game() {
 
 void Game::RendererInit() {
     master_renderer->Initialize();
-    entities_renderer->Initialize();
 }
 
 void Game::Update(float dt) {
@@ -46,8 +44,7 @@ void Game::Update(float dt) {
 
 void Game::Render(const std::unique_ptr<Camera>& current_camera, float dt) {
 
-    // Setting Viewport
-    current_camera->SetViewPort();
+    master_renderer->Render(current_camera);
 
     // Draw Light Ball
     basic_shader->Start();
@@ -73,22 +70,12 @@ void Game::Render(const std::unique_ptr<Camera>& current_camera, float dt) {
 
     // Draw Entities
     lighting_shader->Start();
-    lighting_shader->SetViewAndProj(current_camera);
-
-
     lighting_shader->SetBool("useLighting", true);
     lighting_shader->SetBool("useBlinnPhong", true);
     lighting_shader->SetBool("useTexture", false);
     lighting_shader->SetInt("diffuse_texture", 0);
     lighting_shader->SetFloat("shininess", state.world->shininess);
     lighting_shader->SetVec3("viewPos", current_camera->position);
-
-    lighting_shader->SetLight(state.world->my_directional_light, 0);
-    lighting_shader->SetLight(state.world->my_spotlight, 1);
-
-    for (int i = 0; i < state.world->my_point_lights.size(); ++i) {
-        lighting_shader->SetLight(state.world->my_point_lights[i], i + 2);
-    }
 
 
 
@@ -115,7 +102,7 @@ void Game::Render(const std::unique_ptr<Camera>& current_camera, float dt) {
 
     // TODO:: Model Matrix
     lighting_shader->SetBool("useTexture", true);
-    entities_renderer->Render(state.world->rick_roll, lighting_shader);
+    entities_renderer->Render(state.world->rick_roll);
     lighting_shader->SetBool("useTexture", false);
     //    model->Push();
     //    model->Save(glm::translate(model->Top(), glm::vec3(0.0f, 25.0f, 0.0f)));

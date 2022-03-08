@@ -9,7 +9,7 @@
 struct Renderer {
     Renderer();
     virtual void Initialize() = 0;
-    virtual void Render(const std::unique_ptr<Entity>& entity, const std::unique_ptr<Shader>& shader) = 0;
+    virtual void Render(const std::unique_ptr<Entity>& entity) = 0;
 };
 
 #endif

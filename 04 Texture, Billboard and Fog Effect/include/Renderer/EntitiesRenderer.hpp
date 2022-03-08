@@ -1,12 +1,19 @@
 #ifndef ENTITIESRENDERER_HPP
 #define ENTITIESRENDERER_HPP
 
+#include <memory>
+
 #include "Renderer.hpp"
+#include "Shader/LightningShader.hpp"
 
 struct EntitiesRenderer : public Renderer {
-    EntitiesRenderer(Shader * shader);
+    EntitiesRenderer(LightningShader * shader);
     void Initialize() override;
-    void Render(const std::unique_ptr<Entity>& entity, const std::unique_ptr<Shader>& shader) override;
+    void Render(const std::unique_ptr<Entity>& entity) override;
+
+private:
+    LightningShader* lightning_shader;
+
 };
 
 #endif

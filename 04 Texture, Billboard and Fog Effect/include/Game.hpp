@@ -50,12 +50,12 @@ private:
     // TODO:: Make a Shader Manager to create
     std::unique_ptr<BasicShader> basic_shader = nullptr;
     std::unique_ptr<AlphaShader> alpha_shader = nullptr;
-    std::unique_ptr<LightningShader> lighting_shader = nullptr;
+    // std::unique_ptr<LightningShader> lighting_shader = nullptr;
     std::unique_ptr<Shader> screen_shader = nullptr;
 
     // Renderer
     std::unique_ptr<MasterRenderer> master_renderer = nullptr;
-    std::unique_ptr<EntitiesRenderer> entities_renderer = nullptr;
+    // std::unique_ptr<EntitiesRenderer> entities_renderer = nullptr;
 
     std::unique_ptr<MatrixStack> model = nullptr;
 };
