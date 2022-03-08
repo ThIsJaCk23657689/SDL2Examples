@@ -10,7 +10,7 @@ struct Texture2D {
 
     void Bind(GLint texture_idx = GL_TEXTURE0) const;
     void UnBind() const;
-    void Clear() const;
+    void Destroy() const;
     void Generate(GLint internal_format, GLenum format, int image_width,int image_height, unsigned char* image, bool enable_mipmap = true);
     void SetWrapParameters(GLint wrap_s, GLint wrap_t) const;
     void SetFilterParameters(GLint min_filter, GLint mag_filter) const;

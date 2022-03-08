@@ -5,7 +5,10 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include <string>
+#include <memory>
 #include <unordered_map>
+
+#include "Camera.hpp"
 
 enum ShaderType : GLenum {
     Vert = GL_VERTEX_SHADER,
@@ -17,10 +20,11 @@ enum ShaderType : GLenum {
 };
 
 struct Shader {
-    Shader(const std::string& vertex_path, const std::string& fragment_path);
-    ~Shader();
+    Shader(const std::string& vertex_path, const std::string& fragment_path, const std::string& geometry_path = "");
 
-    void Use() const;
+    void Start() const;
+    void Stop() const;
+    void Destroy() const;
 
     void SetInt(const std::string& uniform_name, int value);
     void SetBool(const std::string& uniform_name, bool value);
@@ -30,12 +34,20 @@ struct Shader {
     void SetVec4(const std::string& uniform_name, const glm::vec4& vector);
     void SetMat4(const std::string& uniform_name, const glm::mat4& matrix);
 
+    void SetViewAndProj(const std::unique_ptr<Camera>& camera);
+
+protected:
+    GLuint id;
+    std::unordered_map<std::string, GLint> uniform_location_cache;
+
+    GLint GetUniformLocation(const std::string& uniform_name);
+
 private:
-    GLuint m_id;
-    std::unordered_map<std::string, GLuint> m_uniform_location_cache;
+    GLuint vertex_id;
+    GLuint fragment_id;
+    GLuint geometry_id;
 
     GLuint CreateShader(const std::string& shader_filepath, ShaderType shader_type);
     GLboolean CompileShader(const GLuint& shader_id);
-    GLboolean LinkShaderProgram(const GLuint& program_id);
-    GLuint GetUniformLocation(const std::string& uniform_name);
+    GLboolean LinkShaderProgram();
 };

@@ -1,10 +1,14 @@
 #include "Renderer/EntitiesRenderer.hpp"
 
+EntitiesRenderer::EntitiesRenderer(Shader * shader) {
+
+}
+
 void EntitiesRenderer::Initialize() {
 
 }
 
-void EntitiesRenderer::Render(Entity * const entity, Shader * const shader) {
+void EntitiesRenderer::Render(const std::unique_ptr<Entity>& entity, const std::unique_ptr<Shader>& shader) {
     glm::mat4 model_matrix = entity->GetModelMatrix();
 
     shader->SetMat4("model", model_matrix);

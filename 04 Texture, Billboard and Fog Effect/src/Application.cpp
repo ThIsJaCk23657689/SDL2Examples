@@ -170,5 +170,8 @@ void Application::Run() {
         // 切換 Buffer
         SDL_GL_SwapWindow(state.window->handler);
     }
+
+    // Clean Up
+    game->Destroy();
     Logger::Message(LogLevel::Info, "Good Bye :)");
 }

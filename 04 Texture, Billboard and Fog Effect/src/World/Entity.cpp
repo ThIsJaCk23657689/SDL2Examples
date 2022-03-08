@@ -6,11 +6,10 @@ Entity::Entity(Model * const mod, glm::vec3 pos, glm::vec3 rot, glm::vec3 sca) :
     velocity({0, 0, 0}),
     acceleration({0, 0, 0}),
     rotate(rot),
-    scale(sca),
-    model_matrix(glm::mat4(1.0f)) {}
+    scale(sca) {}
 
 glm::mat4 Entity::GetModelMatrix(const glm::mat4& previous_matrix) {
-    model_matrix = previous_matrix;
+    glm::mat4 model_matrix = previous_matrix;
     model_matrix = glm::translate(model_matrix, position);
 
     model_matrix = glm::rotate(model_matrix, glm::radians(rotate.x), glm::vec3(1.0f, 0.0f, 0.0f));

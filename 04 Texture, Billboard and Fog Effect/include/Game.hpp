@@ -7,10 +7,15 @@
 #include <memory>
 
 #include "Config.hpp"
-#include "Camera.hpp"
+
+#include "Shader/BasicShader.hpp"
+#include "Shader/LightningShader.hpp"
+#include "Shader/AlphaShader.hpp"
+
 #include "Renderer/MasterRenderer.hpp"
 #include "Renderer/EntitiesRenderer.hpp"
-#include "Shader/Shader.hpp"
+
+#include "Camera.hpp"
 #include "Util/MatrixStack.hpp"
 
 struct Game {
@@ -19,10 +24,11 @@ struct Game {
     void RendererInit();
     void Update(float dt);
     void Render(const std::unique_ptr<Camera>& current_camera, float dt);
+    void Destroy();
 
     void HandleEvents();
 
-    ScreenMode current_screen_mode;
+    ScreenMode current_screen_mode = ScreenMode::Prspct;
 
 private:
     void PollEvents();
@@ -42,9 +48,9 @@ private:
     std::vector<SDL_Event> events = {};
 
     // TODO:: Make a Shader Manager to create
-    std::unique_ptr<Shader> basic_shader = nullptr;
-    std::unique_ptr<Shader> alpha_shader = nullptr;
-    std::unique_ptr<Shader> lighting_shader = nullptr;
+    std::unique_ptr<BasicShader> basic_shader = nullptr;
+    std::unique_ptr<AlphaShader> alpha_shader = nullptr;
+    std::unique_ptr<LightningShader> lighting_shader = nullptr;
     std::unique_ptr<Shader> screen_shader = nullptr;
 
     // Renderer

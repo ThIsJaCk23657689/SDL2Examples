@@ -50,12 +50,12 @@ struct World {
     float speed = 50.0f;
 
     bool draw_axes = false;
-    bool culling = false;
+    bool culling = true;
     bool wire_mode = false;
     float hdr_exposure = 1.0f;
 
-    void create();
-    // void destroy();
+    void Create();
+    void Destroy();
 
     void UpdateViewVolumeVertices();
 };

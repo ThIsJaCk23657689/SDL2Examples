@@ -4,35 +4,53 @@
 #include <fstream>
 #include <iostream>
 
-Shader::Shader(const std::string& vertex_path, const std::string& fragment_path) {
-    GLuint vertex = CreateShader(vertex_path, ShaderType::Vert);
-    GLuint fragment = CreateShader(fragment_path, ShaderType::Frag);
+Shader::Shader(const std::string& vertex_path, const std::string& fragment_path, const std::string& geometry_path) {
+    vertex_id = CreateShader(vertex_path, ShaderType::Vert);
+    fragment_id = CreateShader(fragment_path, ShaderType::Frag);
+    geometry_id = (!geometry_path.empty())? CreateShader(geometry_path, ShaderType::Geom) : 0;
 
-    m_id = glCreateProgram();
-    glAttachShader(m_id, vertex);
-    glAttachShader(m_id, fragment);
-    glLinkProgram(m_id);
+    id = glCreateProgram();
+    glAttachShader(id, vertex_id);
+    glAttachShader(id, fragment_id);
+    if (geometry_id) {
+        glAttachShader(id, geometry_id);
+    }
+    glLinkProgram(id);
+    glValidateProgram(id);
 
-    if (LinkShaderProgram(m_id) != GL_TRUE) {
+    if (LinkShaderProgram() != GL_TRUE) {
         GLint len;
         std::string log;
-        glGetProgramiv(m_id, GL_INFO_LOG_LENGTH, &len);
+        glGetProgramiv(id, GL_INFO_LOG_LENGTH, &len);
         log.resize(len);
-        glGetProgramInfoLog(m_id, len, nullptr, log.data());
+        glGetProgramInfoLog(id, len, nullptr, log.data());
         std::cerr << "[Error] " << log << std::endl;
         exit(-1);
     }
-
-    glDeleteShader(vertex);
-    glDeleteShader(fragment);
 }
 
-Shader::~Shader() {
-    glDeleteProgram(m_id);
+void Shader::Start() const {
+    glUseProgram(id);
 }
 
-void Shader::Use() const {
-    glUseProgram(m_id);
+void Shader::Stop() const {
+    glUseProgram(0);
+}
+
+void Shader::Destroy() const {
+    Stop();
+    glDetachShader(id, vertex_id);
+    glDeleteShader(vertex_id);
+
+    glDetachShader(id, fragment_id);
+    glDeleteShader(fragment_id);
+
+    if (geometry_id) {
+        glDetachShader(id, geometry_id);
+        glDeleteShader(geometry_id);
+    }
+
+    glDeleteProgram(id);
 }
 
 void Shader::SetInt(const std::string& uniform_name, int value) {
@@ -60,14 +78,37 @@ void Shader::SetVec4(const std::string& uniform_name, const glm::vec4& vector) {
 }
 
 void Shader::SetMat4(const std::string& uniform_name, const glm::mat4& matrix) {
-    // glUniformMatrix4fv(GLuint location, GLsizei count, GLboolean transpose, const GLfloat *value);
+    // glUniformMatrix4fv(GLint location, GLsizei count, GLboolean transpose, const GLfloat *value);
     // 第三個參數決定是否要轉置該矩陣
     glUniformMatrix4fv(GetUniformLocation(uniform_name), 1, GL_FALSE, glm::value_ptr(matrix));
 }
 
+void Shader::SetViewAndProj(const std::unique_ptr<Camera>& camera) {
+    glm::mat4 view = camera->View();
+    glm::mat4 projection = camera->Projection();
+
+    SetMat4("view", view);
+    SetMat4("projection", projection);
+}
+
+GLint Shader::GetUniformLocation(const std::string& uniform_name) {
+    if (uniform_location_cache.find(uniform_name) != uniform_location_cache.end()) {
+        return uniform_location_cache[uniform_name];
+    }
+
+    GLint location = glGetUniformLocation(id, uniform_name.c_str());
+    if (location == -1) {
+        std::cerr << "The uniform variable <" << uniform_name
+                  << "> doesn't exist in this shader ID: " << std::to_string(id) << std::endl;
+    }
+
+    uniform_location_cache[uniform_name] = location;
+    return location;
+}
+
 GLuint Shader::CreateShader(const std::string& shader_filepath, ShaderType shader_type) {
     std::ifstream file;
-    std::string source = "";
+    std::string source;
 
     file.open(shader_filepath);
     if (file.fail()) {
@@ -104,23 +145,8 @@ GLboolean Shader::CompileShader(const GLuint& shader_id) {
     return status;
 }
 
-GLboolean Shader::LinkShaderProgram(const GLuint& program_id) {
+GLboolean Shader::LinkShaderProgram() {
     GLint status;
-    glGetProgramiv(program_id, GL_LINK_STATUS, &status);
+    glGetProgramiv(id, GL_LINK_STATUS, &status);
     return status;
-}
-
-GLuint Shader::GetUniformLocation(const std::string& uniform_name) {
-    if (m_uniform_location_cache.find(uniform_name) != m_uniform_location_cache.end()) {
-        return m_uniform_location_cache[uniform_name];
-    }
-
-    GLuint location = glGetUniformLocation(m_id, uniform_name.c_str());
-    if (location == -1) {
-        std::cerr << "The uniform variable <" << uniform_name
-                  << "> doesn't exist in this shader ID: " << std::to_string(m_id) << std::endl;
-    }
-
-    m_uniform_location_cache[uniform_name] = location;
-    return location;
 }

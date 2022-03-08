@@ -2,7 +2,7 @@
 
 #include "Texture/TextureManager.hpp"
 
-void World::create() {
+void World::Create() {
     // Geometry Initialize
     my_cube = std::make_unique<Cube>();
     my_sphere = std::make_unique<Sphere>();
@@ -52,6 +52,10 @@ void World::create() {
     my_point_lights[3]->UpdateColor(glm::vec3(0.82f, 0.0f, 1.0f));
     my_point_lights[4]->UpdateColor(glm::vec3(1.0f, 0.82f, 0.0f));
     my_point_lights[5]->UpdateColor(glm::vec3(165 / 255.0f, 177 / 255.0f, 1.0f));
+}
+
+void World::Destroy() {
+    TextureManager::Destroy();
 }
 
 void World::UpdateViewVolumeVertices() {

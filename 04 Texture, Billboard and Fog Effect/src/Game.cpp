@@ -3,22 +3,23 @@
 #include "State.hpp"
 
 Game::Game() {
-    // TODO:: Create Shader
-    basic_shader = std::make_unique<Shader>("assets/shaders/basic.vert", "assets/shaders/basic.frag");
-    alpha_shader = std::make_unique<Shader>("assets/shaders/alpha.vert", "assets/shaders/alpha.frag");
-    lighting_shader = std::make_unique<Shader>("assets/shaders/lighting.vert", "assets/shaders/lighting.frag");
-    screen_shader = std::make_unique<Shader>("assets/shaders/screen.vert", "assets/shaders/screen.frag");
+    // Create Shader
+    basic_shader = std::make_unique<BasicShader>();
+    lighting_shader = std::make_unique<LightningShader>();
+    alpha_shader = std::make_unique<AlphaShader>();
+    // screen_shader = std::make_unique<Shader>("assets/shaders/screen.vert", "assets/shaders/screen.frag");
+
+    // Create Renderer
+    master_renderer = std::make_unique<MasterRenderer>();
+    entities_renderer = std::make_unique<EntitiesRenderer>(lighting_shader.get());
+
 
     // TODO:: Model Matrix Stack
     model = std::make_unique<MatrixStack>();
 
     // TODO:: Build a world (Entity, Camera, Geometry)
     state.world = std::make_unique<World>();
-    state.world->create();
-
-    // Create Renderer
-    master_renderer = std::make_unique<MasterRenderer>();
-    entities_renderer = std::make_unique<EntitiesRenderer>();
+    state.world->Create();
 }
 
 void Game::RendererInit() {
@@ -45,27 +46,12 @@ void Game::Update(float dt) {
 
 void Game::Render(const std::unique_ptr<Camera>& current_camera, float dt) {
 
-    // 是否開啟 Back Face Culling
-    if (state.world->culling) {
-        glEnable(GL_CULL_FACE);
-    } else {
-        glDisable(GL_CULL_FACE);
-    }
-
-    if (state.world->wire_mode) {
-        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    } else {
-        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    }
-
+    // Setting Viewport
     current_camera->SetViewPort();
-    glm::mat4 view = current_camera->View();
-    glm::mat4 projection = current_camera->Projection();
 
     // Draw Light Ball
-    basic_shader->Use();
-    basic_shader->SetMat4("view", view);
-    basic_shader->SetMat4("projection", projection);
+    basic_shader->Start();
+    basic_shader->SetViewAndProj(current_camera);
     if (state.world->my_directional_light->enable) {
         model->Push();
         model->Save(glm::translate(model->Top(), state.world->my_directional_light->direction * -1.0f));
@@ -86,48 +72,22 @@ void Game::Render(const std::unique_ptr<Camera>& current_camera, float dt) {
     }
 
     // Draw Entities
-    lighting_shader->Use();
-    lighting_shader->SetMat4("view", view);
-    lighting_shader->SetMat4("projection", projection);
+    lighting_shader->Start();
+    lighting_shader->SetViewAndProj(current_camera);
+
+
     lighting_shader->SetBool("useLighting", true);
     lighting_shader->SetBool("useBlinnPhong", true);
     lighting_shader->SetBool("useTexture", false);
     lighting_shader->SetInt("diffuse_texture", 0);
-
-    // Setting Lighting
     lighting_shader->SetFloat("shininess", state.world->shininess);
     lighting_shader->SetVec3("viewPos", current_camera->position);
 
-    lighting_shader->SetVec3("lights[0].direction", state.world->my_directional_light->direction);
-    lighting_shader->SetVec3("lights[0].ambient", state.world->my_directional_light->ambient);
-    lighting_shader->SetVec3("lights[0].diffuse", state.world->my_directional_light->diffuse);
-    lighting_shader->SetVec3("lights[0].specular", state.world->my_directional_light->specular);
-    lighting_shader->SetBool("lights[0].enable", state.world->my_directional_light->enable);
-    lighting_shader->SetInt( "lights[0].caster", state.world->my_directional_light->caster);
+    lighting_shader->SetLight(state.world->my_directional_light, 0);
+    lighting_shader->SetLight(state.world->my_spotlight, 1);
 
-    lighting_shader->SetVec3("lights[1].position", state.world->my_spotlight->position);
-    lighting_shader->SetVec3("lights[1].direction", state.world->my_spotlight->direction);
-    lighting_shader->SetVec3("lights[1].ambient", state.world->my_spotlight->ambient);
-    lighting_shader->SetVec3("lights[1].diffuse", state.world->my_spotlight->diffuse);
-    lighting_shader->SetVec3("lights[1].specular", state.world->my_spotlight->specular);
-    lighting_shader->SetFloat("lights[1].constant", state.world->my_spotlight->constant);
-    lighting_shader->SetFloat("lights[1].linear", state.world->my_spotlight->linear);
-    lighting_shader->SetFloat("lights[1].quadratic", state.world->my_spotlight->quadratic);
-    lighting_shader->SetFloat("lights[1].cutoff", glm::cos(glm::radians(state.world->my_spotlight->cutoff)));
-    lighting_shader->SetFloat("lights[1].outerCutoff", glm::cos(glm::radians(state.world->my_spotlight->outer_cutoff)));
-    lighting_shader->SetBool("lights[1].enable", state.world->my_spotlight->enable);
-    lighting_shader->SetInt("lights[1].caster", state.world->my_spotlight->caster);
-    
     for (int i = 0; i < state.world->my_point_lights.size(); ++i) {
-        lighting_shader->SetVec3("lights[" + std::to_string(i + 2) + "].position", state.world->my_point_lights[i]->position);
-        lighting_shader->SetVec3("lights[" + std::to_string(i + 2) + "].ambient", state.world->my_point_lights[i]->ambient);
-        lighting_shader->SetVec3("lights[" + std::to_string(i + 2) + "].diffuse", state.world->my_point_lights[i]->diffuse);
-        lighting_shader->SetVec3("lights[" + std::to_string(i + 2) + "].specular", state.world->my_point_lights[i]->specular);
-        lighting_shader->SetFloat("lights[" + std::to_string(i + 2) + "].constant", state.world->my_point_lights[i]->constant);
-        lighting_shader->SetFloat("lights[" + std::to_string(i + 2) + "].linear", state.world->my_point_lights[i]->linear);
-        lighting_shader->SetFloat("lights[" + std::to_string(i + 2) + "].quadratic", state.world->my_point_lights[i]->quadratic);
-        lighting_shader->SetBool("lights[" + std::to_string(i + 2) + "].enable", state.world->my_point_lights[i]->enable);
-        lighting_shader->SetInt("lights[" + std::to_string(i + 2) + "].caster", state.world->my_point_lights[i]->caster);
+        lighting_shader->SetLight(state.world->my_point_lights[i], i + 2);
     }
 
 
@@ -155,7 +115,7 @@ void Game::Render(const std::unique_ptr<Camera>& current_camera, float dt) {
 
     // TODO:: Model Matrix
     lighting_shader->SetBool("useTexture", true);
-    entities_renderer->Render(state.world->rick_roll.get(), lighting_shader.get());
+    entities_renderer->Render(state.world->rick_roll, lighting_shader);
     lighting_shader->SetBool("useTexture", false);
     //    model->Push();
     //    model->Save(glm::translate(model->Top(), glm::vec3(0.0f, 25.0f, 0.0f)));
@@ -213,10 +173,8 @@ void Game::Render(const std::unique_ptr<Camera>& current_camera, float dt) {
     model->Pop();
 
 
-
-    alpha_shader->Use();
-    alpha_shader->SetMat4("view", view);
-    alpha_shader->SetMat4("projection", projection);
+    alpha_shader->Start();
+    alpha_shader->SetViewAndProj(current_camera);
     // 繪製 View Volume
     model->Push();
     alpha_shader->SetVec4("objectColor", glm::vec4(0.1f, 0.1f, 0.1f, 0.9f));
@@ -227,6 +185,13 @@ void Game::Render(const std::unique_ptr<Camera>& current_camera, float dt) {
     alpha_shader->SetVec4("objectColor", glm::vec4(0.889f, 0.889f, 0.889f, 0.3f));
     state.world->view_volume->Draw();
     model->Pop();
+}
+
+void Game::Destroy() {
+    basic_shader->Destroy();
+    lighting_shader->Destroy();
+
+    state.world->Destroy();
 }
 
 void Game::HandleEvents() {

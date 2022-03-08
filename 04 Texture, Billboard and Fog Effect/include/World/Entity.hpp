@@ -13,7 +13,6 @@ struct Entity {
     glm::vec3 acceleration;
     glm::vec3 rotate; // store in degrees (pitch, yaw, roll)
     glm::vec3 scale;
-    glm::mat4 model_matrix;
 
     Entity(Model * const mod, glm::vec3 pos = {0, 0, 0}, glm::vec3 rot = {0, 0, 0}, glm::vec3 sca = {1, 1, 1});
     glm::mat4 GetModelMatrix(const glm::mat4& previous_matrix = glm::mat4(1.0f));

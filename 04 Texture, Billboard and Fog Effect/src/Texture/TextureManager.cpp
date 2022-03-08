@@ -37,9 +37,9 @@ Texture2D &TextureManager::GetTexture2D(const std::string &texture_name) {
     }
 }
 
-void TextureManager::Clear() {
+void TextureManager::Destroy() {
     for (auto &iteration : texture2Ds) {
-        iteration.second.Clear();
+        iteration.second.Destroy();
     }
 }
 

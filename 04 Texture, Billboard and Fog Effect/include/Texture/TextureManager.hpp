@@ -15,7 +15,7 @@ public:
     static void Initialize();
     static Texture2D &CreateTexture2D(const std::string &file_name, const std::string &texture_name);
     static Texture2D &GetTexture2D(const std::string &texture_name);
-    static void Clear();
+    static void Destroy();
 
 private:
     TextureManager() = default;

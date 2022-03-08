@@ -24,7 +24,7 @@ void Texture2D::UnBind() const {
     glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-void Texture2D::Clear() const {
+void Texture2D::Destroy() const {
     glDeleteTextures(1, &id);
 }
 
