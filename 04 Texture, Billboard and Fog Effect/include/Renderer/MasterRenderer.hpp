@@ -14,13 +14,14 @@
 struct MasterRenderer {
     void Initialize();
     void Render(const std::unique_ptr<Camera>& camera);
+    void ProcessEntity(const Entity& entity);
 
     void Destroy();
 
 private:
     std::unique_ptr<LightningShader> lightning_shader = nullptr;
     std::unique_ptr<EntitiesRenderer> entities_renderer = nullptr;
-    std::map<Model, std::vector<Entity>> entities;
+    std::unordered_map<Model, std::vector<Entity>> entities;
 
 };
 

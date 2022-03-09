@@ -36,12 +36,36 @@ void EntitiesRenderer::Initialize() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-void EntitiesRenderer::Render(const std::unique_ptr<Entity>& entity) {
-    glm::mat4 model_matrix = entity->GetModelMatrix();
+void EntitiesRenderer::Render(const std::unordered_map<Model, std::vector<Entity>>& entities) {
+    for (const auto& iter : entities) {
+        auto *model = &iter.first;
 
-    lightning_shader->SetMat4("model", model_matrix);
+        // Prepare Geometry (Bind VAO)
+        model->geometry->Bind();
 
-    entity->model->texture->Bind();
-    entity->model->geometry->Draw();
-    entity->model->texture->UnBind();
+        // Prepare Texture and Material
+        lightning_shader->SetFloat("shininess", state.world->shininess);
+        if (model->texture == nullptr) {
+            lightning_shader->SetBool("useTexture", false);
+            lightning_shader->SetVec3("objectColor", glm::vec3(42 / 255.0f, 219 / 255.0f, 89 / 255.0f));
+        } else {
+            lightning_shader->SetBool("useTexture", true);
+            lightning_shader->SetVec3("objectColor", glm::vec3(0.0f));
+            model->texture->Bind(GL_TEXTURE0);
+        }
+
+        auto batch = iter.second;
+        for(auto& entity : batch) {
+            // Prepare Instance
+            glm::mat4 model_matrix = entity.GetModelMatrix();
+            lightning_shader->SetMat4("model", model_matrix);
+
+            // Draw
+            model->geometry->DrawOnly();
+        }
+
+        // Unbind VAO and Texture
+        model->geometry->UnBind();
+        model->texture->UnBind();
+    }
 }

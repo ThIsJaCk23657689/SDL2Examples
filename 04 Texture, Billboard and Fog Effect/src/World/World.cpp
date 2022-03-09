@@ -23,6 +23,21 @@ void World::Create() {
     moon = std::make_unique<Entity>(
         planets.get(), glm::vec3(5.0f, 0.0f, 0.0f), glm::vec3(0.0f), glm::vec3(0.5f, 0.5f, 0.5f));
 
+    for (int i = 0; i < 200; i++) {
+        float x = random_num(rand_generator) * 100.0f - 50;
+        float y = random_num(rand_generator) * 100.0f - 50;
+        float z = random_num(rand_generator) * -300.0f;
+        float pitch = random_num(rand_generator) * 180.0f;
+        float yaw = random_num(rand_generator) * 180.0f;
+
+        cubes.emplace_back(
+            rick_roll_cube_model.get(),
+            glm::vec3(x, y, z),
+            glm::vec3(pitch, yaw, 0),
+            glm::vec3(1.0f)
+        );
+    }
+
     // Camera Initialize
     my_camera = std::make_unique<Camera>(glm::vec3(0.0f, 10.0f, 80.0f), true);
     ortho_x_camera = std::make_unique<Camera>(my_camera->position + glm::vec3(1.0f, 0.0f, 0.0f) * ortho_distance,

@@ -4,6 +4,7 @@
 
 #include <array>
 #include <memory>
+#include <random>
 
 #include "Entity.hpp"
 #include "Geometry/3D/Cube.hpp"
@@ -14,6 +15,9 @@
 
 #include "Camera.hpp"
 #include "Light/Light.hpp"
+
+std::mt19937_64 rand_generator;
+std::uniform_real_distribution<float> random_num(0, 1);
 
 struct World {
     // Geometry Shapes
@@ -31,6 +35,7 @@ struct World {
     std::unique_ptr<Entity> sun = nullptr;
     std::unique_ptr<Entity> earth = nullptr;
     std::unique_ptr<Entity> moon = nullptr;
+    std::vector<Entity> cubes;
 
     // Camera
     float ortho_distance = 50.0f;

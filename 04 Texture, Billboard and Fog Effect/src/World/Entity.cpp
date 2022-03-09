@@ -1,6 +1,6 @@
 #include "World/Entity.hpp"
 
-Entity::Entity(Model * const mod, glm::vec3 pos, glm::vec3 rot, glm::vec3 sca) :
+Entity::Entity(Model * mod, glm::vec3 pos, glm::vec3 rot, glm::vec3 sca) :
     model(mod),
     position(pos),
     velocity({0, 0, 0}),

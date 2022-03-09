@@ -5,7 +5,7 @@
 #include "Texture/Texture2D.hpp"
 
 struct Model {
-    Model(Geometry* const geo, Texture2D* text = nullptr);
+    Model(Geometry* geo, Texture2D* text = nullptr);
 
     Geometry *geometry;
     Texture2D *texture;

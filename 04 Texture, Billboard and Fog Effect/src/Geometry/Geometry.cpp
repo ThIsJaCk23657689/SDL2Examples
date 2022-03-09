@@ -23,10 +23,22 @@ void Geometry::UpdateVertices() {
     glBindVertexArray(0);
 }
 
-void Geometry::Draw() {
+void Geometry::Bind() const {
     glBindVertexArray(vao);
-    glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(indices.size()), GL_UNSIGNED_INT, 0);
+}
+
+void Geometry::UnBind() const {
     glBindVertexArray(0);
+}
+
+void Geometry::DrawOnly() const {
+    glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(indices.size()), GL_UNSIGNED_INT, 0);
+}
+
+void Geometry::Draw() const {
+    Bind();
+    DrawOnly();
+    UnBind();
 }
 
 void Geometry::BufferInitialize() {

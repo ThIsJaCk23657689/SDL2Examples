@@ -23,7 +23,10 @@ struct Geometry {
 
     void Initialize();
     void UpdateVertices();
-    void Draw();
+    void Bind() const;
+    void UnBind() const;
+    void DrawOnly() const;
+    void Draw() const;
 
 protected:
     virtual void GenerateVertices() = 0;

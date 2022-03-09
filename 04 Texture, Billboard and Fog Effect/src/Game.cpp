@@ -44,7 +44,7 @@ void Game::Update(float dt) {
 
 void Game::Render(const std::unique_ptr<Camera>& current_camera, float dt) {
 
-    master_renderer->Render(current_camera);
+
 
     // Draw Light Ball
     basic_shader->Start();
@@ -69,95 +69,83 @@ void Game::Render(const std::unique_ptr<Camera>& current_camera, float dt) {
     }
 
     // Draw Entities
-    lighting_shader->Start();
-    lighting_shader->SetBool("useLighting", true);
-    lighting_shader->SetBool("useBlinnPhong", true);
-    lighting_shader->SetBool("useTexture", false);
-    lighting_shader->SetInt("diffuse_texture", 0);
-    lighting_shader->SetFloat("shininess", state.world->shininess);
-    lighting_shader->SetVec3("viewPos", current_camera->position);
+    for (auto &entity : state.world->cubes) {
+        master_renderer->ProcessEntity(entity);
+    }
 
 
+    master_renderer->Render(current_camera);
 
-    model->Push();
-    model->Save(glm::translate(model->Top(), state.world->my_camera->position));
-    model->Save(glm::rotate(model->Top(), glm::radians(-state.world->my_camera->yaw), glm::vec3(0.0, 1.0, 0.0)));
-    model->Save(glm::rotate(model->Top(), glm::radians(state.world->my_camera->pitch), glm::vec3(1.0, 0.0, 0.0)));
-    model->Save(glm::translate(model->Top(), glm::vec3(0.0f, 0.0f, 1.0f)));
-    // 繪製攝影機三軸
-    DrawAxes(20.0f);
-    model->Pop();
-    
-    model->Push();
-    model->Save(glm::translate(model->Top(), state.world->my_camera->position));
-    model->Save(glm::rotate(model->Top(), glm::radians(-state.world->my_camera->yaw), glm::vec3(0.0, 1.0, 0.0)));
-    model->Save(glm::rotate(model->Top(), glm::radians(state.world->my_camera->pitch), glm::vec3(1.0, 0.0, 0.0)));
-    model->Save(glm::translate(model->Top(), glm::vec3(0.0f, 0.0f, 5.5f)));
-    model->Save(glm::scale(model->Top(), glm::vec3(8.0f, 5.0f, 10.0f)));
-    lighting_shader->SetVec3("objectColor", glm::vec3(0.2f));
-    lighting_shader->SetMat4("model", model->Top());
-    // 繪製攝影機本體
-    state.world->my_cube->Draw();
-    model->Pop();
 
-    // TODO:: Model Matrix
-    lighting_shader->SetBool("useTexture", true);
-    entities_renderer->Render(state.world->rick_roll);
-    lighting_shader->SetBool("useTexture", false);
-    //    model->Push();
-    //    model->Save(glm::translate(model->Top(), glm::vec3(0.0f, 25.0f, 0.0f)));
-    //    model->Save(glm::scale(model->Top(), glm::vec3(10.0f)));
-    //    lighting_shader->SetMat4("model", model->Top());
-    //    state.world->my_cube->Draw();
-    //    model->Pop();
-
-    model->Push();
-    model->Save(glm::translate(model->Top(), glm::vec3(0.0f, -50.0f, 0.0f)));
-    model->Save(glm::scale(model->Top(), glm::vec3(100.0f)));
-    lighting_shader->SetVec3("objectColor", glm::vec3(42 / 255.0f, 219 / 255.0f, 89 / 255.0f));
-    lighting_shader->SetMat4("model", model->Top());
-    state.world->my_cube->Draw();
-    model->Pop();
-
-    model->Push();
-    model->Push();
-    model->Save(glm::translate(model->Top(), state.world->sun->position));
-    model->Push();
-    model->Save(glm::scale(model->Top(), state.world->sun->scale));
-    lighting_shader->SetVec3("objectColor", glm::vec3(1.0f, 0.811764706f, 0.301960784f));
-    lighting_shader->SetMat4("model", model->Top());
-    state.world->my_sphere->Draw();
-    model->Pop();
-    DrawAxes();
-    model->Pop();
-
-    model->Push();
-    model->Save(glm::rotate(model->Top(), glm::radians(state.world->earth->rotate.y / 365.0f), glm::vec3(0.0, 1.0, 0.0)));
-    model->Save(glm::translate(model->Top(), state.world->earth->position));
-    model->Save(glm::rotate(model->Top(), glm::radians(23.5f), glm::vec3(1.0, 0.0, 0.0)));
-    model->Save(glm::rotate(model->Top(), glm::radians(state.world->earth->rotate.y), glm::vec3(0.0, 1.0, 0.0)));
-    DrawAxes();
-
-    model->Push();
-    model->Save(glm::scale(model->Top(), state.world->earth->scale));
-    lighting_shader->SetVec3("objectColor", glm::vec3(0.137254902f, 0.274509804f, 0.968627451f));
-    lighting_shader->SetMat4("model", model->Top());
-    state.world->my_sphere->Draw();
-    model->Pop();
-
-    model->Push();
-    model->Save(glm::rotate(model->Top(), glm::radians(state.world->earth->rotate.y / 48.0f), glm::vec3(0.0, 1.0, 0.0)));
-    model->Save(glm::translate(model->Top(), state.world->moon->position));
-    DrawAxes();
-
-    model->Save(glm::scale(model->Top(), state.world->moon->scale));
-    lighting_shader->SetVec3("objectColor", glm::vec3(0.447058824f, 0.450980392f, 0.478431373f));
-    lighting_shader->SetMat4("model", model->Top());
-    state.world->my_sphere->Draw();
-
-    model->Pop();
-    model->Pop();
-    model->Pop();
+//    model->Push();
+//    model->Save(glm::translate(model->Top(), state.world->my_camera->position));
+//    model->Save(glm::rotate(model->Top(), glm::radians(-state.world->my_camera->yaw), glm::vec3(0.0, 1.0, 0.0)));
+//    model->Save(glm::rotate(model->Top(), glm::radians(state.world->my_camera->pitch), glm::vec3(1.0, 0.0, 0.0)));
+//    model->Save(glm::translate(model->Top(), glm::vec3(0.0f, 0.0f, 1.0f)));
+//    // 繪製攝影機三軸
+//    model->Pop();
+//
+//    model->Push();
+//    model->Save(glm::translate(model->Top(), state.world->my_camera->position));
+//    model->Save(glm::rotate(model->Top(), glm::radians(-state.world->my_camera->yaw), glm::vec3(0.0, 1.0, 0.0)));
+//    model->Save(glm::rotate(model->Top(), glm::radians(state.world->my_camera->pitch), glm::vec3(1.0, 0.0, 0.0)));
+//    model->Save(glm::translate(model->Top(), glm::vec3(0.0f, 0.0f, 5.5f)));
+//    model->Save(glm::scale(model->Top(), glm::vec3(8.0f, 5.0f, 10.0f)));
+//    lighting_shader->SetVec3("objectColor", glm::vec3(0.2f));
+//    lighting_shader->SetMat4("model", model->Top());
+//    // 繪製攝影機本體
+//    state.world->my_cube->Draw();
+//    model->Pop();
+//
+//
+//    // Big Cube
+//    model->Push();
+//    model->Save(glm::translate(model->Top(), glm::vec3(0.0f, -50.0f, 0.0f)));
+//    model->Save(glm::scale(model->Top(), glm::vec3(100.0f)));
+//    lighting_shader->SetVec3("objectColor", glm::vec3(42 / 255.0f, 219 / 255.0f, 89 / 255.0f));
+//    lighting_shader->SetMat4("model", model->Top());
+//    state.world->my_cube->Draw();
+//    model->Pop();
+//
+//    // Sun
+//    model->Push();
+//    model->Push();
+//    model->Save(glm::translate(model->Top(), state.world->sun->position));
+//    model->Push();
+//    model->Save(glm::scale(model->Top(), state.world->sun->scale));
+//    lighting_shader->SetVec3("objectColor", glm::vec3(1.0f, 0.811764706f, 0.301960784f));
+//    lighting_shader->SetMat4("model", model->Top());
+//    state.world->my_sphere->Draw();
+//    model->Pop();
+//    model->Pop();
+//
+//    // Earth
+//    model->Push();
+//    model->Save(glm::rotate(model->Top(), glm::radians(state.world->earth->rotate.y / 365.0f), glm::vec3(0.0, 1.0, 0.0)));
+//    model->Save(glm::translate(model->Top(), state.world->earth->position));
+//    model->Save(glm::rotate(model->Top(), glm::radians(23.5f), glm::vec3(1.0, 0.0, 0.0)));
+//    model->Save(glm::rotate(model->Top(), glm::radians(state.world->earth->rotate.y), glm::vec3(0.0, 1.0, 0.0)));
+//
+//    model->Push();
+//    model->Save(glm::scale(model->Top(), state.world->earth->scale));
+//    lighting_shader->SetVec3("objectColor", glm::vec3(0.137254902f, 0.274509804f, 0.968627451f));
+//    lighting_shader->SetMat4("model", model->Top());
+//    state.world->my_sphere->Draw();
+//    model->Pop();
+//
+//    model->Push();
+//    model->Save(glm::rotate(model->Top(), glm::radians(state.world->earth->rotate.y / 48.0f), glm::vec3(0.0, 1.0, 0.0)));
+//    model->Save(glm::translate(model->Top(), state.world->moon->position));
+//    DrawAxes();
+//
+//    model->Save(glm::scale(model->Top(), state.world->moon->scale));
+//    lighting_shader->SetVec3("objectColor", glm::vec3(0.447058824f, 0.450980392f, 0.478431373f));
+//    lighting_shader->SetMat4("model", model->Top());
+//    state.world->my_sphere->Draw();
+//
+//    model->Pop();
+//    model->Pop();
+//    model->Pop();
 
 
     alpha_shader->Start();
@@ -176,7 +164,7 @@ void Game::Render(const std::unique_ptr<Camera>& current_camera, float dt) {
 
 void Game::Destroy() {
     basic_shader->Destroy();
-    lighting_shader->Destroy();
+    // lighting_shader->Destroy();
 
     state.world->Destroy();
 }
@@ -336,27 +324,27 @@ void Game::DrawAxes(float length) {
         return;
     }
 
-    model->Push();
-    model->Save(glm::translate(model->Top(), glm::vec3(length / 2.0f, 0.0f, 0.0f)));
-    model->Save(glm::scale(model->Top(), glm::vec3(length, 0.5f, 0.5f)));
-    lighting_shader->SetVec3("objectColor", glm::vec3(1.0f, 0.0f, 0.0f));
-    lighting_shader->SetMat4("model", model->Top());
-    state.world->my_cube->Draw();
-    model->Pop();
-
-    model->Push();
-    model->Save(glm::translate(model->Top(), glm::vec3(0.0f, length / 2.0f, 0.0f)));
-    model->Save(glm::scale(model->Top(), glm::vec3(0.5f, length, 0.5f)));
-    lighting_shader->SetVec3("objectColor", glm::vec3(0.0f, 1.0f, 0.0f));
-    lighting_shader->SetMat4("model", model->Top());
-    state.world->my_cube->Draw();
-    model->Pop();
-
-    model->Push();
-    model->Save(glm::translate(model->Top(), glm::vec3(0.0f, 0.0f, length / 2.0f)));
-    model->Save(glm::scale(model->Top(), glm::vec3(0.5f, 0.5f, length)));
-    lighting_shader->SetVec3("objectColor", glm::vec3(0.0f, 0.0f, 1.0f));
-    lighting_shader->SetMat4("model", model->Top());
-    state.world->my_cube->Draw();
-    model->Pop();
+//    model->Push();
+//    model->Save(glm::translate(model->Top(), glm::vec3(length / 2.0f, 0.0f, 0.0f)));
+//    model->Save(glm::scale(model->Top(), glm::vec3(length, 0.5f, 0.5f)));
+//    lighting_shader->SetVec3("objectColor", glm::vec3(1.0f, 0.0f, 0.0f));
+//    lighting_shader->SetMat4("model", model->Top());
+//    state.world->my_cube->Draw();
+//    model->Pop();
+//
+//    model->Push();
+//    model->Save(glm::translate(model->Top(), glm::vec3(0.0f, length / 2.0f, 0.0f)));
+//    model->Save(glm::scale(model->Top(), glm::vec3(0.5f, length, 0.5f)));
+//    lighting_shader->SetVec3("objectColor", glm::vec3(0.0f, 1.0f, 0.0f));
+//    lighting_shader->SetMat4("model", model->Top());
+//    state.world->my_cube->Draw();
+//    model->Pop();
+//
+//    model->Push();
+//    model->Save(glm::translate(model->Top(), glm::vec3(0.0f, 0.0f, length / 2.0f)));
+//    model->Save(glm::scale(model->Top(), glm::vec3(0.5f, 0.5f, length)));
+//    lighting_shader->SetVec3("objectColor", glm::vec3(0.0f, 0.0f, 1.0f));
+//    lighting_shader->SetMat4("model", model->Top());
+//    state.world->my_cube->Draw();
+//    model->Pop();
 }
