@@ -1,17 +1,18 @@
 #ifndef RENDERER_HPP
 #define RENDERER_HPP
 
-#include <map>
+#include <vector>
 #include <memory>
 
-#include "Shader/Shader.hpp"
+#include "State.hpp"
+#include "Camera.hpp"
 #include "World/Entity.hpp"
-#include "Model/Model.hpp"
+#include "Material/Material.hpp"
+#include "Geometry/Geometry.hpp"
 
 struct Renderer {
-    Renderer();
-    virtual void Initialize() = 0;
-    virtual void Render(const std::unordered_map<Model, std::vector<Entity>>& entities) = 0;
+    virtual void Prepare(const std::unique_ptr<Camera>& camera) = 0;
+    virtual void Render(const std::vector<Entity>& entities, const std::unique_ptr<Material>& material, const Geometry* geometry) = 0;
 };
 
 #endif

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef CUBE_HPP
+#define CUBE_HPP
 
 #include "Geometry/Geometry.hpp"
 
@@ -11,3 +12,5 @@ struct Cube : public Geometry {
 protected:
     void GenerateVertices() override;
 };
+
+#endif

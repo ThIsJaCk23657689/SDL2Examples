@@ -1,4 +1,5 @@
-#pragma once
+#ifndef VERTEX_HPP
+#define VERTEX_HPP
 #include <type_traits>
 
 struct Vertex {
@@ -26,3 +27,4 @@ static_assert(std::is_standard_layout_v<Vertex>);
 static_assert(std::is_standard_layout_v<Vertex::Position>);
 static_assert(std::is_standard_layout_v<Vertex::Normal>);
 static_assert(std::is_standard_layout_v<Vertex::TexCoord>);
+#endif

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef CAMERA_HPP
+#define CAMERA_HPP
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -71,3 +72,5 @@ private:
     void UpdateCameraVectors();
     void UpdateProjectionParameters();
 };
+
+#endif

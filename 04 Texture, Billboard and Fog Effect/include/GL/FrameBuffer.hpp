@@ -1,4 +1,5 @@
-#pragma once
+#ifndef FRAMEBUFFER_HPP
+#define FRAMEBUFFER_HPP
 
 #include <glad/glad.h>
 #include <memory>
@@ -17,3 +18,4 @@ struct FrameBuffer {
     void BindRenderBuffer(const std::unique_ptr<RenderBuffer>& rbo);
     void CheckComplete();
 };
+#endif

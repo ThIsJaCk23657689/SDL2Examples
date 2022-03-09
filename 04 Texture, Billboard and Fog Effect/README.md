@@ -27,6 +27,16 @@
 ## 備註
 如果使用 Mingw 編譯的話，請記得 vcpkg 的套件要安裝 `x64-mingw-dynamic` 的版本才行，且 shader file 的換行符號要改為 `LF` 才不會發生編譯錯誤。 
 
+## 備忘錄
+> （參考 Learning OpenGL Breakout 一些設計理念）
+1. Renderer 創建時綁定 Geometry、Shader。
+2. Entity 是獨立個體的，需要位置、大小、texture 以及 顏色。
+3. Renderer 繪製（Draw()）時需要材質、位置、大小、旋轉以及顏色。
+4. 所以說 Renderer.Draw(Texture, Position, Size, Color) 是可以單獨繪製東西出來;
+5. 也可以透過 Entity.Draw(*Renderer); 的方法來實現繪製。
+6. 缺點就是遇到大量相同物體和顏色(Texture)的繪製，會一直去重複綁定 VAO 或是 Texture ID，造成浪費。
+7. 之前考慮過把 Model 跟 vector<Entity> 使用 unordered_map 來管理，基本上是一對多，但這不是好辦法。
+
 ------------------------------------------------------------
 國立臺灣海洋大學 資訊工程學系 電腦圖學實驗室 Lab 503
 

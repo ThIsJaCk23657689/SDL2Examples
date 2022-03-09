@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SPHERE_HPP
+#define SPHERE_HPP
 
 #include "Geometry/Geometry.hpp"
 
@@ -21,3 +22,4 @@ private:
     unsigned int m_longitude;
     unsigned int m_latitude;
 };
+#endif

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef UI_HPP
+#define UI_HPP
 
 #include <SDL.h>
 #include <imgui.h>
@@ -56,3 +57,5 @@ private:
     void SettingsRender();
     void AboutRender();
 };
+
+#endif

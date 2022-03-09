@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SHADER_HPP
+#define SHADER_HPP
 
 #include <glad/glad.h>
 #include <glm/glm.hpp>
@@ -51,3 +52,5 @@ private:
     GLboolean CompileShader(const GLuint& shader_id);
     GLboolean LinkShaderProgram();
 };
+
+#endif

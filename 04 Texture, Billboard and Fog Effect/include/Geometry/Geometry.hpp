@@ -1,4 +1,5 @@
-#pragma once
+#ifndef GEOMETRY_HPP
+#define GEOMETRY_HPP
 
 #include "Model/Vertex.hpp"
 
@@ -33,3 +34,4 @@ protected:
     virtual void BufferInitialize();
     void Clear();
 };
+#endif

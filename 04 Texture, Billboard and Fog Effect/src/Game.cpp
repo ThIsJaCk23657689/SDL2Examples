@@ -22,6 +22,7 @@ Game::Game() {
 }
 
 void Game::RendererInit() {
+    // 在每一次的 Game loop 都會執行，且在分割畫面之前
     master_renderer->Initialize();
 }
 
@@ -33,19 +34,25 @@ void Game::Update(float dt) {
 
     state.world->UpdateViewVolumeVertices();
 
-    state.world->earth->rotate.y += state.world->speed * dt;
-
     state.world->my_spotlight->position = state.world->my_camera->position;
     state.world->my_spotlight->direction = state.world->my_camera->front;
 
-    state.world->rick_roll->UpdatePosition(glm::vec3(0.2f, 1.0f, 0.0f), dt);
-    state.world->rick_roll->UpdateRotation(glm::vec3(0.0f, 15.0f, 10.0f), dt);
+    // state.world->earth->rotate.y += state.world->speed * dt;
+
+    for (auto& rick : state.world->rick_rolls) {
+        rick.UpdateRotation(glm::vec3(0.0f, 80.0f, 10.0f), dt);
+    }
+
+    // state.world->rick_roll->UpdatePosition(glm::vec3(0.2f, 1.0f, 0.0f), dt);
+    // state.world->rick_roll->UpdateRotation(glm::vec3(0.0f, 15.0f, 10.0f), dt);
 }
 
 void Game::Render(const std::unique_ptr<Camera>& current_camera, float dt) {
+    // 基本上就是每一偵都會執行此函數，如果說畫面有切割的話，那同一次 Game loop 之中會 repeat 多次。
 
+    master_renderer->Render(current_camera);
 
-
+    // TODO: 把 Light Ball 納入 Lightning Renderer，也許跟 Light 做綁定（或是說 Light 繼承 Entity）
     // Draw Light Ball
     basic_shader->Start();
     basic_shader->SetViewAndProj(current_camera);
@@ -68,15 +75,7 @@ void Game::Render(const std::unique_ptr<Camera>& current_camera, float dt) {
         }
     }
 
-    // Draw Entities
-    for (auto &entity : state.world->cubes) {
-        master_renderer->ProcessEntity(entity);
-    }
-
-
-    master_renderer->Render(current_camera);
-
-
+    // TODO: 繪製 xyz 三軸
 //    model->Push();
 //    model->Save(glm::translate(model->Top(), state.world->my_camera->position));
 //    model->Save(glm::rotate(model->Top(), glm::radians(-state.world->my_camera->yaw), glm::vec3(0.0, 1.0, 0.0)));
@@ -147,7 +146,7 @@ void Game::Render(const std::unique_ptr<Camera>& current_camera, float dt) {
 //    model->Pop();
 //    model->Pop();
 
-
+    // TODO: 把 View Volume 納入 Alpha Renderer
     alpha_shader->Start();
     alpha_shader->SetViewAndProj(current_camera);
     // 繪製 View Volume
@@ -164,8 +163,7 @@ void Game::Render(const std::unique_ptr<Camera>& current_camera, float dt) {
 
 void Game::Destroy() {
     basic_shader->Destroy();
-    // lighting_shader->Destroy();
-
+    alpha_shader->Destroy();
     state.world->Destroy();
 }
 

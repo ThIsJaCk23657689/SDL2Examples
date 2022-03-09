@@ -280,7 +280,6 @@ void UI::LightningInfoRender() {
     if (Windows.LightningInfo.Visible) {
         ImGui::SetNextWindowSize(ImVec2(400, 180), ImGuiCond_Once);
         ImGui::Begin("Lightning Info", &Windows.LightningInfo.Visible, Windows.LightningInfo.WindowFlags);
-        ImGui::SliderFloat("Shininess", &state.world->shininess, 1.0f, 512.0f);
         ImGui::Spacing();
         if (ImGui::BeginTabBar("TabBar##Window_LightningInfo")) {
 

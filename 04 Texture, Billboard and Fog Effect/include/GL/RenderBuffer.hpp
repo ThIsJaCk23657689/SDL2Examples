@@ -1,4 +1,5 @@
-#pragma once
+#ifndef RENDERBUFFER_HPP
+#define RENDERBUFFER_HPP
 
 #include <glad//glad.h>
 
@@ -9,3 +10,4 @@ struct RenderBuffer {
     void Bind();
     void UnBind();
 };
+#endif

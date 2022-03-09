@@ -1,4 +1,5 @@
-#pragma once
+#ifndef TEXTURE2D_HPP
+#define TEXTURE2D_HPP
 
 #include <glad/glad.h>
 #include <stb_image.h>
@@ -17,3 +18,5 @@ struct Texture2D {
 
     unsigned int id;
 };
+
+#endif

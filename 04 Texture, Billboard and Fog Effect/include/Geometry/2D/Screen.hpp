@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SCREEN_HPP
+#define SCREEN_HPP
 
 #include "Geometry/Geometry.hpp"
 #include <glad/glad.h>
@@ -21,3 +22,4 @@ protected:
     void Clear();
 
 };
+#endif

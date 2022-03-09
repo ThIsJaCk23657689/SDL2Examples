@@ -1,52 +1,58 @@
 #include "Renderer/MasterRenderer.hpp"
 
-#include "State.hpp"
+MasterRenderer::MasterRenderer() {
+    // Game Class 初始化的時候就會執行
+
+    // 建立 Shaders
+    basic_shader = std::make_unique<BasicShader>();
+    lightning_shader = std::make_unique<LightningShader>();
+    alpha_shader = std::make_unique<AlphaShader>();
+
+    // 建立 Renderer
+    basic_renderer = std::make_unique<BasicRenderer>(basic_shader.get());
+    lightning_renderer = std::make_unique<LightningRenderer>(lightning_shader.get());
+    alpha_renderer = std::make_unique<AlphaRenderer>(alpha_shader.get());
+
+    // 設定 gl
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_MULTISAMPLE);
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+}
 
 void MasterRenderer::Initialize() {
-    lightning_shader = std::make_unique<LightningShader>();
-    entities_renderer = std::make_unique<EntitiesRenderer>(lightning_shader.get());
+    // 在每一次的 Game loop 都會執行，且在分割畫面之前
+
+    // 是否開啟 Back Face Culling
+    if (state.world->culling) {
+        glEnable(GL_CULL_FACE);
+        glCullFace(GL_BACK);
+    } else {
+        glDisable(GL_CULL_FACE);
+    }
+
+    // 清除快取
+    glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
 void MasterRenderer::Render(const std::unique_ptr<Camera>& camera) {
-    entities_renderer->Initialize();
-    lightning_shader->Start();
-    lightning_shader->SetBool("useLighting", true);
-    lightning_shader->SetBool("useBlinnPhong", true);
-    lightning_shader->SetVec3("objectColor", glm::vec3(0.0f));
-    lightning_shader->SetBool("useTexture", false);
-    lightning_shader->SetInt("diffuse_texture", 0);
+    // 繪製需要光照的物體 (lightning renderer)
+    lightning_renderer->Prepare(camera);
+    lightning_renderer->Render(state.world->suns, state.world->sun_material, state.world->my_sphere.get());
+    lightning_renderer->Render(state.world->earths, state.world->earth_material, state.world->my_sphere.get());
+    lightning_renderer->Render(state.world->moons, state.world->moon_material, state.world->my_sphere.get());
+    lightning_renderer->Render(state.world->rick_rolls, state.world->rick_roll_material, state.world->my_cube.get());
+    lightning_renderer->Render(state.world->grounds, state.world->green_material, state.world->my_cube.get());
 
-    // Load Lights
-    lightning_shader->SetLight(state.world->my_directional_light, 0);
-    lightning_shader->SetLight(state.world->my_spotlight, 1);
-    for (int i = 0; i < state.world->my_point_lights.size(); ++i) {
-        lightning_shader->SetLight(state.world->my_point_lights[i], i + 2);
-    }
-
-    // Load View, Projection Matrix and Viewport settings
-    camera->SetViewPort();
-    lightning_shader->SetViewAndProj(camera);
-    lightning_shader->SetVec3("viewPos", camera->position);
-
-    // Render objects
-    entities_renderer->Render(entities);
-
-    lightning_shader->Stop();
-    entities.clear();
-}
-
-void MasterRenderer::ProcessEntity(const Entity& entity) {
-    auto model = *entity.model;
-
-    if (entities.find(model) != entities.end()) {
-        std::vector<Entity> batch = entities[model];
-    } else {
-        std::vector<Entity> new_batch;
-        new_batch.push_back(entity);
-        entities[model] = new_batch;
-    }
+    // TODO:: 攝影機的繪製，可以考慮讓 Camera 繼承 Entity，不過要解決一個問題： 如果我只有一個 Entity 要繪製，那還需要為此建立一個 vector 嗎，是不是有點太浪費資源。
+    // 有沒有辦法使用 Entity.Draw(Renderer) 的方式?
+    // 但這樣又會本末倒置，不然就是說要採用 Renderer.Render(Entity, Material, Geometry) 多載的方式，嘗試看看。
 }
 
 void MasterRenderer::Destroy() {
+    basic_shader->Destroy();
     lightning_shader->Destroy();
+    alpha_shader->Destroy();
 }

@@ -2,6 +2,9 @@
 
 #include "Texture/TextureManager.hpp"
 
+std::mt19937_64 rand_generator;
+std::uniform_real_distribution<float> random_num(0, 1);
+
 void World::Create() {
     // Geometry Initialize
     my_cube = std::make_unique<Cube>();
@@ -9,33 +12,48 @@ void World::Create() {
     view_volume = std::make_unique<Cube>();
     my_screen = std::make_unique<Screen>();
 
-    // TODO:: Load Images and Create Textures
+    // Load Images and Create Textures
     TextureManager::Initialize();
 
-    // Model Initialize
-    planets = std::make_unique<Model>(my_sphere.get());
-    rick_roll_cube_model = std::make_unique<Model>(my_cube.get(), &TextureManager::GetTexture2D("RickRoll"));
+    // Material Initialize
+    sun_material = std::make_unique<Material>(glm::vec3(1.0f, 0.811764706f, 0.301960784f));
+    earth_material = std::make_unique<Material>(glm::vec3(0.137254902f, 0.274509804f, 0.968627451f));
+    moon_material = std::make_unique<Material>(glm::vec3(0.447058824f, 0.450980392f, 0.478431373f));
+    rick_roll_material = std::make_unique<Material>(&TextureManager::GetTexture2D("RickRoll"));
+    green_material = std::make_unique<Material>(glm::vec3(42 / 255.0f, 219 / 255.0f, 89 / 255.0f));
+    gray_material = std::make_unique<Material>(glm::vec3(0.2f));
+    
+//    planets = std::make_unique<Model>(my_sphere.get());
+//    rick_roll_cube_model = std::make_unique<Model>(my_cube.get(), &TextureManager::GetTexture2D("RickRoll"));
 
     // Entity Initialize
-    rick_roll = std::make_unique<Entity>(rick_roll_cube_model.get(), glm::vec3(0.0f));
-    sun = std::make_unique<Entity>(planets.get(), glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(3.0f));
-    earth = std::make_unique<Entity>(planets.get(), glm::vec3(30.0f, 0.0f, 0.0f));
-    moon = std::make_unique<Entity>(
-        planets.get(), glm::vec3(5.0f, 0.0f, 0.0f), glm::vec3(0.0f), glm::vec3(0.5f, 0.5f, 0.5f));
-
-    for (int i = 0; i < 200; i++) {
-        float x = random_num(rand_generator) * 100.0f - 50;
-        float y = random_num(rand_generator) * 100.0f - 50;
-        float z = random_num(rand_generator) * -300.0f;
+    suns = {
+        Entity(glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(3.0f))
+    };
+    earths = {
+        Entity(glm::vec3(30.0f, 0.0f, 0.0f))
+    };
+    moons = {
+        Entity(glm::vec3(5.0f, 0.0f, 0.0f), glm::vec3(0.0f), glm::vec3(0.5f, 0.5f, 0.5f))
+    };
+    grounds = {
+        Entity(glm::vec3(0.0f, -50.0f, 0.0f), glm::vec3(0.0f), glm::vec3(100.0f))
+    };
+//    cameras = {
+//
+//    };
+    for (int i = 0; i < 50; i++) {
+        float x = random_num(rand_generator) * 100.0f - 50.0f;
+        float y = random_num(rand_generator) * 50.0f;
+        float z = random_num(rand_generator) * 100.0f - 50.0f;
         float pitch = random_num(rand_generator) * 180.0f;
         float yaw = random_num(rand_generator) * 180.0f;
-
-        cubes.emplace_back(
-            rick_roll_cube_model.get(),
+        float scale = random_num(rand_generator) + 1.0f;
+        rick_rolls.emplace_back(Entity(
             glm::vec3(x, y, z),
             glm::vec3(pitch, yaw, 0),
-            glm::vec3(1.0f)
-        );
+            glm::vec3(scale)
+        ));
     }
 
     // Camera Initialize
