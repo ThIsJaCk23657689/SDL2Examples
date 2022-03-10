@@ -8,7 +8,7 @@ LightningShader::LightningShader() : Shader(VERTEX_FILE, FRAGMENT_FILE) {}
 void LightningShader::SetLight(const std::unique_ptr<Light>& light, const int& light_index) {
     switch (light->caster) {
         case LightCaster::Directional:
-            SetVec3("lights[" + std::to_string(light_index) + "].direction", light->direction);
+            SetVec3("lights[" + std::to_string(light_index) + "].direction", light->entity.front);
             SetVec3("lights[" + std::to_string(light_index) + "].ambient", light->ambient);
             SetVec3("lights[" + std::to_string(light_index) + "].diffuse", light->diffuse);
             SetVec3("lights[" + std::to_string(light_index) + "].specular", light->specular);
@@ -16,7 +16,7 @@ void LightningShader::SetLight(const std::unique_ptr<Light>& light, const int& l
             SetInt( "lights[" + std::to_string(light_index) + "].caster", light->caster);
             break;
         case LightCaster::Point:
-            SetVec3("lights[" + std::to_string(light_index) + "].position", light->position);
+            SetVec3("lights[" + std::to_string(light_index) + "].position", light->entity.position);
             SetVec3("lights[" + std::to_string(light_index) + "].ambient", light->ambient);
             SetVec3("lights[" + std::to_string(light_index) + "].diffuse", light->diffuse);
             SetVec3("lights[" + std::to_string(light_index) + "].specular", light->specular);
@@ -27,8 +27,8 @@ void LightningShader::SetLight(const std::unique_ptr<Light>& light, const int& l
             SetInt("lights[" + std::to_string(light_index) + "].caster", light->caster);
             break;
         case LightCaster::Spot:
-            SetVec3("lights[" + std::to_string(light_index) + "].position", light->position);
-            SetVec3("lights[" + std::to_string(light_index) + "].direction", light->direction);
+            SetVec3("lights[" + std::to_string(light_index) + "].position", light->entity.position);
+            SetVec3("lights[" + std::to_string(light_index) + "].direction", light->entity.front);
             SetVec3("lights[" + std::to_string(light_index) + "].ambient", light->ambient);
             SetVec3("lights[" + std::to_string(light_index) + "].diffuse", light->diffuse);
             SetVec3("lights[" + std::to_string(light_index) + "].specular", light->specular);

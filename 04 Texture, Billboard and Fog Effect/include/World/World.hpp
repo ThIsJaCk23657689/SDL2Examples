@@ -25,11 +25,6 @@ struct World {
     std::unique_ptr<Screen> my_screen = nullptr;
 
     // Material
-    std::unique_ptr<Material> sun_material = nullptr;
-    std::unique_ptr<Material> earth_material = nullptr;
-    std::unique_ptr<Material> moon_material = nullptr;
-    std::unique_ptr<Material> rick_roll_material = nullptr;
-    std::unique_ptr<Material> green_material = nullptr;
     std::unique_ptr<Material> gray_material = nullptr;
 
 //    // Model

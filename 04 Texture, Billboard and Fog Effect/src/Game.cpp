@@ -34,8 +34,8 @@ void Game::Update(float dt) {
 
     state.world->UpdateViewVolumeVertices();
 
-    state.world->my_spotlight->position = state.world->my_camera->position;
-    state.world->my_spotlight->direction = state.world->my_camera->front;
+    // Update the spotlight
+    state.world->my_spotlight->Update(dt);
 
     // state.world->earth->rotate.y += state.world->speed * dt;
 
@@ -54,26 +54,26 @@ void Game::Render(const std::unique_ptr<Camera>& current_camera, float dt) {
 
     // TODO: 把 Light Ball 納入 Lightning Renderer，也許跟 Light 做綁定（或是說 Light 繼承 Entity）
     // Draw Light Ball
-    basic_shader->Start();
-    basic_shader->SetViewAndProj(current_camera);
-    if (state.world->my_directional_light->enable) {
-        model->Push();
-        model->Save(glm::translate(model->Top(), state.world->my_directional_light->direction * -1.0f));
-        basic_shader->SetVec3("objectColor", state.world->my_directional_light->color);
-        basic_shader->SetMat4("model", model->Top());
-        state.world->my_sphere->Draw();
-        model->Pop();
-    }
-    for (int i = 0; i < state.world->my_point_lights.size(); ++i) {
-        if (state.world->my_point_lights[i]->enable) {
-            model->Push();
-            model->Save(glm::translate(model->Top(), state.world->my_point_lights[i]->position));
-            basic_shader->SetVec3("objectColor", state.world->my_point_lights[i]->color);
-            basic_shader->SetMat4("model", model->Top());
-            state.world->my_sphere->Draw();
-            model->Pop();
-        }
-    }
+//    basic_shader->Start();
+//    basic_shader->SetViewAndProj(current_camera);
+//    if (state.world->my_directional_light->enable) {
+//        model->Push();
+//        model->Save(glm::translate(model->Top(), state.world->my_directional_light->direction * -1.0f));
+//        basic_shader->SetVec3("objectColor", state.world->my_directional_light->color);
+//        basic_shader->SetMat4("model", model->Top());
+//        state.world->my_sphere->Draw();
+//        model->Pop();
+//    }
+//    for (int i = 0; i < state.world->my_point_lights.size(); ++i) {
+//        if (state.world->my_point_lights[i]->enable) {
+//            model->Push();
+//            model->Save(glm::translate(model->Top(), state.world->my_point_lights[i]->position));
+//            basic_shader->SetVec3("objectColor", state.world->my_point_lights[i]->color);
+//            basic_shader->SetMat4("model", model->Top());
+//            state.world->my_sphere->Draw();
+//            model->Pop();
+//        }
+//    }
 
     // TODO: 繪製 xyz 三軸
 //    model->Push();

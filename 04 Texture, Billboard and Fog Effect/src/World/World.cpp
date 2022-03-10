@@ -16,11 +16,6 @@ void World::Create() {
     TextureManager::Initialize();
 
     // Material Initialize
-    sun_material = std::make_unique<Material>(glm::vec3(1.0f, 0.811764706f, 0.301960784f));
-    earth_material = std::make_unique<Material>(glm::vec3(0.137254902f, 0.274509804f, 0.968627451f));
-    moon_material = std::make_unique<Material>(glm::vec3(0.447058824f, 0.450980392f, 0.478431373f));
-    rick_roll_material = std::make_unique<Material>(&TextureManager::GetTexture2D("RickRoll"));
-    green_material = std::make_unique<Material>(glm::vec3(42 / 255.0f, 219 / 255.0f, 89 / 255.0f));
     gray_material = std::make_unique<Material>(glm::vec3(0.2f));
     
 //    planets = std::make_unique<Model>(my_sphere.get());
@@ -28,16 +23,16 @@ void World::Create() {
 
     // Entity Initialize
     suns = {
-        Entity(glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(3.0f))
+        Entity(glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(3.0f), glm::vec3(1.0f, 0.811764706f, 0.301960784f))
     };
     earths = {
-        Entity(glm::vec3(30.0f, 0.0f, 0.0f))
+        Entity(glm::vec3(30.0f, 0.0f, 0.0f), glm::vec3(0.0f), glm::vec3(1.0f), glm::vec3(0.137254902f, 0.274509804f, 0.968627451f))
     };
     moons = {
-        Entity(glm::vec3(5.0f, 0.0f, 0.0f), glm::vec3(0.0f), glm::vec3(0.5f, 0.5f, 0.5f))
+        Entity(glm::vec3(5.0f, 0.0f, 0.0f), glm::vec3(0.0f), glm::vec3(0.5f, 0.5f, 0.5f), glm::vec3(0.447058824f, 0.450980392f, 0.478431373f))
     };
     grounds = {
-        Entity(glm::vec3(0.0f, -50.0f, 0.0f), glm::vec3(0.0f), glm::vec3(100.0f))
+        Entity(glm::vec3(0.0f, -50.0f, 0.0f), glm::vec3(0.0f), glm::vec3(100.0f), glm::vec3(42 / 255.0f, 219 / 255.0f, 89 / 255.0f))
     };
 //    cameras = {
 //
@@ -49,11 +44,9 @@ void World::Create() {
         float pitch = random_num(rand_generator) * 180.0f;
         float yaw = random_num(rand_generator) * 180.0f;
         float scale = random_num(rand_generator) + 1.0f;
-        rick_rolls.emplace_back(Entity(
-            glm::vec3(x, y, z),
-            glm::vec3(pitch, yaw, 0),
-            glm::vec3(scale)
-        ));
+
+        auto temp = Entity(glm::vec3(x, y, z),glm::vec3(pitch, yaw, 0), glm::vec3(scale), &TextureManager::GetTexture2D("RickRoll"));
+        rick_rolls.emplace_back(temp);
     }
 
     // Camera Initialize
@@ -70,6 +63,9 @@ void World::Create() {
 
     // Light Initialize
     my_directional_light = std::make_unique<Light>(glm::vec4(0.0f, -1.0f, -3.0f, 0.0f), false);
+    my_spotlight = std::make_unique<Light>(glm::vec3(0.0f, 5.0f, 5.0f), glm::vec3(0.0f, -0.5f, -1.0f), true);
+    my_spotlight->HookCamera(my_camera.get());
+
     my_point_lights = {
         std::make_unique<Light>(glm::vec3(33.75f, 8.75f, -37.654f), true),
         std::make_unique<Light>(glm::vec3(-23.75f, 7.5f, 37.654f), true),
@@ -78,7 +74,6 @@ void World::Create() {
         std::make_unique<Light>(glm::vec3(-42.5f, 12.5f, -5.556f), true),
         std::make_unique<Light>(glm::vec3(0.0f, 13.75f, 0.617f), true),
     };
-    my_spotlight = std::make_unique<Light>(glm::vec3(0.0f, 5.0f, 5.0f), glm::vec3(0.0f, -0.5f, -1.0f), true);
     my_point_lights[0]->UpdateColor(glm::vec3(1.0f, 0.082f, 0.082f));
     my_point_lights[1]->UpdateColor(glm::vec3(0.082f, 0.082f, 1.0f));
     my_point_lights[2]->UpdateColor(glm::vec3(0.082f, 1.0f, 0.082f));

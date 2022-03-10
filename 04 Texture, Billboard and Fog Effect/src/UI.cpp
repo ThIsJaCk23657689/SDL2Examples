@@ -285,7 +285,10 @@ void UI::LightningInfoRender() {
 
             if (ImGui::BeginTabItem("Directional Light"))  {
                 ImGui::Checkbox("Enable", &state.world->my_directional_light->enable);
-                ImGui::SliderFloat3("Direction", glm::value_ptr(state.world->my_directional_light->direction), -50.0f, 50.0f);
+                if (ImGui::SliderFloat3("Direction", glm::value_ptr(state.world->my_directional_light->entity.front), -50.0f, 50.0f)) {
+                    // 平行光的位置會等於它的方向取反
+                    state.world->my_directional_light->entity.position = -state.world->my_directional_light->entity.front;
+                }
                 if (ImGui::ColorEdit3("Color##Direction", glm::value_ptr(state.world->my_directional_light->color))) {
                     state.world->my_directional_light->UpdateColor();
                 }
@@ -296,7 +299,7 @@ void UI::LightningInfoRender() {
                 for (int i = 0; i < state.world->my_point_lights.size(); ++i) {
                     if (ImGui::TreeNode(std::string("Point Light " + std::to_string(i)).c_str())) {
                         ImGui::Checkbox("Enable", &state.world->my_point_lights[i]->enable);
-                        ImGui::SliderFloat3("Position", glm::value_ptr(state.world->my_point_lights[i]->position), -50.0f, 50.0f);
+                        ImGui::SliderFloat3("Position", glm::value_ptr(state.world->my_point_lights[i]->entity.position), -50.0f, 50.0f);
                         if (ImGui::ColorEdit3("Color", glm::value_ptr(state.world->my_point_lights[i]->color))) {
                             state.world->my_point_lights[i]->UpdateColor();
                         }
@@ -309,8 +312,8 @@ void UI::LightningInfoRender() {
 
             if (ImGui::BeginTabItem("SpotLight"))  {
                 ImGui::Checkbox("Enable", &state.world->my_spotlight->enable);
-                ImGui::SliderFloat3("Position", glm::value_ptr(state.world->my_spotlight->position), -50.0f, 50.0f);
-                ImGui::SliderFloat3("Direction", glm::value_ptr(state.world->my_spotlight->direction), -1.0f, 1.0f);
+                ImGui::SliderFloat3("Position", glm::value_ptr(state.world->my_spotlight->entity.position), -50.0f, 50.0f);
+                ImGui::SliderFloat3("Direction", glm::value_ptr(state.world->my_spotlight->entity.front), -1.0f, 1.0f);
                 if (ImGui::ColorEdit3("Color", glm::value_ptr(state.world->my_spotlight->color))) {
                     state.world->my_spotlight->UpdateColor();
                 }

@@ -2,6 +2,9 @@
 #define LIGHT_HPP
 #include <glm/glm.hpp>
 
+#include "World/Entity.hpp"
+#include "Camera.hpp"
+
 enum LightCaster : int {
     Directional = 0,
     Point,
@@ -9,8 +12,8 @@ enum LightCaster : int {
 };
 
 struct Light {
-    glm::vec3 position;
-    glm::vec3 direction;
+    // glm::vec3 position;
+    // glm::vec3 direction;
 
     glm::vec3 ambient;
     glm::vec3 diffuse;
@@ -27,6 +30,9 @@ struct Light {
     bool enable;
     LightCaster caster;
 
+    Entity entity;
+    const Camera* camera;
+
     // Directional Light
     Light(glm::vec4 dir = glm::vec4(0.0, -1.0, -1.0f, 0.0f), bool enb = true);
 
@@ -36,6 +42,8 @@ struct Light {
     // Spotlight
     Light(glm::vec3 pos = glm::vec3(0.0, 0.0, 5.0f), glm::vec3 dir = glm::vec3(0.0, 0.0, -1.0f), bool enb = true);
 
+    void HookCamera(const Camera* cam);
+    void Update(float dt);
     void UpdateColor();
     void UpdateColor(glm::vec3 color);
 };
