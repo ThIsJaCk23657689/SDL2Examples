@@ -105,6 +105,10 @@ void Camera::UpdateTargetPosition(glm::vec3 target_pos) {
     UpdateCameraVectors();
 }
 
+void Camera::HookEntity(const Entity &ent) {
+    entity = &ent;
+}
+
 float Camera::AspectRatio() {
     return static_cast<float>(viewport.width) / static_cast<float>(viewport.height);
 }
@@ -117,6 +121,11 @@ glm::mat4 Camera::View() {
 void Camera::ProcessKeyboard() {
     // SDL2 鍵盤控制移動建議使用這個 SDL_GetKeyboardState()，才不會覺得卡卡頓頓的
     const Uint8* state = SDL_GetKeyboardState(NULL);
+    if (state[SDL_SCANCODE_LCTRL]) {
+        move_speed = 450.0f;
+    } else {
+        move_speed = 150.0f;
+    }
 
     if (state[SDL_SCANCODE_W]) {
         acceleration += front * move_speed;

@@ -3,6 +3,10 @@
 
 #include <glm/glm.hpp>
 
+#include <memory>
+
+#include "Shader/Shader.hpp"
+
 enum FogMode : int {
     LINEAR = 0,
     EXP = 1,
@@ -18,6 +22,8 @@ struct Fog {
     bool enable;
 
     Fog(glm::vec3 col, float des = 0.15f, float f_s = 20.0f, float f_e = 80.0f, bool ena = true);
+
+    void Set(std::unique_ptr<Shader>& shader);
 };
 
 #endif

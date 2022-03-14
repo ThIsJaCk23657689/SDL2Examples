@@ -46,6 +46,7 @@ uniform vec3 viewPos;
 uniform bool useLighting;
 uniform bool useBlinnPhong;
 uniform bool useTexture;
+uniform bool emissionTexture;
 
 uniform Light lights[NUM_LIGHTS];
 uniform Fog fog;
@@ -64,6 +65,11 @@ void main() {
     vec3 illumination = vec3(0.0f);
     if (useLighting) {
         for (int i = 0; i < NUM_LIGHTS; i++ ) {
+            if (emissionTexture) {
+                // 發現如果該貼圖具有 emission 特性，就不用算光照直接跳出迴圈
+                illumination = final_frag_color * 1.5f;
+                break;
+            }
             if (lights[i].enable) {
                 illumination += CalcLight(lights[i], norm, viewDir, final_frag_color);
             }

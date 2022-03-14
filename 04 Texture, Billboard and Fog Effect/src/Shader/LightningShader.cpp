@@ -42,12 +42,3 @@ void LightningShader::SetLight(const std::unique_ptr<Light>& light, const int& l
             break;
     }
 }
-
-void LightningShader::SetFog(const std::unique_ptr<Fog>& fog) {
-    SetVec3("fog.color", fog->color);
-    SetInt("fog.mode", fog->mode);
-    SetFloat("fog.density", fog->density);
-    SetFloat("fog.start", fog->start);
-    SetFloat("fog.end", fog->end);
-    SetBool("fog.enable", fog->enable);
-}

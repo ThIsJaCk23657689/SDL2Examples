@@ -15,28 +15,13 @@ void World::Create() {
     // Load Images and Create Textures
     TextureManager::Initialize();
 
-    // Material Initialize
-    gray_material = std::make_unique<Material>(glm::vec3(0.2f));
-    
-//    planets = std::make_unique<Model>(my_sphere.get());
-//    rick_roll_cube_model = std::make_unique<Model>(my_cube.get(), &TextureManager::GetTexture2D("RickRoll"));
-
     // Entity Initialize
-    suns = {
-        Entity(glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(3.0f), glm::vec3(1.0f, 0.811764706f, 0.301960784f))
-    };
-    earths = {
-        Entity(glm::vec3(30.0f, 0.0f, 0.0f), glm::vec3(0.0f), glm::vec3(1.0f), glm::vec3(0.137254902f, 0.274509804f, 0.968627451f))
-    };
-    moons = {
-        Entity(glm::vec3(5.0f, 0.0f, 0.0f), glm::vec3(0.0f), glm::vec3(0.5f, 0.5f, 0.5f), glm::vec3(0.447058824f, 0.450980392f, 0.478431373f))
-    };
-    grounds = {
-        Entity(glm::vec3(0.0f, -50.0f, 0.0f), glm::vec3(0.0f), glm::vec3(100.0f), glm::vec3(42 / 255.0f, 219 / 255.0f, 89 / 255.0f))
-    };
-//    cameras = {
-//
-//    };
+    sun = Entity(glm::vec3(0.0f, 10.0f, 0.0f), glm::vec3(0.0f), glm::vec3(3.0f), &TextureManager::GetTexture2D("Sun"));
+    sun.material.emission_texture = true;
+    earth = Entity(glm::vec3(20.0f, 10.0f, 0.0f), glm::vec3(0.0f, 23.5f, 0.0f), glm::vec3(1.0f), &TextureManager::GetTexture2D("Earth"));
+    moon = Entity(glm::vec3(25.0f, 10.0f, 0.0f), glm::vec3(0.0f), glm::vec3(0.6f), &TextureManager::GetTexture2D("Moon"));
+    ground = Entity(glm::vec3(0.0f, -50.0f, 0.0f), glm::vec3(0.0f), glm::vec3(100.0f), glm::vec3(42 / 255.0f, 219 / 255.0f, 89 / 255.0f));
+    camera = Entity(glm::vec3(0.0f, 0.0f, 5.5f), glm::vec3(0.0f), glm::vec3(8.0f, 5.0f, 10.0f), glm::vec3(0.2f));
     for (int i = 0; i < 50; i++) {
         float x = random_num(rand_generator) * 100.0f - 50.0f;
         float y = random_num(rand_generator) * 50.0f;
@@ -51,6 +36,7 @@ void World::Create() {
 
     // Camera Initialize
     my_camera = std::make_unique<Camera>(glm::vec3(0.0f, 10.0f, 80.0f), true);
+    my_camera->HookEntity(camera);
     ortho_x_camera = std::make_unique<Camera>(my_camera->position + glm::vec3(1.0f, 0.0f, 0.0f) * ortho_distance,
                                               my_camera->position);
     ortho_x_camera->yaw = -90.0f;
@@ -72,7 +58,7 @@ void World::Create() {
         std::make_unique<Light>(glm::vec3(-17.5f, 8.75f, -32.716f), true),
         std::make_unique<Light>(glm::vec3(32.5f, 7.5f, 23.309f), true),
         std::make_unique<Light>(glm::vec3(-42.5f, 12.5f, -5.556f), true),
-        std::make_unique<Light>(glm::vec3(0.0f, 13.75f, 0.617f), true),
+        std::make_unique<Light>(glm::vec3(sun.position), true),
     };
     my_point_lights[0]->UpdateColor(glm::vec3(1.0f, 0.082f, 0.082f));
     my_point_lights[1]->UpdateColor(glm::vec3(0.082f, 0.082f, 1.0f));
@@ -82,7 +68,8 @@ void World::Create() {
     my_point_lights[5]->UpdateColor(glm::vec3(165 / 255.0f, 177 / 255.0f, 1.0f));
 
     // Fog init
-    my_fog = std::make_unique<Fog>(glm::vec3(0.1f, 0.1f, 0.1f), 0.012f);
+    my_fog = std::make_unique<Fog>(glm::vec3(0.1f, 0.1f, 0.1f), 0.012f, 50.0f, 120.0f);
+    my_fog->mode = FogMode::LINEAR;
 }
 
 void World::Destroy() {

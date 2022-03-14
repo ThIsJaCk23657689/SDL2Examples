@@ -10,8 +10,9 @@ std::map<std::string, Texture2D> TextureManager::texture2Ds;
 void TextureManager::Initialize() {
     // Create Textures (Note: All the textures which be used must create in this function)
     TextureManager::CreateTexture2D("rickroll.png", "RickRoll");
-    TextureManager::CreateTexture2D("wall.jpg", "Wall");
-    TextureManager::CreateTexture2D("awesomeface.png", "Face");
+    TextureManager::CreateTexture2D("earth.jpg", "Earth");
+    TextureManager::CreateTexture2D("sun.jpg", "Sun");
+    TextureManager::CreateTexture2D("moon.jpg", "Moon");
 
     // TextureManager::GetTexture2D("Rick Roll").SetWrapParameters(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
     // TextureManager::GetTexture2D("Rick Roll").SetFilterParameters(GL_NEAREST_MIPMAP_NEAREST, GL_NEAREST);

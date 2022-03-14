@@ -8,8 +8,12 @@ void BasicRenderer::Prepare(const std::unique_ptr<Camera>& camera) {
     m_shader->Start();
     m_shader->SetVec3("objectColor", glm::vec3(0.0f));
 
-    // Load View, Projection Matrix
+    // Load Fog
+    state.world->my_fog->Set(reinterpret_cast<std::unique_ptr<Shader>&>(m_shader));
+
+    // Load View and Projection Matrix
     m_shader->SetViewAndProj(camera);
+    m_shader->SetVec3("viewPos", camera->position);
 }
 
 void BasicRenderer::Render(const Entity& entity, const Geometry* geometry) {

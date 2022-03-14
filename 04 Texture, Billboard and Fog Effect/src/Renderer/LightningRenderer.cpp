@@ -10,6 +10,7 @@ void LightningRenderer::Prepare(const std::unique_ptr<Camera>& camera) {
     m_shader->SetBool("useBlinnPhong", true);
     m_shader->SetVec3("objectColor", glm::vec3(0.0f));
     m_shader->SetBool("useTexture", false);
+    m_shader->SetBool("emissionTexture", false);
     m_shader->SetInt("diffuse_texture", 0);
 
     // Load Lights
@@ -20,10 +21,9 @@ void LightningRenderer::Prepare(const std::unique_ptr<Camera>& camera) {
     }
 
     // Load Fog
-    m_shader->SetFog(state.world->my_fog);
+    state.world->my_fog->Set(reinterpret_cast<std::unique_ptr<Shader>&>(m_shader));
 
-    // Load View, Projection Matrix and Viewport settings
-    camera->SetViewPort();
+    // Load View and Projection Matrix
     m_shader->SetViewAndProj(camera);
     m_shader->SetVec3("viewPos", camera->position);
 }
@@ -38,6 +38,11 @@ void LightningRenderer::Render(const Entity& entity, const Geometry* geometry) {
         m_shader->SetBool("useTexture", false);
         m_shader->SetVec3("objectColor", entity.material.color);
     } else {
+        if (entity.material.emission_texture) {
+            m_shader->SetBool("emissionTexture", true);
+        } else {
+            m_shader->SetBool("emissionTexture", false);
+        }
         m_shader->SetBool("useTexture", true);
         m_shader->SetVec3("objectColor", glm::vec3(0.0f));
         entity.material.texture->Bind(GL_TEXTURE0);
@@ -70,6 +75,11 @@ void LightningRenderer::Render(const std::vector<Entity>& entities, const Geomet
             m_shader->SetBool("useTexture", false);
             m_shader->SetVec3("objectColor", entity.material.color);
         } else {
+            if (entity.material.emission_texture) {
+                m_shader->SetBool("emissionTexture", true);
+            } else {
+                m_shader->SetBool("emissionTexture", false);
+            }
             m_shader->SetBool("useTexture", true);
             m_shader->SetVec3("objectColor", glm::vec3(0.0f));
             entity.material.texture->Bind(GL_TEXTURE0);

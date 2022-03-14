@@ -46,7 +46,7 @@ void Sphere::GenerateVertices() {
 
             // texture coordinate (u, v) range between [0, 1]
             float u = j / static_cast<float>(m_longitude);
-            float v = i / static_cast<float>(m_latitude);
+            float v = 1.0f - (i / static_cast<float>(m_latitude));
 
             // 新增圓球座標位置到頂點中, 其法向量就等同於圓心（原點）到半徑為１的球表面上（單位向量）。
             vertices.push_back({ {m_radius * x, m_radius * y, m_radius * z}, { x, y, z }, { u, v } });

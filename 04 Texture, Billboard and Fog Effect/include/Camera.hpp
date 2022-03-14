@@ -5,6 +5,11 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <vector>
 
+#include "World/Entity.hpp"
+
+// 攝影機本身不會移動，只會跟隨有綁定的 Entity
+// Entity 會移動，但鍵盤滑鼠是控制 Player 裡面的 Entity (就跟 Light 包含 Entity 一樣)
+
 enum CameraMovement : unsigned int {
     LEFT = 0,
     RIGHT = 1,
@@ -50,6 +55,9 @@ struct Camera {
     void ToggleMouseControl();
     void Update(float dt);
     void UpdateTargetPosition(glm::vec3 target_pos);
+
+    void HookEntity(const Entity &ent);
+    const Entity *entity;
 
     float pitch, yaw;
     glm::vec3 position;

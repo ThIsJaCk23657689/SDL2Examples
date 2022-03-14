@@ -15,6 +15,7 @@ struct Material {
     Material(Texture2D* tex);
 
     Texture2D* texture;
+    bool emission_texture;
 
     glm::vec3 color;
     float shininess;
