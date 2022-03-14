@@ -26,6 +26,10 @@ struct UI {
             bool Visible = false;
             int WindowFlags = 0;
         } LightningInfo;
+        struct FogInfo {
+            bool Visible = false;
+            int WindowFlags = 0;
+        } FogInfo;
         struct Settings {
             bool Visible = false;
             int WindowFlags = 0;
@@ -54,6 +58,7 @@ private:
     void CameraInfoRender();
     void ProjectionInfoRender();
     void LightningInfoRender();
+    void FogInfoRender();
     void SettingsRender();
     void AboutRender();
 };

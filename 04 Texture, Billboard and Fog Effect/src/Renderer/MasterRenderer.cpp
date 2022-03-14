@@ -33,7 +33,11 @@ void MasterRenderer::Initialize() {
     }
 
     // 清除快取
-    glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+    if (state.world->fog_bind_bg_color) {
+        glClearColor(state.world->my_fog->color.r, state.world->my_fog->color.g, state.world->my_fog->color.b, 1.0f);
+    } else {
+        glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+    }
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 

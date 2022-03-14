@@ -19,6 +19,9 @@ void LightningRenderer::Prepare(const std::unique_ptr<Camera>& camera) {
         m_shader->SetLight(state.world->my_point_lights[i], i + 2);
     }
 
+    // Load Fog
+    m_shader->SetFog(state.world->my_fog);
+
     // Load View, Projection Matrix and Viewport settings
     camera->SetViewPort();
     m_shader->SetViewAndProj(camera);

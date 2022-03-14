@@ -53,6 +53,7 @@ void UI::MenuBarRender() {
             ImGui::MenuItem("Camera Info", nullptr, &Windows.CameraInfo.Visible);
             ImGui::MenuItem("Projection Info", nullptr, &Windows.ProjectionInfo.Visible);
             ImGui::MenuItem("Lightning Info", nullptr, &Windows.LightningInfo.Visible);
+            ImGui::MenuItem("Fog Info", nullptr, &Windows.FogInfo.Visible);
             ImGui::MenuItem("Settings", nullptr, &Windows.Settings.Visible);
             ImGui::EndMenu();
         }
@@ -75,13 +76,12 @@ void UI::MenuBarRender() {
 }
 
 void UI::WindowsRender() {
-
     CameraInfoRender();
     ProjectionInfoRender();
     LightningInfoRender();
+    FogInfoRender();
     SettingsRender();
     AboutRender();
-
 #ifndef NDEBUG
     // Demo Window Render
     if (Windows.Demo.Visible) {
@@ -323,6 +323,29 @@ void UI::LightningInfoRender() {
 
             ImGui::EndTabBar();
         }
+        ImGui::End();
+    }
+}
+
+void UI::FogInfoRender() {
+    // Fog Window Render
+    if (Windows.FogInfo.Visible) {
+        ImGui::SetNextWindowSize(ImVec2(400, 180), ImGuiCond_Once);
+        ImGui::Begin("Fog Info", &Windows.FogInfo.Visible, Windows.FogInfo.WindowFlags);
+        ImGui::Spacing();
+
+        ImGui::Checkbox("Enable", &state.world->my_fog->enable);
+        ImGui::ColorEdit3("Color", glm::value_ptr(state.world->my_fog->color));
+        const char* items_a[] = { "LINEAR", "EXP", "EXP2" };
+        ImGui::Combo("Mode", reinterpret_cast<int*>(&state.world->my_fog->mode), items_a, IM_ARRAYSIZE(items_a));
+        if (state.world->my_fog->mode == 0) {
+            ImGui::DragFloatRange2("F_Start / F_End", &state.world->my_fog->start, &state.world->my_fog->end, 1.0f, state.world->my_camera->frustum.near, state.world->my_camera->frustum.far);
+        } else {
+            ImGui::SliderFloat("Density", &state.world->my_fog->density, 0.0f, 1.0f);
+        }
+        ImGui::Spacing();
+        ImGui::Checkbox("Background color sync", &state.world->fog_bind_bg_color);
+        ImGui::Spacing();
         ImGui::End();
     }
 }

@@ -16,6 +16,7 @@
 
 #include "Camera.hpp"
 #include "Light/Light.hpp"
+#include "Fog.hpp"
 
 struct World {
     // Geometry Shapes
@@ -54,6 +55,10 @@ struct World {
     std::unique_ptr<Light> my_directional_light = nullptr;
     std::array<std::unique_ptr<Light>, 6> my_point_lights = { nullptr };
     std::unique_ptr<Light> my_spotlight = nullptr;
+
+    // Fog
+    std::unique_ptr<Fog> my_fog = nullptr;
+    bool fog_bind_bg_color = false;
 
     float speed = 50.0f;
 

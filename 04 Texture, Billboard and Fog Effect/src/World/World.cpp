@@ -80,6 +80,9 @@ void World::Create() {
     my_point_lights[3]->UpdateColor(glm::vec3(0.82f, 0.0f, 1.0f));
     my_point_lights[4]->UpdateColor(glm::vec3(1.0f, 0.82f, 0.0f));
     my_point_lights[5]->UpdateColor(glm::vec3(165 / 255.0f, 177 / 255.0f, 1.0f));
+
+    // Fog init
+    my_fog = std::make_unique<Fog>(glm::vec3(0.1f, 0.1f, 0.1f), 0.012f);
 }
 
 void World::Destroy() {
