@@ -45,6 +45,7 @@ void MasterRenderer::Render(const std::unique_ptr<Camera>& camera) {
     // Viewport settings
     camera->SetViewPort();
 
+    // TODO: 或許真的要考慮把形狀跟 renderer 做綁定，不然其實仔細看這個球體也是重覆綁定多次。
     // 繪製需要光照的物體 (lightning renderer)
     lightning_renderer->Prepare(camera);
     lightning_renderer->Render(state.world->sun, state.world->my_sphere.get());
@@ -54,10 +55,6 @@ void MasterRenderer::Render(const std::unique_ptr<Camera>& camera) {
     lightning_renderer->Render(state.world->ground, state.world->my_cube.get());
 
     lightning_renderer->Render(state.world->camera, state.world->my_cube.get());
-
-    // TODO:: 攝影機的繪製，可以考慮讓 Camera 繼承 Entity，不過要解決一個問題： 如果我只有一個 Entity 要繪製，那還需要為此建立一個 vector 嗎，是不是有點太浪費資源。
-    // 有沒有辦法使用 Entity.Draw(Renderer) 的方式?
-    // 但這樣又會本末倒置，不然就是說要採用 Renderer.Render(Entity, Material, Geometry) 多載的方式，嘗試看看。
 
 
     // 繪製光球 這邊設計應該可以再更好

@@ -105,7 +105,7 @@ void Camera::UpdateTargetPosition(glm::vec3 target_pos) {
     UpdateCameraVectors();
 }
 
-void Camera::HookEntity(const Entity &ent) {
+void Camera::HookEntity(Entity &ent) {
     entity = &ent;
 }
 
@@ -209,6 +209,13 @@ void Camera::Update(float dt) {
 
         acceleration = glm::vec3(0.0f);
         velocity *= 0.95f;
+
+        if (entity != nullptr) {
+            // TODO: 嚴格上 Entity 必須為 Const，且是 Entity 去驅動 Camera。
+            entity->position = position + front * -5.5f;
+            entity->rotate.x = pitch;
+            entity->rotate.y = -yaw;
+        }
     }
 }
 

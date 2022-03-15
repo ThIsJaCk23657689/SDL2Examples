@@ -34,8 +34,8 @@ glm::mat4 Entity::GetModelMatrix(const glm::mat4& previous_matrix) const {
     glm::mat4 model_matrix = previous_matrix;
     model_matrix = glm::translate(model_matrix, position);
 
-    model_matrix = glm::rotate(model_matrix, glm::radians(rotate.x), glm::vec3(1.0f, 0.0f, 0.0f));
     model_matrix = glm::rotate(model_matrix, glm::radians(rotate.y), glm::vec3(0.0f, 1.0f, 0.0f));
+    model_matrix = glm::rotate(model_matrix, glm::radians(rotate.x), glm::vec3(1.0f, 0.0f, 0.0f));
     model_matrix = glm::rotate(model_matrix, glm::radians(rotate.z), glm::vec3(0.0f, 0.0f, 1.0f));
 
     model_matrix = glm::scale(model_matrix, scale);
