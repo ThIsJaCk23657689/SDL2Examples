@@ -46,6 +46,7 @@ void MasterRenderer::Render(const std::unique_ptr<Camera>& camera) {
     // Viewport settings
     camera->SetViewPort();
 
+    // TODO: 或許真的要考慮把形狀跟 renderer 做綁定，不然其實仔細看這個球體也是重覆綁定多次。
     // 繪製需要光照的物體 (lightning renderer)
     lightning_renderer->Prepare(camera);
     lightning_renderer->Render(state.world->sun, state.world->my_sphere.get());

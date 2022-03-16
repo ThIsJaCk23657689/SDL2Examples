@@ -55,7 +55,7 @@ struct Camera {
     void UpdateTargetPosition(glm::vec3 target_pos);
 
     void HookEntity(const Entity &ent);
-    const Entity *entity;
+    const Entity* entity;
 
     float pitch, yaw;
     glm::vec3 position;
