@@ -3,17 +3,17 @@
 #include "SDL.h"
 #include <glad/glad.h>
 
-Camera::Camera(glm::vec3 pos, bool is_prscpt) :
+Camera::Camera(bool is_prscpt) :
     pitch(0.0f),
     yaw(0.0f),
-    position(pos),
+    position({0, 0, 1}),
     velocity(glm::vec3(0.0f)),
     acceleration(glm::vec3(0.0f)),
     world_up(glm::vec3(0.0f, 1.0f, 0.0f)),
     front(glm::vec3(0.0, 0.0, -1.0)),
     right(glm::vec3(1.0, 0.0, 0.0)),
     up(glm::vec3(0.0, 1.0, 0.0)),
-    target(pos + front),
+    target({0, 0, -1}),
     move_speed(150.0f),
     mouse_sensitivity(0.1f),
     zoom(45.0f),
@@ -21,7 +21,7 @@ Camera::Camera(glm::vec3 pos, bool is_prscpt) :
     is_perspective(is_prscpt),
     follow_target(false)
 {
-    UpdateCameraVectors();
+    // UpdateCameraVectors();
 
     // Default Value
     frustum.near = 0.1f;
@@ -49,7 +49,7 @@ Camera::Camera(glm::vec3 pos, glm::vec3 target, bool is_prscpt) :
     follow_target(true)
 {
     distance = glm::length(position - target);
-    UpdateCameraVectors();
+    // UpdateCameraVectors();
 
     // Default Value
     frustum.near = 0.1f;
@@ -109,79 +109,13 @@ void Camera::HookEntity(const Entity &ent) {
     entity = &ent;
 }
 
-float Camera::AspectRatio() {
+float Camera::AspectRatio() const {
     return static_cast<float>(viewport.width) / static_cast<float>(viewport.height);
 }
 
-glm::mat4 Camera::View() {
+glm::mat4 Camera::View() const {
     glm::mat4 view = glm::lookAt(position, position + front, world_up);
     return view;
-}
-
-void Camera::ProcessKeyboard() {
-    // SDL2 鍵盤控制移動建議使用這個 SDL_GetKeyboardState()，才不會覺得卡卡頓頓的
-    const Uint8* state = SDL_GetKeyboardState(NULL);
-    if (state[SDL_SCANCODE_LCTRL]) {
-        move_speed = 450.0f;
-    } else {
-        move_speed = 150.0f;
-    }
-
-    if (state[SDL_SCANCODE_W]) {
-        acceleration += front * move_speed;
-    }
-    if (state[SDL_SCANCODE_S]) {
-        acceleration -= front * move_speed;
-    }
-    if (state[SDL_SCANCODE_D]) {
-        acceleration += right * move_speed;
-    }
-    if (state[SDL_SCANCODE_A]) {
-        acceleration -= right * move_speed;
-    }
-    if (state[SDL_SCANCODE_SPACE]) {
-        acceleration.y += move_speed * 2.0f;
-    }
-    if (state[SDL_SCANCODE_LSHIFT]) {
-        acceleration.y -= move_speed * 2.0f;
-    }
-}
-
-void Camera::ProcessMouseMovement(bool constrain) {
-    // 當 SDL_SetRelativeMouseMode() 為 TRUE 時，鼠標會不見
-    // 並且使用的是【相對位置】，一般來說就是與上一幀滑鼠位置的相對位置
-    // 就不用還要自己去計算，會方便許多！
-    if (!mouse_control) {
-        SDL_SetRelativeMouseMode(SDL_FALSE);
-        return;
-    }
-
-    int xoffset, yoffset;
-    SDL_SetRelativeMouseMode(SDL_TRUE);
-    SDL_GetRelativeMouseState(&xoffset, &yoffset);
-
-    yaw += xoffset * mouse_sensitivity;
-    pitch += -yoffset * mouse_sensitivity;
-
-    if (yaw >= 360.0f) {
-        yaw = 0.0f;
-    }
-    if (yaw <= -360.0f) {
-        yaw = 0.0f;
-    }
-
-    // 限制 Pitch 不能為 ±90°，不然會產生萬向鎖問題（Yaw 跟 Pitch 合併在一起，此時 Yaw 跟 Roll 會是一樣的作用）。
-    if (constrain) {
-        if (pitch > 89.0f) {
-            pitch = 89.0f;
-        }
-        if (pitch < -89.0f) {
-            pitch = -89.0f;
-        }
-    }
-
-    // 更新攝影機三軸座標
-    UpdateCameraVectors();
 }
 
 void Camera::ProcessMouseScroll(float yoffset) {
@@ -196,20 +130,17 @@ void Camera::ProcessMouseScroll(float yoffset) {
     }
 }
 
-void Camera::ToggleMouseControl() {
-    mouse_control = !mouse_control;
-}
-
 void Camera::Update(float dt) {
-    UpdateCameraVectors();
+    // 此處省略 up，固定都是 (0, 1, 0)。
+    front = entity->front;
+    right = entity->right;
 
-    if (!follow_target) {
-        velocity += acceleration * dt;
-        position += velocity * dt;
+    // 攝影機的位置會吃其跟隨 Entity 的位置、旋轉度數以及三軸，這後面加 5.5f 是怕攝影機本體會擋住畫面。
+    position = entity->position + front * 5.5f;
 
-        acceleration = glm::vec3(0.0f);
-        velocity *= 0.95f;
-    }
+    // 此處省略 roll (rotate.z)，固定都是 0 度。
+    pitch = entity->rotate.x;
+    yaw = entity->rotate.y;
 }
 
 glm::mat4 Camera::Projection() {

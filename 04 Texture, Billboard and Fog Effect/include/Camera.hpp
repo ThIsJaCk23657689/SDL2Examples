@@ -20,7 +20,7 @@ enum CameraMovement : unsigned int {
 };
 
 struct Camera {
-    Camera(glm::vec3 pos, bool is_prscpt = false);
+    explicit Camera(bool is_prscpt = false);
 
     Camera(glm::vec3 pos, glm::vec3 target, bool is_prscpt = false);
 
@@ -42,17 +42,15 @@ struct Camera {
     std::vector <glm::vec4> near_plane_vertex;
     std::vector <glm::vec4> far_plane_vertex;
 
-    float AspectRatio();
-    glm::mat4 View();
+    float AspectRatio() const;
+    glm::mat4 View() const;
     glm::mat4 Projection();
     glm::mat4 Orthogonal();
     glm::mat4 Perspective();
     void SetViewPort();
 
-    void ProcessKeyboard();
-    void ProcessMouseMovement(bool constrain = true);
+
     void ProcessMouseScroll(float yoffset);
-    void ToggleMouseControl();
     void Update(float dt);
     void UpdateTargetPosition(glm::vec3 target_pos);
 

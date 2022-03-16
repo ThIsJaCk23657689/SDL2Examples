@@ -21,7 +21,8 @@ void World::Create() {
     earth = Entity(glm::vec3(20.0f, 10.0f, 0.0f), glm::vec3(0.0f, 23.5f, 0.0f), glm::vec3(1.0f), &TextureManager::GetTexture2D("Earth"));
     moon = Entity(glm::vec3(25.0f, 10.0f, 0.0f), glm::vec3(0.0f), glm::vec3(0.6f), &TextureManager::GetTexture2D("Moon"));
     ground = Entity(glm::vec3(0.0f, -50.0f, 0.0f), glm::vec3(0.0f), glm::vec3(100.0f), glm::vec3(42 / 255.0f, 219 / 255.0f, 89 / 255.0f));
-    camera = Entity(glm::vec3(0.0f, 0.0f, 5.5f), glm::vec3(0.0f), glm::vec3(8.0f, 5.0f, 10.0f), glm::vec3(0.2f));
+    camera = Entity(glm::vec3(0.0f, 10.0f, 80.0f), glm::vec3(0.0f), glm::vec3(8.0f, 5.0f, 10.0f), glm::vec3(0.2f));
+    camera.movable = true;
     for (int i = 0; i < 50; i++) {
         float x = random_num(rand_generator) * 100.0f - 50.0f;
         float y = random_num(rand_generator) * 50.0f;
@@ -34,8 +35,11 @@ void World::Create() {
         rick_rolls.emplace_back(temp);
     }
 
+    // Player Initialize
+    me = std::make_unique<Player>(&camera);
+
     // Camera Initialize
-    my_camera = std::make_unique<Camera>(glm::vec3(0.0f, 10.0f, 80.0f), true);
+    my_camera = std::make_unique<Camera>(true);
     my_camera->HookEntity(camera);
     ortho_x_camera = std::make_unique<Camera>(my_camera->position + glm::vec3(1.0f, 0.0f, 0.0f) * ortho_distance,
                                               my_camera->position);

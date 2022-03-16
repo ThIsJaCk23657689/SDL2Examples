@@ -34,8 +34,6 @@ struct Entity {
     void Update(float dt);
     void UpdatePosition(glm::vec3 delta, float dt);
     void UpdateRotation(glm::vec3 delta, float dt);
-
-private:
     void UpdateAxes();
 
 };

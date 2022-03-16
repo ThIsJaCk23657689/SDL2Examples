@@ -7,12 +7,13 @@
 #include <memory>
 #include <random>
 
-#include "Entity.hpp"
 #include "Geometry/3D/Cube.hpp"
 #include "Geometry/3D/Sphere.hpp"
 #include "Geometry/2D/Screen.hpp"
 
+#include "Entity.hpp"
 #include "Material/Material.hpp"
+#include "Player.hpp"
 
 #include "Camera.hpp"
 #include "Light/Light.hpp"
@@ -32,6 +33,9 @@ struct World {
     std::vector<Entity> rick_rolls;
     Entity ground;
     Entity camera;
+
+    // Player
+    std::unique_ptr<Player> me = nullptr;
 
     // Camera
     float ortho_distance = 50.0f;

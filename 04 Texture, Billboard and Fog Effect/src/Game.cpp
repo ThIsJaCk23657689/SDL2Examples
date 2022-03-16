@@ -13,10 +13,9 @@ Game::Game() {
     master_renderer = std::make_unique<MasterRenderer>();
     // entities_renderer = std::make_unique<EntitiesRenderer>(lighting_shader.get());
 
-    // TODO:: Model Matrix Stack
+    // Model Matrix Stack
     model = std::make_unique<MatrixStack>();
 
-    // TODO:: Build a world (Entity, Camera, Geometry)
     state.world = std::make_unique<World>();
     state.world->Create();
 }
@@ -27,6 +26,10 @@ void Game::RendererInit() {
 }
 
 void Game::Update(float dt) {
+    // Update the Player
+    state.world->me->Update(dt);
+
+    // Update cameras
     state.world->my_camera->Update(dt);
     state.world->ortho_x_camera->UpdateTargetPosition(state.world->my_camera->position);
     state.world->ortho_y_camera->UpdateTargetPosition(state.world->my_camera->position);
@@ -37,14 +40,12 @@ void Game::Update(float dt) {
     // Update the spotlight
     state.world->my_spotlight->Update(dt);
 
-    // state.world->earth->rotate.y += state.world->speed * dt;
+    state.world->earth.UpdateRotation(glm::vec3(0.0f, 80.0f, 0.0f), dt);
+    state.world->moon.UpdateRotation(glm::vec3(0.0f, 30.0f, 0.0f), dt);
 
     for (auto& rick : state.world->rick_rolls) {
         rick.UpdateRotation(glm::vec3(0.0f, 80.0f, 10.0f), dt);
     }
-
-    // state.world->rick_roll->UpdatePosition(glm::vec3(0.2f, 1.0f, 0.0f), dt);
-    // state.world->rick_roll->UpdateRotation(glm::vec3(0.0f, 15.0f, 10.0f), dt);
 }
 
 void Game::Render(const std::unique_ptr<Camera>& current_camera, float dt) {
@@ -52,28 +53,6 @@ void Game::Render(const std::unique_ptr<Camera>& current_camera, float dt) {
 
     master_renderer->Render(current_camera);
 
-    // TODO: 把 Light Ball 納入 Lightning Renderer，也許跟 Light 做綁定（或是說 Light 繼承 Entity）
-    // Draw Light Ball
-//    basic_shader->Start();
-//    basic_shader->SetViewAndProj(current_camera);
-//    if (state.world->my_directional_light->enable) {
-//        model->Push();
-//        model->Save(glm::translate(model->Top(), state.world->my_directional_light->direction * -1.0f));
-//        basic_shader->SetVec3("objectColor", state.world->my_directional_light->color);
-//        basic_shader->SetMat4("model", model->Top());
-//        state.world->my_sphere->Draw();
-//        model->Pop();
-//    }
-//    for (int i = 0; i < state.world->my_point_lights.size(); ++i) {
-//        if (state.world->my_point_lights[i]->enable) {
-//            model->Push();
-//            model->Save(glm::translate(model->Top(), state.world->my_point_lights[i]->position));
-//            basic_shader->SetVec3("objectColor", state.world->my_point_lights[i]->color);
-//            basic_shader->SetMat4("model", model->Top());
-//            state.world->my_sphere->Draw();
-//            model->Pop();
-//        }
-//    }
 
     // TODO: 繪製 xyz 三軸
 //    model->Push();
@@ -97,53 +76,44 @@ void Game::Render(const std::unique_ptr<Camera>& current_camera, float dt) {
 //    model->Pop();
 //
 //
-//    // Big Cube
-//    model->Push();
-//    model->Save(glm::translate(model->Top(), glm::vec3(0.0f, -50.0f, 0.0f)));
-//    model->Save(glm::scale(model->Top(), glm::vec3(100.0f)));
-//    lighting_shader->SetVec3("objectColor", glm::vec3(42 / 255.0f, 219 / 255.0f, 89 / 255.0f));
-//    lighting_shader->SetMat4("model", model->Top());
-//    state.world->my_cube->Draw();
-//    model->Pop();
-//
 //    // Sun
 //    model->Push();
-//    model->Push();
-//    model->Save(glm::translate(model->Top(), state.world->sun->position));
-//    model->Push();
-//    model->Save(glm::scale(model->Top(), state.world->sun->scale));
-//    lighting_shader->SetVec3("objectColor", glm::vec3(1.0f, 0.811764706f, 0.301960784f));
-//    lighting_shader->SetMat4("model", model->Top());
-//    state.world->my_sphere->Draw();
-//    model->Pop();
-//    model->Pop();
-//
-//    // Earth
-//    model->Push();
-//    model->Save(glm::rotate(model->Top(), glm::radians(state.world->earth->rotate.y / 365.0f), glm::vec3(0.0, 1.0, 0.0)));
-//    model->Save(glm::translate(model->Top(), state.world->earth->position));
-//    model->Save(glm::rotate(model->Top(), glm::radians(23.5f), glm::vec3(1.0, 0.0, 0.0)));
-//    model->Save(glm::rotate(model->Top(), glm::radians(state.world->earth->rotate.y), glm::vec3(0.0, 1.0, 0.0)));
-//
-//    model->Push();
-//    model->Save(glm::scale(model->Top(), state.world->earth->scale));
-//    lighting_shader->SetVec3("objectColor", glm::vec3(0.137254902f, 0.274509804f, 0.968627451f));
-//    lighting_shader->SetMat4("model", model->Top());
-//    state.world->my_sphere->Draw();
-//    model->Pop();
-//
-//    model->Push();
-//    model->Save(glm::rotate(model->Top(), glm::radians(state.world->earth->rotate.y / 48.0f), glm::vec3(0.0, 1.0, 0.0)));
-//    model->Save(glm::translate(model->Top(), state.world->moon->position));
-//    DrawAxes();
-//
-//    model->Save(glm::scale(model->Top(), state.world->moon->scale));
-//    lighting_shader->SetVec3("objectColor", glm::vec3(0.447058824f, 0.450980392f, 0.478431373f));
-//    lighting_shader->SetMat4("model", model->Top());
-//    state.world->my_sphere->Draw();
-//
-//    model->Pop();
-//    model->Pop();
+    //    model->Push();
+    //    model->Save(glm::translate(model->Top(), state.world->sun->position));
+        //    model->Push();
+        //    model->Save(glm::scale(model->Top(), state.world->sun->scale));
+        //    lighting_shader->SetVec3("objectColor", glm::vec3(1.0f, 0.811764706f, 0.301960784f));
+        //    lighting_shader->SetMat4("model", model->Top());
+        //    state.world->my_sphere->Draw();
+        //    model->Pop();
+    //    model->Pop();
+    //
+    //    // Earth
+    //    model->Push();
+        //    model->Save(glm::rotate(model->Top(), glm::radians(state.world->earth->rotate.y / 365.0f), glm::vec3(0.0, 1.0, 0.0)));
+        //    model->Save(glm::translate(model->Top(), state.world->earth->position));
+        //    model->Save(glm::rotate(model->Top(), glm::radians(23.5f), glm::vec3(1.0, 0.0, 0.0)));
+        //    model->Save(glm::rotate(model->Top(), glm::radians(state.world->earth->rotate.y), glm::vec3(0.0, 1.0, 0.0)));
+    //
+        //    model->Push();
+        //    model->Save(glm::scale(model->Top(), state.world->earth->scale));
+        //    lighting_shader->SetVec3("objectColor", glm::vec3(0.137254902f, 0.274509804f, 0.968627451f));
+        //    lighting_shader->SetMat4("model", model->Top());
+        //    state.world->my_sphere->Draw();
+        //    model->Pop();
+    //
+    //        model->Push();
+        //    model->Save(glm::rotate(model->Top(), glm::radians(state.world->earth->rotate.y / 48.0f), glm::vec3(0.0, 1.0, 0.0)));
+        //    model->Save(glm::translate(model->Top(), state.world->moon->position));
+        //    DrawAxes();
+    //
+        //    model->Save(glm::scale(model->Top(), state.world->moon->scale));
+        //    lighting_shader->SetVec3("objectColor", glm::vec3(0.447058824f, 0.450980392f, 0.478431373f));
+        //    lighting_shader->SetMat4("model", model->Top());
+        //    state.world->my_sphere->Draw();
+    //
+    //      model->Pop();
+    //    model->Pop();
 //    model->Pop();
 
     // TODO: 把 View Volume 納入 Alpha Renderer
@@ -187,8 +157,10 @@ void Game::HandleEvents() {
 
     // 執行攝影機的控制，這邊事件觸發並不是透過 SDL_Event ，而是透過像是 SDL_GetKeyboardState() 和 SDL_GetRelativeMouseState() 去控制的。
     // Camera Event Handler
-    state.world->my_camera->ProcessKeyboard();
-    state.world->my_camera->ProcessMouseMovement();
+    state.world->me->HandleEvents();
+
+    // state.world->my_camera->ProcessKeyboard();
+    // state.world->my_camera->ProcessMouseMovement();
 }
 
 void Game::PollEvents() {
@@ -224,7 +196,7 @@ void Game::GlobalEvents(const SDL_Event &event) {
                 }
             }
             if (event.key.keysym.sym == SDLK_TAB) {
-                state.world->my_camera->ToggleMouseControl();
+                state.world->me->ToggleMouseControl();
             }
             break;
         case SDL_WINDOWEVENT:
