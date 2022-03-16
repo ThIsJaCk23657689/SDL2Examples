@@ -2,8 +2,9 @@
 ### 01 Model Matrices Stack and Sphere (Finished)
 ### 02 Camera, Projection and View Volume (Finished)
 ### 03 Shading, Lightning and Material (Finished)
-### 04 Texture, Billboard and Fog Effect (Not Yet)
-### 05 Post Processing, Gamma Correction and HDR (Almost Finished)
+### 04 Texture, Billboard and Fog Effect (Finished)
+### 05 Post Processing, Gamma Correction and HDR (Not Yet)
+### 06 
 ------------------------------------------------------------
 國立臺灣海洋大學 資訊工程學系 電腦圖學實驗室 Lab 503
 
