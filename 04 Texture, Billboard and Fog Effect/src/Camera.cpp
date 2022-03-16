@@ -131,9 +131,9 @@ void Camera::ProcessMouseScroll(float yoffset) {
 }
 
 void Camera::Update(float dt) {
-    // 此處省略 up，固定都是 (0, 1, 0)。
     front = entity->front;
     right = entity->right;
+    up = entity->up;
 
     // 攝影機的位置會吃其跟隨 Entity 的位置、旋轉度數以及三軸，這後面加 5.5f 是怕攝影機本體會擋住畫面。
     position = entity->position + front * 5.5f;

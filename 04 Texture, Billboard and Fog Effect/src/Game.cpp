@@ -4,17 +4,10 @@
 
 Game::Game() {
     // Create Shader
-    basic_shader = std::make_unique<BasicShader>();
-    // lighting_shader = std::make_unique<LightningShader>();
-    alpha_shader = std::make_unique<AlphaShader>();
     // screen_shader = std::make_unique<Shader>("assets/shaders/screen.vert", "assets/shaders/screen.frag");
 
     // Create Renderer
     master_renderer = std::make_unique<MasterRenderer>();
-    // entities_renderer = std::make_unique<EntitiesRenderer>(lighting_shader.get());
-
-    // Model Matrix Stack
-    model = std::make_unique<MatrixStack>();
 
     state.world = std::make_unique<World>();
     state.world->Create();
@@ -35,7 +28,8 @@ void Game::Update(float dt) {
     state.world->ortho_y_camera->UpdateTargetPosition(state.world->my_camera->position);
     state.world->ortho_z_camera->UpdateTargetPosition(state.world->my_camera->position);
 
-    state.world->UpdateViewVolumeVertices();
+    state.world->billboard->UpdateBillboard(state.world->my_camera);
+    state.world->view_volume->UpdateViewVolume(state.world->my_camera);
 
     // Update the spotlight
     state.world->my_spotlight->Update(dt);
@@ -50,90 +44,11 @@ void Game::Update(float dt) {
 
 void Game::Render(const std::unique_ptr<Camera>& current_camera, float dt) {
     // 基本上就是每一偵都會執行此函數，如果說畫面有切割的話，那同一次 Game loop 之中會 repeat 多次。
-
     master_renderer->Render(current_camera);
 
-
-    // TODO: 繪製 xyz 三軸
-//    model->Push();
-//    model->Save(glm::translate(model->Top(), state.world->my_camera->position));
-//    model->Save(glm::rotate(model->Top(), glm::radians(-state.world->my_camera->yaw), glm::vec3(0.0, 1.0, 0.0)));
-//    model->Save(glm::rotate(model->Top(), glm::radians(state.world->my_camera->pitch), glm::vec3(1.0, 0.0, 0.0)));
-//    model->Save(glm::translate(model->Top(), glm::vec3(0.0f, 0.0f, 1.0f)));
-//    // 繪製攝影機三軸
-//    model->Pop();
-//
-//    model->Push();
-//    model->Save(glm::translate(model->Top(), state.world->my_camera->position));
-//    model->Save(glm::rotate(model->Top(), glm::radians(-state.world->my_camera->yaw), glm::vec3(0.0, 1.0, 0.0)));
-//    model->Save(glm::rotate(model->Top(), glm::radians(state.world->my_camera->pitch), glm::vec3(1.0, 0.0, 0.0)));
-//    model->Save(glm::translate(model->Top(), glm::vec3(0.0f, 0.0f, 5.5f)));
-//    model->Save(glm::scale(model->Top(), glm::vec3(8.0f, 5.0f, 10.0f)));
-//    lighting_shader->SetVec3("objectColor", glm::vec3(0.2f));
-//    lighting_shader->SetMat4("model", model->Top());
-//    // 繪製攝影機本體
-//    state.world->my_cube->Draw();
-//    model->Pop();
-//
-//
-//    // Sun
-//    model->Push();
-    //    model->Push();
-    //    model->Save(glm::translate(model->Top(), state.world->sun->position));
-        //    model->Push();
-        //    model->Save(glm::scale(model->Top(), state.world->sun->scale));
-        //    lighting_shader->SetVec3("objectColor", glm::vec3(1.0f, 0.811764706f, 0.301960784f));
-        //    lighting_shader->SetMat4("model", model->Top());
-        //    state.world->my_sphere->Draw();
-        //    model->Pop();
-    //    model->Pop();
-    //
-    //    // Earth
-    //    model->Push();
-        //    model->Save(glm::rotate(model->Top(), glm::radians(state.world->earth->rotate.y / 365.0f), glm::vec3(0.0, 1.0, 0.0)));
-        //    model->Save(glm::translate(model->Top(), state.world->earth->position));
-        //    model->Save(glm::rotate(model->Top(), glm::radians(23.5f), glm::vec3(1.0, 0.0, 0.0)));
-        //    model->Save(glm::rotate(model->Top(), glm::radians(state.world->earth->rotate.y), glm::vec3(0.0, 1.0, 0.0)));
-    //
-        //    model->Push();
-        //    model->Save(glm::scale(model->Top(), state.world->earth->scale));
-        //    lighting_shader->SetVec3("objectColor", glm::vec3(0.137254902f, 0.274509804f, 0.968627451f));
-        //    lighting_shader->SetMat4("model", model->Top());
-        //    state.world->my_sphere->Draw();
-        //    model->Pop();
-    //
-    //        model->Push();
-        //    model->Save(glm::rotate(model->Top(), glm::radians(state.world->earth->rotate.y / 48.0f), glm::vec3(0.0, 1.0, 0.0)));
-        //    model->Save(glm::translate(model->Top(), state.world->moon->position));
-        //    DrawAxes();
-    //
-        //    model->Save(glm::scale(model->Top(), state.world->moon->scale));
-        //    lighting_shader->SetVec3("objectColor", glm::vec3(0.447058824f, 0.450980392f, 0.478431373f));
-        //    lighting_shader->SetMat4("model", model->Top());
-        //    state.world->my_sphere->Draw();
-    //
-    //      model->Pop();
-    //    model->Pop();
-//    model->Pop();
-
-    // TODO: 把 View Volume 納入 Alpha Renderer
-    alpha_shader->Start();
-    alpha_shader->SetViewAndProj(current_camera);
-    // 繪製 View Volume
-    model->Push();
-    alpha_shader->SetVec4("objectColor", glm::vec4(0.1f, 0.1f, 0.1f, 0.9f));
-    alpha_shader->SetMat4("model", model->Top());
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    state.world->view_volume->Draw();
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    alpha_shader->SetVec4("objectColor", glm::vec4(0.889f, 0.889f, 0.889f, 0.3f));
-    state.world->view_volume->Draw();
-    model->Pop();
 }
 
 void Game::Destroy() {
-    basic_shader->Destroy();
-    alpha_shader->Destroy();
     state.world->Destroy();
 }
 

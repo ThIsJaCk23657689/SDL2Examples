@@ -12,7 +12,8 @@
 
 #include "Renderer/BasicRenderer.hpp"
 #include "Renderer/LightningRenderer.hpp"
-#include "Renderer/AlphaRenderer.hpp"
+#include "Renderer/ViewVolumeRenderer.hpp"
+#include "Renderer/AxesRenderer.hpp"
 
 #include "World/Entity.hpp"
 
@@ -32,7 +33,8 @@ private:
     // Renderers
     std::unique_ptr<BasicRenderer> basic_renderer = nullptr;
     std::unique_ptr<LightningRenderer> lightning_renderer = nullptr;
-    std::unique_ptr<AlphaRenderer> alpha_renderer = nullptr;
+    std::unique_ptr<ViewVolumeRenderer> view_volume_renderer = nullptr;
+    std::unique_ptr<AxesRenderer> axes_renderer = nullptr;
 
 };
 

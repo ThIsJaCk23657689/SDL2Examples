@@ -47,15 +47,8 @@ private:
 
     std::vector<SDL_Event> events = {};
 
-    // TODO:: 記得把 shader 都給 Master Renderer 管理
-    std::unique_ptr<BasicShader> basic_shader = nullptr;
-    std::unique_ptr<AlphaShader> alpha_shader = nullptr;
-    std::unique_ptr<Shader> screen_shader = nullptr;
-
     // Renderer (Only this one)
     std::unique_ptr<MasterRenderer> master_renderer = nullptr;
-
-    std::unique_ptr<MatrixStack> model = nullptr;
 };
 
 #endif

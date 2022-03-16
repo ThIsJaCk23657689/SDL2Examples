@@ -59,7 +59,7 @@ void main() {
     vec3 norm = normalize(fs_in.Normal);
     vec3 viewDir = normalize(viewPos - fs_in.Normal);
 
-    vec3 final_frag_color = (useTexture) ? texture(diffuse_texture, fs_in.TexCoord).rgb : objectColor;
+    vec4 final_frag_color = (useTexture) ? texture(diffuse_texture, fs_in.TexCoord) : vec4(objectColor, 1.0f);
 
     // 計算光照
     vec3 illumination = vec3(0.0f);
@@ -67,17 +67,22 @@ void main() {
         for (int i = 0; i < NUM_LIGHTS; i++ ) {
             if (emissionTexture) {
                 // 發現如果該貼圖具有 emission 特性，就不用算光照直接跳出迴圈
-                illumination = final_frag_color * 1.5f;
+                illumination = final_frag_color.rgb * 1.5f;
                 break;
             }
             if (lights[i].enable) {
-                illumination += CalcLight(lights[i], norm, viewDir, final_frag_color);
+                illumination += CalcLight(lights[i], norm, viewDir, final_frag_color.rgb);
             }
         }
     }
 
+    // 去透明
+    if (final_frag_color.a < 0.1f) {
+        discard;
+    }
+
     // 計算濃霧
-    vec4 final_color = CalcFog(vec4(clamp(illumination, 0.0f, 1.0f), 1.0f));
+    vec4 final_color = CalcFog(vec4(clamp(illumination, 0.0f, 1.0f), final_frag_color.a));
 
     FragColor = final_color;
 }

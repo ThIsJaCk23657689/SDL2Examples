@@ -11,7 +11,8 @@ MasterRenderer::MasterRenderer() {
     // 建立 Renderer
     basic_renderer = std::make_unique<BasicRenderer>(basic_shader.get());
     lightning_renderer = std::make_unique<LightningRenderer>(lightning_shader.get());
-    alpha_renderer = std::make_unique<AlphaRenderer>(alpha_shader.get());
+    view_volume_renderer = std::make_unique<ViewVolumeRenderer>(alpha_shader.get());
+    axes_renderer = std::make_unique<AxesRenderer>(basic_shader.get());
 
     // 設定 gl
     glEnable(GL_DEPTH_TEST);
@@ -51,6 +52,7 @@ void MasterRenderer::Render(const std::unique_ptr<Camera>& camera) {
     lightning_renderer->Render(state.world->earth, state.world->my_sphere.get());
     lightning_renderer->Render(state.world->moon, state.world->my_sphere.get());
     lightning_renderer->Render(state.world->rick_rolls, state.world->my_cube.get());
+    lightning_renderer->Render(state.world->awesome_faces, state.world->billboard.get());
     lightning_renderer->Render(state.world->ground, state.world->my_cube.get());
     lightning_renderer->Render(state.world->camera, state.world->my_cube.get());
 
@@ -65,7 +67,19 @@ void MasterRenderer::Render(const std::unique_ptr<Camera>& camera) {
         }
     }
 
+    // 繪製 xyz 三軸
+    if (state.world->draw_axes) {
+        axes_renderer->Prepare(camera);
+        axes_renderer->Render(5.0f);
+        axes_renderer->Render(state.world->sun);
+        axes_renderer->Render(state.world->earth, 5.0f);
+        axes_renderer->Render(state.world->moon, 3.0f);
+        axes_renderer->Render(state.world->camera, 10.0f);
+    }
 
+    // 繪製 View Volume
+    view_volume_renderer->Prepare(camera);
+    view_volume_renderer->Render(state.world->view_volume.get());
 }
 
 void MasterRenderer::Destroy() {

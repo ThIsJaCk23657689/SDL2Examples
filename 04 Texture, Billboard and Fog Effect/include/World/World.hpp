@@ -9,6 +9,7 @@
 
 #include "Geometry/3D/Cube.hpp"
 #include "Geometry/3D/Sphere.hpp"
+#include "Geometry/2D/Billboard.hpp"
 #include "Geometry/2D/Screen.hpp"
 
 #include "Entity.hpp"
@@ -24,6 +25,7 @@ struct World {
     std::unique_ptr<Sphere> my_sphere = nullptr;
     std::unique_ptr<Cube> my_cube = nullptr;
     std::unique_ptr<Cube> view_volume = nullptr;
+    std::unique_ptr<Billboard> billboard = nullptr;
     std::unique_ptr<Screen> my_screen = nullptr;
 
     // Entity (For movement)
@@ -33,6 +35,7 @@ struct World {
     std::vector<Entity> rick_rolls;
     Entity ground;
     Entity camera;
+    std::vector<Entity> awesome_faces;
 
     // Player
     std::unique_ptr<Player> me = nullptr;
@@ -62,9 +65,6 @@ struct World {
 
     void Create();
     void Destroy();
-
-    // TODO:: Not support to be here
-    void UpdateViewVolumeVertices();
 };
 
 #endif
