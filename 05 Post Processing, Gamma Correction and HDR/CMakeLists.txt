@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.14 FATAL_ERROR)
 
 # 設定變數
-set(MY_PROJECT "SDL2 Examples - 05 Post Processing, Gamma Correction and HDR")
-set(MY_EXECUTABLE "sdl2-examples-05")
+set(MY_PROJECT "SDL2 Examples - 04 Texture, Billboard and Fog Effect")
+set(MY_EXECUTABLE "sdl2-examples-04")
 
 # 定義專案屬性
 project(${MY_PROJECT})
@@ -28,8 +28,16 @@ message(STATUS)
 message(STATUS "\tC++ Compiler:             ${CMAKE_CXX_COMPILER_ID} ${CMAKE_CXX_COMPILER_VERSION}")
 message(STATUS "\tC++ Compiler Path:        ${CMAKE_CXX_COMPILER}")
 message(STATUS)
+
+if (MSVC)
+    message(STATUS "\tMSVC Version:             ${MSVC_VERSION}")
+    message(STATUS "\tMSVC Toolset:             ${MSVC_TOOLSET_VERSION}")
+endif ()
+message(STATUS)
+
 message(STATUS "\tVCPKG Path:               ${CMAKE_TOOLCHAIN_FILE}")
 message(STATUS)
+message(STATUS "========================================")
 
 # 引入 vcpkg 套件
 find_package(OpenGL REQUIRED)
@@ -41,7 +49,20 @@ find_path(STB_INCLUDE_DIRS "stb.h")
 
 # 指定標頭檔資料夾、找尋所有原始檔、並將【原始碼】加入到【執行檔目標】中
 target_include_directories(${MY_EXECUTABLE} PRIVATE "include" ${STB_INCLUDE_DIRS})
-file(GLOB MY_SOURCE CONFIGURE_DEPENDS "src/*.cpp")
+file(GLOB MY_SOURCE CONFIGURE_DEPENDS
+    "src/*.cpp"
+    "src/Geometry/*.cpp"
+    "src/Geometry/2D/*.cpp"
+    "src/Geometry/3D/*.cpp"
+    "src/GL/*.cpp"
+    "src/Light/*.cpp"
+    "src/Material/*.cpp"
+    "src/Renderer/*.cpp"
+    "src/Shader/*.cpp"
+    "src/Texture/*.cpp"
+    "src/Util/*.cpp"
+    "src/World/*.cpp"
+)
 target_sources(${MY_EXECUTABLE} PRIVATE ${MY_SOURCE})
 
 # 將 vcpkg 的套件（函式庫）連結到【執行檔目標】
