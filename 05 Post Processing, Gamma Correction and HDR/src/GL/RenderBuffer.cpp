@@ -18,3 +18,8 @@ void RenderBuffer::Bind() {
 void RenderBuffer::UnBind() {
     glBindRenderbuffer(GL_RENDERBUFFER, 0);
 }
+void RenderBuffer::Resize(unsigned int screen_width, unsigned int screen_height) {
+    Bind();
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, screen_width, screen_height);
+    UnBind();
+}

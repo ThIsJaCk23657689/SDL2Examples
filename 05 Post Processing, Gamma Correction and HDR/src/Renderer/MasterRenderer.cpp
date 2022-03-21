@@ -1,5 +1,7 @@
 #include "Renderer/MasterRenderer.hpp"
 
+#include "Texture/TextureManager.hpp"
+
 MasterRenderer::MasterRenderer() {
     // Game Class 初始化的時候就會執行
 
@@ -7,15 +9,16 @@ MasterRenderer::MasterRenderer() {
     basic_shader = std::make_unique<BasicShader>();
     lightning_shader = std::make_unique<LightningShader>();
     alpha_shader = std::make_unique<AlphaShader>();
+    screen_shader = std::make_unique<ScreenShader>();
 
     // 建立 Renderer
     basic_renderer = std::make_unique<BasicRenderer>(basic_shader.get());
     lightning_renderer = std::make_unique<LightningRenderer>(lightning_shader.get());
     view_volume_renderer = std::make_unique<ViewVolumeRenderer>(alpha_shader.get());
     axes_renderer = std::make_unique<AxesRenderer>(basic_shader.get());
+    screen_renderer = std::make_unique<ScreenRenderer>(screen_shader.get());
 
     // 設定 gl
-    glEnable(GL_DEPTH_TEST);
     glEnable(GL_MULTISAMPLE);
 
     glEnable(GL_BLEND);
@@ -40,6 +43,7 @@ void MasterRenderer::Initialize() {
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
     }
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glEnable(GL_DEPTH_TEST);
 }
 
 void MasterRenderer::Render(const std::unique_ptr<Camera>& camera) {
@@ -87,4 +91,14 @@ void MasterRenderer::Destroy() {
     basic_shader->Destroy();
     lightning_shader->Destroy();
     alpha_shader->Destroy();
+}
+
+void MasterRenderer::RenderScreen() {
+    // Call By Application，在每一次 main loop 的結尾執行
+    glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
+    glDisable(GL_DEPTH_TEST);
+
+    screen_renderer->Prepare();
+    screen_renderer->Render(&TextureManager::GetTexture2D("PostProcessing"), state.world->my_screen.get());
 }

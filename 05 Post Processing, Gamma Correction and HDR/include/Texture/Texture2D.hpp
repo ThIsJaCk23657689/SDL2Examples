@@ -13,9 +13,12 @@ struct Texture2D {
     void UnBind() const;
     void Destroy() const;
     void Generate(GLint internal_format, GLenum format, int image_width,int image_height, unsigned char* image, bool enable_mipmap = true);
+
     void SetWrapParameters(GLint wrap_s, GLint wrap_t) const;
     void SetFilterParameters(GLint min_filter, GLint mag_filter) const;
 
+    GLint m_internal_format;
+    GLenum m_format;
     unsigned int id;
 };
 

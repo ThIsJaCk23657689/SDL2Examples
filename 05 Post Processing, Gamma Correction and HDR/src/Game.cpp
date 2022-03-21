@@ -1,5 +1,6 @@
 #include "Game.hpp"
 
+#include "Texture/TextureManager.hpp"
 #include "State.hpp"
 
 Game::Game() {
@@ -11,11 +12,24 @@ Game::Game() {
 
     state.world = std::make_unique<World>();
     state.world->Create();
+
+    // Create Framebuffer and Renderbuffer
+    main_renderbuffer = std::make_unique<RenderBuffer>(state.window->width, state.window->height);
+    main_framebuffer = std::make_unique<FrameBuffer>();
+    main_framebuffer->BindTexture2D(TextureManager::GetTexture2D("PostProcessing"));
+    main_framebuffer->BindRenderBuffer(main_renderbuffer);
+    main_framebuffer->CheckComplete();
 }
 
 void Game::RendererInit() {
     // 在每一次的 Game loop 都會執行，且在分割畫面之前
+    main_framebuffer->Bind();
     master_renderer->Initialize();
+}
+
+void Game::RenderScreen() {
+    main_framebuffer->UnBind();
+    master_renderer->RenderScreen();
 }
 
 void Game::Update(float dt) {
@@ -118,6 +132,9 @@ void Game::GlobalEvents(const SDL_Event &event) {
             if (event.window.event == SDL_WINDOWEVENT_RESIZED) {
                 // 更新視窗長寬
                 SDL_GetWindowSize(state.window->handler, &state.window->width, &state.window->height);
+
+                // 更新 Framebuffer Texture 和 Renderer buffer
+                UpdateFramebuffer();
             }
             break;
     }
@@ -204,32 +221,12 @@ void Game::OnWindowEvent(const SDL_WindowEvent& e) {
 //    }
 }
 
-void Game::DrawAxes(float length) {
-    if (!state.world->draw_axes) {
-        return;
-    }
+void Game::UpdateFramebuffer() {
+    // 當視窗大小改變時，每次都必須要重新更改 Texture 與 Renderbuffer 的大小
+    main_renderbuffer->Resize(state.window->width, state.window->height);
 
-//    model->Push();
-//    model->Save(glm::translate(model->Top(), glm::vec3(length / 2.0f, 0.0f, 0.0f)));
-//    model->Save(glm::scale(model->Top(), glm::vec3(length, 0.5f, 0.5f)));
-//    lighting_shader->SetVec3("objectColor", glm::vec3(1.0f, 0.0f, 0.0f));
-//    lighting_shader->SetMat4("model", model->Top());
-//    state.world->my_cube->Draw();
-//    model->Pop();
-//
-//    model->Push();
-//    model->Save(glm::translate(model->Top(), glm::vec3(0.0f, length / 2.0f, 0.0f)));
-//    model->Save(glm::scale(model->Top(), glm::vec3(0.5f, length, 0.5f)));
-//    lighting_shader->SetVec3("objectColor", glm::vec3(0.0f, 1.0f, 0.0f));
-//    lighting_shader->SetMat4("model", model->Top());
-//    state.world->my_cube->Draw();
-//    model->Pop();
-//
-//    model->Push();
-//    model->Save(glm::translate(model->Top(), glm::vec3(0.0f, 0.0f, length / 2.0f)));
-//    model->Save(glm::scale(model->Top(), glm::vec3(0.5f, 0.5f, length)));
-//    lighting_shader->SetVec3("objectColor", glm::vec3(0.0f, 0.0f, 1.0f));
-//    lighting_shader->SetMat4("model", model->Top());
-//    state.world->my_cube->Draw();
-//    model->Pop();
+    Texture2D screen = TextureManager::GetTexture2D("PostProcessing");
+    screen.Bind();
+    screen.Generate(GL_RGB, GL_RGB, state.window->width, state.window->height, nullptr, false);
+    screen.UnBind();
 }

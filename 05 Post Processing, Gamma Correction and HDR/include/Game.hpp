@@ -7,21 +7,19 @@
 #include <memory>
 
 #include "Config.hpp"
+#include "Camera.hpp"
 
-#include "Shader/BasicShader.hpp"
-#include "Shader/LightningShader.hpp"
-#include "Shader/AlphaShader.hpp"
+#include "GL/FrameBuffer.hpp"
+#include "GL/RenderBuffer.hpp"
 
 #include "Renderer/MasterRenderer.hpp"
-#include "Renderer/EntitiesRenderer.hpp"
-
-#include "Camera.hpp"
 #include "Util/MatrixStack.hpp"
 
 struct Game {
     Game();
 
     void RendererInit();
+    void RenderScreen();
     void Update(float dt);
     void Render(const std::unique_ptr<Camera>& current_camera, float dt);
     void Destroy();
@@ -42,13 +40,16 @@ private:
     void OnMouseWheelEvent(const SDL_MouseWheelEvent& e);
     void OnWindowEvent(const SDL_WindowEvent& e);
 
-    // TODO:: Not support to be here
-    void DrawAxes(float length = 10.0f);
+    void UpdateFramebuffer();
 
     std::vector<SDL_Event> events = {};
 
     // Renderer (Only this one)
     std::unique_ptr<MasterRenderer> master_renderer = nullptr;
+
+    // Framebuffer and Renderbuffer (For Post Processing Purpose)
+    std::unique_ptr<FrameBuffer> main_framebuffer = nullptr;
+    std::unique_ptr<RenderBuffer> main_renderbuffer = nullptr;
 };
 
 #endif

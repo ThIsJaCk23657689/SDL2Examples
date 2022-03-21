@@ -16,9 +16,9 @@ void FrameBuffer::UnBind() {
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void FrameBuffer::BindTexture2D(const std::unique_ptr<Texture2D>& texture) {
+void FrameBuffer::BindTexture2D(const Texture2D& texture) {
     Bind();
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture->id, 0);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture.id, 0);
     UnBind();
 }
 

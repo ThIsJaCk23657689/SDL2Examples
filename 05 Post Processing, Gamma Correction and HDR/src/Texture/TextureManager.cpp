@@ -3,6 +3,8 @@
 #include <stb_image.h>
 
 #include <utility>
+
+#include "State.hpp"
 #include "Util/Logger.hpp"
 
 std::map<std::string, Texture2D> TextureManager::texture2Ds;
@@ -14,11 +16,21 @@ void TextureManager::Initialize() {
     TextureManager::CreateTexture2D("earth.jpg", "Earth");
     TextureManager::CreateTexture2D("sun.jpg", "Sun");
     TextureManager::CreateTexture2D("moon.jpg", "Moon");
+
+    // Create Texture for Post Processing
+    TextureManager::CreateTexture2D(state.window->width, state.window->height, "PostProcessing");
 }
 
 Texture2D &TextureManager::CreateTexture2D(const std::string &file_name, const std::string &texture_name) {
     std::string file_path = "assets/textures/" + file_name;
     texture2Ds[texture_name] = std::move(LoadTexture2DFromFile(file_path));
+    return texture2Ds[texture_name];
+}
+
+Texture2D& TextureManager::CreateTexture2D(const int width, const int height, const std::string& texture_name) {
+    Texture2D texture = Texture2D();
+    texture.Generate(GL_RGB, GL_RGB, width, height, nullptr, false);
+    texture2Ds[texture_name] = texture;
     return texture2Ds[texture_name];
 }
 

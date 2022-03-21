@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.14 FATAL_ERROR)
 
 # 設定變數
-set(MY_PROJECT "SDL2 Examples - 04 Texture, Billboard and Fog Effect")
-set(MY_EXECUTABLE "sdl2-examples-04")
+set(MY_PROJECT "SDL2 Examples - 05 Post Processing, Gamma Correction and HDR")
+set(MY_EXECUTABLE "sdl2-examples-05")
 
 # 定義專案屬性
 project(${MY_PROJECT})

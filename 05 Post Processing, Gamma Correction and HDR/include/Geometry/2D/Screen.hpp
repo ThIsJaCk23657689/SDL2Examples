@@ -14,7 +14,7 @@ struct Screen {
     ~Screen();
 
     void Initialize();
-    void Draw();
+    void Draw() const;
 
 protected:
     void GenerateVertices();

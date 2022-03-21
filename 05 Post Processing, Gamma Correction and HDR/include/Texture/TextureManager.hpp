@@ -14,6 +14,7 @@ public:
     static std::map<std::string, Texture2D> texture2Ds;
     static void Initialize();
     static Texture2D &CreateTexture2D(const std::string &file_name, const std::string &texture_name);
+    static Texture2D &CreateTexture2D(const int width, const int height, const std::string &texture_name);
     static Texture2D &GetTexture2D(const std::string &texture_name);
     static void Destroy();
 

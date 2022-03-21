@@ -15,7 +15,7 @@ void Screen::Initialize() {
     BufferInitialize();
 }
 
-void Screen::Draw() {
+void Screen::Draw() const {
     glBindVertexArray(vao);
     glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(indices.size()), GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);

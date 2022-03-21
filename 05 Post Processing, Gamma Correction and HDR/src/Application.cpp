@@ -164,6 +164,9 @@ void Application::Run() {
             }
         }
 
+        // 繪製 Screen
+        game->RenderScreen();
+
         // 繪製 Imgui
         state.ui->Render();
 
