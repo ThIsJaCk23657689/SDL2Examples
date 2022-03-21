@@ -76,6 +76,8 @@ struct World {
 
     bool use_gamma_correction = true;
     float gamma_value = 2.2f;
+
+    bool use_hdr = true;
     float hdr_exposure = 1.0f;
 
     void Create();

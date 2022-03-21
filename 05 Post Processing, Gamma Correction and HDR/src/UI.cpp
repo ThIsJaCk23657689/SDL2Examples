@@ -366,7 +366,12 @@ void UI::SettingsRender() {
         ImGui::Combo("Screen Mode", reinterpret_cast<int*>(&state.world->current_screen_mode), items_a, IM_ARRAYSIZE(items_a));
         ImGui::Checkbox("Gamma Correction", &state.world->use_gamma_correction);
         if (state.world->use_gamma_correction) {
-            ImGui::SliderFloat("Gamma Value", &state.world->gamma_value, 1.0f, 2.2f);
+            ImGui::SliderFloat("Gamma Value", &state.world->gamma_value, 0.1f, 5.0f);
+        }
+        ImGui::Spacing();
+        ImGui::Checkbox("Use HDR", &state.world->use_hdr);
+        if (state.world->use_hdr) {
+            ImGui::SliderFloat("HDR Exposure", &state.world->hdr_exposure, 0.1f, 10.0f);
         }
         ImGui::Spacing();
         ImGui::End();

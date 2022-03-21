@@ -29,7 +29,7 @@ Texture2D &TextureManager::CreateTexture2D(const std::string &file_name, const s
 
 Texture2D& TextureManager::CreateTexture2D(const int width, const int height, const std::string& texture_name) {
     Texture2D texture = Texture2D();
-    texture.Generate(GL_RGB, GL_RGB, width, height, nullptr, false);
+    texture.Generate(GL_RGB16F, GL_RGB, width, height, nullptr, false);
     texture2Ds[texture_name] = texture;
     return texture2Ds[texture_name];
 }

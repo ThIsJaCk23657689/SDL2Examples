@@ -9,7 +9,8 @@ uniform sampler2D screenTexture;
 uniform bool useGamma;
 uniform float gammaValue;
 
-// uniform float exposure;
+uniform bool useHDR;
+uniform float hdrExposure;
 
 const float offset = 1.0f / 300.0f;
 
@@ -43,17 +44,8 @@ vec4 CalcKernel(float kernel[9]) {
 
 void main() {
 
-
-    // vec3 hdrColor = texture(screenTexture, TexCoords).rgb;
-
-    // vec3 mapped = hdrColor / (hdrColor + vec3(1.0f));
-    // vec3 mapped = vec3(1.0f) - exp(-hdrColor * exposure);
-
-    // mapped = pow(mapped, vec3(1.0 / gamma));
-
-    // FragColor = vec4(mapped, 1.0f);
-
     vec4 main_color = texture(screenTexture, TexCoords);
+
     switch (screenMode) {
         case 1:
             // 顏色相反，
@@ -93,9 +85,19 @@ void main() {
             break;
     }
 
-    if (useGamma) {
-        main_color = vec4(pow(main_color.xyz, vec3(1.0 / gammaValue)), 1.0f);
+    vec3 hdr_color = main_color.rgb;
+
+    if (useHDR) {
+        // Reinhard Color Mapping
+        // hdr_color = hdr_color / (hdr_color + vec3(1.0f));
+
+        // Exposure
+        hdr_color = vec3(1.0f) - exp(-hdr_color * hdrExposure);
     }
 
-    FragColor = main_color;
+    if (useGamma) {
+        hdr_color = pow(hdr_color, vec3(1.0 / gammaValue));
+    }
+
+    FragColor = vec4(hdr_color, 1.0f);
 }

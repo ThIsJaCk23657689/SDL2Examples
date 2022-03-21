@@ -83,7 +83,7 @@ void main() {
     }
 
     // 計算濃霧
-    vec4 final_color = CalcFog(vec4(clamp(illumination, 0.0f, 1.0f), final_frag_color.a));
+    vec4 final_color = CalcFog(vec4(illumination, final_frag_color.a));
 
     FragColor = final_color;
 }
