@@ -3,8 +3,9 @@
 ### 02 Camera, Projection and View Volume (Finished)
 ### 03 Shading, Lightning and Material (Finished)
 ### 04 Texture, Billboard and Fog Effect (Finished)
-### 05 Post Processing, Gamma Correction and HDR (Not Yet)
-### 06 
+### 05 Post Processing, Gamma Correction and HDR (Finished)
+### 06 Cube Map, Normal Map and Bloom
+### 07 Physically Based Rendering
 
 ------------------------------------------------------------
 國立臺灣海洋大學 資訊工程學系 電腦圖學實驗室 Lab 503
