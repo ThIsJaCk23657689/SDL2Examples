@@ -27,9 +27,9 @@ void Game::RendererInit() {
     master_renderer->Initialize();
 }
 
-void Game::RenderScreen() {
+void Game::RenderScreen(const std::unique_ptr<Camera>& current_camera) {
     main_framebuffer->UnBind();
-    master_renderer->RenderScreen();
+    master_renderer->RenderScreen(current_camera);
 }
 
 void Game::Update(float dt) {

@@ -20,6 +20,15 @@
 #include "Light/Light.hpp"
 #include "Fog.hpp"
 
+enum PostEffect : unsigned int {
+    NORMAL = 0,
+    INVERSION = 1,
+    GRAYSCALE = 2,
+    NARCOTIC = 3,
+    BLUR = 4,
+    EDGE_DETECTION = 5,
+};
+
 struct World {
     // Geometry Shapes
     std::unique_ptr<Sphere> my_sphere = nullptr;
@@ -55,6 +64,9 @@ struct World {
     // Fog
     std::unique_ptr<Fog> my_fog = nullptr;
     bool fog_bind_bg_color = false;
+
+    // Screen
+    PostEffect current_screen_mode = PostEffect::NORMAL;
 
     float speed = 50.0f;
 

@@ -164,8 +164,9 @@ void Application::Run() {
             }
         }
 
-        // 繪製 Screen
-        game->RenderScreen();
+        // 繪製 Screen，並且記得將 Viewport 切回正常大小
+        state.world->my_camera->viewport = { 0, 0, state.window->width, state.window->height };
+        game->RenderScreen(state.world->my_camera);
 
         // 繪製 Imgui
         state.ui->Render();

@@ -93,11 +93,14 @@ void MasterRenderer::Destroy() {
     alpha_shader->Destroy();
 }
 
-void MasterRenderer::RenderScreen() {
+void MasterRenderer::RenderScreen(const std::unique_ptr<Camera>& camera) {
     // Call By Application，在每一次 main loop 的結尾執行
     glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
     glDisable(GL_DEPTH_TEST);
+
+    // Viewport settings
+    camera->SetViewPort();
 
     screen_renderer->Prepare();
     screen_renderer->Render(&TextureManager::GetTexture2D("PostProcessing"), state.world->my_screen.get());

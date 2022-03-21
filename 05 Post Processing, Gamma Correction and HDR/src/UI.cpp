@@ -361,6 +361,10 @@ void UI::SettingsRender() {
                     ImGui::GetIO().Framerate);
         ImGui::Checkbox("Draw Axes ", &state.world->draw_axes);
         ImGui::Checkbox("Back Face Culling", &state.world->culling);
+        ImGui::Spacing();
+        const char* items_a[] = { "Normal", "Inversion", "Grayscale", "Narcotic", "Blur", "Edge Detection" };
+        ImGui::Combo("Screen Mode", reinterpret_cast<int*>(&state.world->current_screen_mode), items_a, IM_ARRAYSIZE(items_a));
+        ImGui::Spacing();
         ImGui::End();
     }
 }

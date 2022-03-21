@@ -26,7 +26,7 @@ struct MasterRenderer {
     void Render(const std::unique_ptr<Camera>& camera);
     void Destroy();
 
-    void RenderScreen();
+    void RenderScreen(const std::unique_ptr<Camera>& camera);
 
 private:
     // Shaders
