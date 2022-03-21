@@ -33,6 +33,7 @@ struct Fog {
     vec3 color;
     int mode;
     float density;
+    float gradient;
     float start;
     float end;
     bool enable;
@@ -151,10 +152,10 @@ vec4 CalcFog(vec4 color) {
             fog_factor = clamp((fog.end - distance) / (fog.end - fog.start), 0.0f, 1.0f);
             break;
             case 1:
-            fog_factor = clamp(1.0 / exp(fog.density * distance), 0.0f, 1.0f);
+            fog_factor = clamp(1.0 / exp(pow(fog.density * distance, fog.gradient)), 0.0f, 1.0f);
             break;
             case 2:
-            fog_factor = clamp(1.0 / exp(fog.density * distance * distance), 0.0f, 1.0f);
+            fog_factor = clamp(1.0 / exp(pow(fog.density * distance * distance, fog.gradient)), 0.0f, 1.0f);
             break;
         }
         final_color = mix(vec4(fog.color, 1.0f), color, fog_factor);

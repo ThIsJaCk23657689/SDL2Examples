@@ -342,6 +342,7 @@ void UI::FogInfoRender() {
             ImGui::DragFloatRange2("F_Start / F_End", &state.world->my_fog->start, &state.world->my_fog->end, 1.0f, state.world->my_camera->frustum.near, state.world->my_camera->frustum.far);
         } else {
             ImGui::SliderFloat("Density", &state.world->my_fog->density, 0.0f, 1.0f);
+            ImGui::SliderFloat("Gradient", &state.world->my_fog->gradient, 0.0f, 10.0f);
         }
         ImGui::Spacing();
         ImGui::Checkbox("Background color sync", &state.world->fog_bind_bg_color);
