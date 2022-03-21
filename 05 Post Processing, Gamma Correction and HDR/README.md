@@ -1,9 +1,10 @@
 # SDL2 範例程式
 ### 05 Post Processing, Gamma Correction and HDR
-本範例程式使用 SDL2 並且使用 OpenGL 3.3 版本，實現近代 OpenGL 開發以及流程，其中包含 Shader 的撰寫以及分拆程式，盡可能的實現物件導向設計的概念，但特別注意從這個單元之後的程式複雜度對於完全不了解的人來說會有點複雜，主要是因為避免掉過於攏長的程式碼，目前已經將許多功能分散、拆開以及解偶。
+本範例程式使用 SDL2 並且使用 OpenGL 3.3 版本，實現近代 OpenGL 開發以及流程，其中包含 Shader 的撰寫以及分拆程式，盡可能的實現物件導向設計的概念。
 
-本程式實作
+本程式實作 Post Processing、HDR、Gamma Correction。
 
+![](https://i.imgur.com/EWW6010.png)
 
 ## 安裝
 需要使用 vcpkg 安裝以下套件：
