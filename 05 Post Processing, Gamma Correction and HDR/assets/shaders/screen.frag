@@ -5,6 +5,10 @@ in vec2 TexCoords;
 
 uniform int screenMode;
 uniform sampler2D screenTexture;
+
+uniform bool useGamma;
+uniform float gammaValue;
+
 // uniform float exposure;
 
 const float offset = 1.0f / 300.0f;
@@ -39,7 +43,7 @@ vec4 CalcKernel(float kernel[9]) {
 
 void main() {
 
-    // const float gamma = 2.2f;
+
     // vec3 hdrColor = texture(screenTexture, TexCoords).rgb;
 
     // vec3 mapped = hdrColor / (hdrColor + vec3(1.0f));
@@ -89,6 +93,9 @@ void main() {
             break;
     }
 
+    if (useGamma) {
+        main_color = vec4(pow(main_color.xyz, vec3(1.0 / gammaValue)), 1.0f);
+    }
 
     FragColor = main_color;
 }

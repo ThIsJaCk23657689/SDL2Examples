@@ -73,6 +73,9 @@ struct World {
     bool draw_axes = false;
     bool culling = true;
     bool wire_mode = false;
+
+    bool use_gamma_correction = true;
+    float gamma_value = 2.2f;
     float hdr_exposure = 1.0f;
 
     void Create();

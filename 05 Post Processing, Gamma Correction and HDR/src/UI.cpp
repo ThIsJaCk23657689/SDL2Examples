@@ -364,6 +364,10 @@ void UI::SettingsRender() {
         ImGui::Spacing();
         const char* items_a[] = { "Normal", "Inversion", "Grayscale", "Narcotic", "Blur", "Edge Detection" };
         ImGui::Combo("Screen Mode", reinterpret_cast<int*>(&state.world->current_screen_mode), items_a, IM_ARRAYSIZE(items_a));
+        ImGui::Checkbox("Gamma Correction", &state.world->use_gamma_correction);
+        if (state.world->use_gamma_correction) {
+            ImGui::SliderFloat("Gamma Value", &state.world->gamma_value, 1.0f, 2.2f);
+        }
         ImGui::Spacing();
         ImGui::End();
     }
