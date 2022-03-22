@@ -11,19 +11,19 @@ std::map<std::string, Texture2D> TextureManager::texture2Ds;
 
 void TextureManager::Initialize() {
     // Create Textures (Note: All the textures which be used must create in this function)
-    TextureManager::CreateTexture2D("rickroll.png", "RickRoll");
-    TextureManager::CreateTexture2D("awesomeface.png", "Awesome Face");
-    TextureManager::CreateTexture2D("earth.jpg", "Earth");
-    TextureManager::CreateTexture2D("sun.jpg", "Sun");
-    TextureManager::CreateTexture2D("moon.jpg", "Moon");
+    TextureManager::CreateTexture2D("rickroll.png", "RickRoll", true);
+    TextureManager::CreateTexture2D("awesomeface.png", "Awesome Face", true);
+    TextureManager::CreateTexture2D("earth.jpg", "Earth", true);
+    TextureManager::CreateTexture2D("sun.jpg", "Sun", true);
+    TextureManager::CreateTexture2D("moon.jpg", "Moon", true);
 
     // Create Texture for Post Processing
     TextureManager::CreateTexture2D(state.window->width, state.window->height, "PostProcessing");
 }
 
-Texture2D &TextureManager::CreateTexture2D(const std::string &file_name, const std::string &texture_name) {
+Texture2D &TextureManager::CreateTexture2D(const std::string &file_name, const std::string &texture_name, bool is_srgb) {
     std::string file_path = "assets/textures/" + file_name;
-    texture2Ds[texture_name] = std::move(LoadTexture2DFromFile(file_path));
+    texture2Ds[texture_name] = std::move(LoadTexture2DFromFile(file_path, is_srgb));
     return texture2Ds[texture_name];
 }
 
@@ -50,7 +50,7 @@ void TextureManager::Destroy() {
     }
 }
 
-Texture2D TextureManager::LoadTexture2DFromFile(const std::string &file_path) {
+Texture2D TextureManager::LoadTexture2DFromFile(const std::string &file_path, bool is_srgb) {
     Texture2D texture;
 
     int width, height, nrChannels;
@@ -67,11 +67,26 @@ Texture2D TextureManager::LoadTexture2DFromFile(const std::string &file_path) {
                 format = GL_RED;
                 break;
             case 3:
-                internal_format = GL_RGB8;
+                // 只要寬不是 4 的倍數，就不使用 Alignment
+                if (width % 4 != 0) {
+                    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+                }
+
+                if (is_srgb) {
+                    internal_format = GL_SRGB8;
+                } else {
+                    internal_format = GL_RGB8;
+                }
+
                 format = GL_RGB;
                 break;
             case 4:
-                internal_format = GL_RGBA8;
+                if (is_srgb) {
+                    internal_format = GL_SRGB_ALPHA;
+                } else {
+                    internal_format = GL_RGBA8;
+                }
+
                 format = GL_RGBA;
                 break;
             default:
@@ -85,6 +100,9 @@ Texture2D TextureManager::LoadTexture2DFromFile(const std::string &file_path) {
         Logger::Message(LogLevel::Error, "Failed to load image at path: " + file_path);
         exit(-42069);
     }
+
+    // 效率會比較好
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
 
     stbi_image_free(image);
     return texture;
