@@ -40,7 +40,7 @@ void MasterRenderer::Initialize() {
     if (state.world->fog_bind_bg_color) {
         glClearColor(state.world->my_fog->color.r, state.world->my_fog->color.g, state.world->my_fog->color.b, 1.0f);
     } else {
-        glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+        glClearColor(4 / 255.0f, 4 / 255.0f, 4 / 255.0f, 1.0f);
     }
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glEnable(GL_DEPTH_TEST);

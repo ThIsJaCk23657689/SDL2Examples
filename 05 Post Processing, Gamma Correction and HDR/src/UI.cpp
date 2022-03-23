@@ -354,7 +354,7 @@ void UI::FogInfoRender() {
 void UI::SettingsRender() {
     // Settings Window Render
     if (Windows.Settings.Visible) {
-        ImGui::SetNextWindowSize(ImVec2(380, 150), ImGuiCond_Once);
+        ImGui::SetNextWindowSize(ImVec2(380, 260), ImGuiCond_Once);
         ImGui::Begin("Settings", &Windows.Settings.Visible, Windows.Settings.WindowFlags);
         ImGui::Text("Application average %.3f ms/frame (%.1f FPS)",
                     1000.0f / ImGui::GetIO().Framerate,
