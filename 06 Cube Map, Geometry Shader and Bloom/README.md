@@ -4,10 +4,6 @@
 
 本程式實作 Cube Map, Normal Map 和 Bloom。
 
-![](https://i.imgur.com/EWW6010.png)
-
-![](https://i.imgur.com/xMTgqgg.png)
-
 ## 安裝
 需要使用 vcpkg 安裝以下套件：
 * sdl2
