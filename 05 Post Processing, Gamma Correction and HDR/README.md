@@ -28,9 +28,9 @@
 * `Ctrl` + `q` 關閉程式
 
 ## 備註
-如果使用 Mingw 編譯的話，請記得 vcpkg 的套件要安裝 `x64-mingw-dynamic` 的版本，以及 CMake 需要新增 `-DVCPKG_TARGET_TRIPLET=x64-mingw-dynamic` 以及 shader file 的換行符號要改為 `LF` 才不會發生編譯錯誤。 
-> 根據實測，`lightning.vert` 和 `lightning.frag` 換行符號必須是 LF 才行，具體原因我也不是很確定。
-
+1. 如果使用 Mingw 編譯的話，請記得 vcpkg 的套件要安裝 `x64-mingw-dynamic` 的版本，以及 CMake 需要新增 `-DVCPKG_TARGET_TRIPLET=x64-mingw-dynamic` 以及 shader file 的換行符號要改為 `LF` 才不會發生編譯錯誤。
+2. 該程式的 HDR 實做是基於 Reinhard 和 Exposure 這兩種的 Tone Mapping，使用者可以透過 GUI 來切換。
+3. 有使用 Gamma Correction，所以讀取材質圖片時請用 `GL_SRGB` 或 `GL_SRGB_ALPHA`，因為通常材質圖片（指是 `diffuse texture`）都是基於 `sRGB` 色彩空間來設計與繪製，而這些顏彩空間本身就是已經 Gamma 校正過了，所以說把圖片繪製進來後再經過程式內部的 Gamma 校正後，材質貼圖會直過亮（因為已經兩次校正）；但是 `specular texture` 或 `normal texture` 就不需要，因為這些圖檔的數值就不是用於顏色顯示。
 ------------------------------------------------------------
 國立臺灣海洋大學 資訊工程學系 電腦圖學實驗室 Lab 503
 

@@ -10,6 +10,7 @@ uniform bool useGamma;
 uniform float gammaValue;
 
 uniform bool useHDR;
+uniform int hdrMode;
 uniform float hdrExposure;
 
 const float offset = 1.0f / 300.0f;
@@ -88,11 +89,13 @@ void main() {
     vec3 hdr_color = main_color.rgb;
 
     if (useHDR) {
-        // Reinhard Color Mapping
-        // hdr_color = hdr_color / (hdr_color + vec3(1.0f));
-
-        // Exposure
-        hdr_color = vec3(1.0f) - exp(-hdr_color * hdrExposure);
+        if (hdrMode == 0) {
+            // Reinhard Color Mapping
+            hdr_color = hdr_color / (hdr_color + vec3(1.0f));
+        } else {
+            // Exposure
+            hdr_color = vec3(1.0f) - exp(-hdr_color * hdrExposure);
+        }
     }
 
     if (useGamma) {

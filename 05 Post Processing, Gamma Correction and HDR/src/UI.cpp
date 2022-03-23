@@ -371,7 +371,11 @@ void UI::SettingsRender() {
         ImGui::Spacing();
         ImGui::Checkbox("Use HDR", &state.world->use_hdr);
         if (state.world->use_hdr) {
-            ImGui::SliderFloat("HDR Exposure", &state.world->hdr_exposure, 0.1f, 10.0f);
+            const char* items_hdr[] = { "Reinhard", "Exposure" };
+            ImGui::Combo("HDR Mode", reinterpret_cast<int*>(&state.world->current_hdr_mode), items_hdr, IM_ARRAYSIZE(items_hdr));
+            if (state.world->current_hdr_mode == HDRMode::EXPOSURE) {
+                ImGui::SliderFloat("HDR Exposure", &state.world->hdr_exposure, 0.1f, 10.0f);
+            }
         }
         ImGui::Spacing();
         ImGui::End();

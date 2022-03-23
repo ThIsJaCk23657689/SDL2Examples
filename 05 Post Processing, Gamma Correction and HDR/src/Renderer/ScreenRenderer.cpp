@@ -15,6 +15,7 @@ void ScreenRenderer::Prepare() {
     m_shader->SetFloat("gammaValue", state.world->gamma_value);
 
     m_shader->SetBool("useHDR", state.world->use_hdr);
+    m_shader->SetInt("hdrMode", state.world->current_hdr_mode);
     m_shader->SetFloat("hdrExposure", state.world->hdr_exposure);
 }
 

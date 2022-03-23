@@ -29,6 +29,11 @@ enum PostEffect : unsigned int {
     EDGE_DETECTION = 5,
 };
 
+enum HDRMode : unsigned int {
+    REINHARD = 0,
+    EXPOSURE = 1,
+};
+
 struct World {
     // Geometry Shapes
     std::unique_ptr<Sphere> my_sphere = nullptr;
@@ -78,6 +83,7 @@ struct World {
     float gamma_value = 2.2f;
 
     bool use_hdr = true;
+    HDRMode current_hdr_mode = HDRMode::EXPOSURE;
     float hdr_exposure = 1.0f;
 
     void Create();
