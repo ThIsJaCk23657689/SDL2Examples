@@ -28,8 +28,8 @@
 * `Ctrl` + `q` 關閉程式
 
 ## 備註
-如果使用 Mingw 編譯的話，請記得 vcpkg 的套件要安裝 `x64-mingw-dynamic` 的版本，以及 CMake 需要新增 `-DVCPKG_TARGET_TRIPLET=x64-mingw-dynamic` 以及 shader file 的換行符號要改為 `LF` 才不會發生編譯錯誤。 
-> 根據實測，`lightning.vert` 和 `lightning.frag` 換行符號必須是 LF 才行，具體原因我也不是很確定。
+1. 如果使用 Mingw 編譯的話，請記得 vcpkg 的套件要安裝 `x64-mingw-dynamic` 的版本，以及 CMake 需要新增 `-DVCPKG_TARGET_TRIPLET=x64-mingw-dynamic` 以及 shader file 的換行符號要改為 `LF` 才不會發生編譯錯誤。 
+2. 使用 OpenGL 讀取 Texture 必須要注意，如果該圖片是 `jpeg` 格式且寬不是 4 的倍數時，必須設定 `glPixelStorei(GL_UNPACK_ALIGNMENT, 1);`，不然圖片讀取出來會錯誤（歪邊或者喪失顏色），嚴重甚至發生 segmentation fault；代價是讀取效能會比　`glPixelStorei(GL_UNPACK_ALIGNMENT, 4);` 來的差。
 
 ------------------------------------------------------------
 國立臺灣海洋大學 資訊工程學系 電腦圖學實驗室 Lab 503

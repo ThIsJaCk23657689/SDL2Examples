@@ -55,6 +55,11 @@ Texture2D TextureManager::LoadTexture2DFromFile(const std::string &file_path) {
                 format = GL_RED;
                 break;
             case 3:
+                // 只要寬不是 4 的倍數，就不使用 Alignment
+                if (width % 4 != 0) {
+                    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+                }
+
                 internal_format = GL_RGB8;
                 format = GL_RGB;
                 break;
@@ -73,6 +78,9 @@ Texture2D TextureManager::LoadTexture2DFromFile(const std::string &file_path) {
         Logger::Message(LogLevel::Error, "Failed to load image at path: " + file_path);
         exit(-42069);
     }
+
+    // 效率會比較好
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
 
     stbi_image_free(image);
     return texture;
