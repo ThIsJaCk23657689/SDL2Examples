@@ -9,6 +9,7 @@ ScreenRenderer::ScreenRenderer(ScreenShader* shader) : m_shader(shader) {
 void ScreenRenderer::Prepare() {
     m_shader->Start();
     m_shader->SetInt("screenTexture", 0);
+    m_shader->SetInt("bloomTexture", 1);
     m_shader->SetInt("screenMode", state.world->current_screen_mode);
 
     m_shader->SetBool("useGamma", state.world->use_gamma_correction);
@@ -19,7 +20,8 @@ void ScreenRenderer::Prepare() {
     m_shader->SetFloat("hdrExposure", state.world->hdr_exposure);
 }
 
-void ScreenRenderer::Render(const Texture2D* texture, const Screen* screen) {
-    texture->Bind(GL_TEXTURE0);
+void ScreenRenderer::Render(const Texture2D* screen_texture, const Texture2D* bloom_texture, const Screen* screen) {
+    screen_texture->Bind(GL_TEXTURE0);
+    bloom_texture->Bind(GL_TEXTURE1);
     screen->Draw();
 }

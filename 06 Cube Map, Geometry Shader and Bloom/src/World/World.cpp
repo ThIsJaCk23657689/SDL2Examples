@@ -10,6 +10,7 @@ void World::Create() {
     my_cube = std::make_unique<Cube>();
     my_sphere = std::make_unique<Sphere>();
     view_volume = std::make_unique<Cube>();
+    my_floor = std::make_unique<Floor>(10.0f);
     billboard = std::make_unique<Billboard>();
     my_screen = std::make_unique<Screen>();
 
@@ -21,7 +22,7 @@ void World::Create() {
     sun.material.emission_texture = true;
     earth = Entity(glm::vec3(20.0f, 10.0f, 0.0f), glm::vec3(0.0f, 23.5f, 0.0f), glm::vec3(1.0f), &TextureManager::GetTexture2D("Earth"));
     moon = Entity(glm::vec3(25.0f, 10.0f, 0.0f), glm::vec3(0.0f), glm::vec3(0.6f), &TextureManager::GetTexture2D("Moon"));
-    ground = Entity(glm::vec3(0.0f, -50.0f, 0.0f), glm::vec3(0.0f), glm::vec3(100.0f), glm::vec3(42 / 255.0f, 219 / 255.0f, 89 / 255.0f));
+    ground = Entity(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f), glm::vec3(100.0f), &TextureManager::GetTexture2D("Wooden Floor"));
     camera = Entity(glm::vec3(0.0f, 10.0f, 80.0f), glm::vec3(0.0f), glm::vec3(8.0f, 5.0f, 10.0f), glm::vec3(0.2f));
     camera.movable = true;
     for (int i = 0; i < 50; i++) {
@@ -71,12 +72,12 @@ void World::Create() {
         std::make_unique<Light>(glm::vec3(-42.5f, 12.5f, -5.556f), true),
         std::make_unique<Light>(glm::vec3(sun.position), true),
     };
-    my_point_lights[0]->UpdateColor(glm::vec3(1.0f, 0.082f, 0.082f));
-    my_point_lights[1]->UpdateColor(glm::vec3(0.082f, 0.082f, 1.0f));
-    my_point_lights[2]->UpdateColor(glm::vec3(0.082f, 1.0f, 0.082f));
-    my_point_lights[3]->UpdateColor(glm::vec3(0.82f, 0.0f, 1.0f));
-    my_point_lights[4]->UpdateColor(glm::vec3(1.0f, 0.82f, 0.0f));
-    my_point_lights[5]->UpdateColor(glm::vec3(50.0f, 50.0f, 50.0f));
+    my_point_lights[0]->UpdateColor(glm::vec3(5.0f, 5.0f, 5.0f));
+    my_point_lights[1]->UpdateColor(glm::vec3(10.0f, 0.0f, 0.0f));
+    my_point_lights[2]->UpdateColor(glm::vec3(0.0f, 0.0f, 15.0f));
+    my_point_lights[3]->UpdateColor(glm::vec3(0.0f, 5.0f, 0.0f));
+    my_point_lights[4]->UpdateColor(glm::vec3(20.0f, 5.0f, 10.0f));
+    my_point_lights[5]->UpdateColor(glm::vec3(200.0f, 200.0f, 200.0f));
 
     // Fog init
     my_fog = std::make_unique<Fog>(glm::vec3(4 / 255.0f), 0.008f, 1.5f, 50.0f, 120.0f);

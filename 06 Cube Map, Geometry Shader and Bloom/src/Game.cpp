@@ -16,8 +16,13 @@ Game::Game() {
     // Create Framebuffer and Renderbuffer
     main_renderbuffer = std::make_unique<RenderBuffer>(state.window->width, state.window->height);
     main_framebuffer = std::make_unique<FrameBuffer>();
-    main_framebuffer->BindTexture2D(TextureManager::GetTexture2D("PostProcessing"));
+    main_framebuffer->BindTexture2D(TextureManager::GetTexture2D("PostProcessing"), 0);
+    main_framebuffer->BindTexture2D(TextureManager::GetTexture2D("Bloom"), 1);
     main_framebuffer->BindRenderBuffer(main_renderbuffer);
+
+    unsigned int attachments[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
+    glDrawBuffers(2, attachments);
+
     main_framebuffer->CheckComplete();
 }
 
@@ -227,6 +232,11 @@ void Game::UpdateFramebuffer() {
 
     Texture2D screen = TextureManager::GetTexture2D("PostProcessing");
     screen.Bind();
-    screen.Generate(GL_RGB, GL_RGB, state.window->width, state.window->height, nullptr, false);
+    screen.Generate(GL_RGB16F, GL_RGB, state.window->width, state.window->height, nullptr, false);
     screen.UnBind();
+
+    Texture2D bloom = TextureManager::GetTexture2D("Bloom");
+    bloom.Bind();
+    bloom.Generate(GL_RGB16F, GL_RGB, state.window->width, state.window->height, nullptr, false);
+    bloom.UnBind();
 }

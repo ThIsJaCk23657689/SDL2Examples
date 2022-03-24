@@ -58,7 +58,7 @@ void MasterRenderer::Render(const std::unique_ptr<Camera>& camera) {
     lightning_renderer->Render(state.world->moon, state.world->my_sphere.get());
     lightning_renderer->Render(state.world->rick_rolls, state.world->my_cube.get());
     lightning_renderer->Render(state.world->awesome_faces, state.world->billboard.get());
-    lightning_renderer->Render(state.world->ground, state.world->my_cube.get());
+    lightning_renderer->Render(state.world->ground, state.world->my_floor.get());
     lightning_renderer->Render(state.world->camera, state.world->my_cube.get());
 
     // 繪製光球 這邊設計應該可以再更好
@@ -103,5 +103,5 @@ void MasterRenderer::RenderScreen(const std::unique_ptr<Camera>& camera) {
     camera->SetViewPort();
 
     screen_renderer->Prepare();
-    screen_renderer->Render(&TextureManager::GetTexture2D("PostProcessing"), state.world->my_screen.get());
+    screen_renderer->Render(&TextureManager::GetTexture2D("PostProcessing"), &TextureManager::GetTexture2D("Bloom"), state.world->my_screen.get());
 }

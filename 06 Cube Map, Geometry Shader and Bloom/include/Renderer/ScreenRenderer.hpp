@@ -8,7 +8,7 @@
 struct ScreenRenderer {
     ScreenRenderer(ScreenShader* shader);
     void Prepare();
-    void Render(const Texture2D* texture, const Screen* screen);
+    void Render(const Texture2D* screen_texture, const Texture2D* bloom_texture, const Screen* screen);
 
 private:
     ScreenShader* m_shader;

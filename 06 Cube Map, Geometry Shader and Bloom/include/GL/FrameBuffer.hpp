@@ -16,7 +16,7 @@ struct FrameBuffer {
     ~FrameBuffer();
     void Bind();
     void UnBind();
-    void BindTexture2D(const Texture2D& texture);
+    void BindTexture2D(const Texture2D& texture, int attachment = 0);
     void BindRenderBuffer(const std::unique_ptr<RenderBuffer>& rbo);
     void CheckComplete();
 };

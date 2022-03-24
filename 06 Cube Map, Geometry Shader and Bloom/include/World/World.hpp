@@ -9,6 +9,7 @@
 
 #include "Geometry/3D/Cube.hpp"
 #include "Geometry/3D/Sphere.hpp"
+#include "Geometry/2D/Floor.hpp"
 #include "Geometry/2D/Billboard.hpp"
 #include "Geometry/2D/Screen.hpp"
 
@@ -39,6 +40,7 @@ struct World {
     std::unique_ptr<Sphere> my_sphere = nullptr;
     std::unique_ptr<Cube> my_cube = nullptr;
     std::unique_ptr<Cube> view_volume = nullptr;
+    std::unique_ptr<Floor> my_floor = nullptr;
     std::unique_ptr<Billboard> billboard = nullptr;
     std::unique_ptr<Screen> my_screen = nullptr;
 

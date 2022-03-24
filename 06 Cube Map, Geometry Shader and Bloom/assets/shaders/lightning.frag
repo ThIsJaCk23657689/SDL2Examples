@@ -1,8 +1,8 @@
 #version 330 core
+layout (location = 0) out vec4 FragColor;
+layout (location = 1) out vec4 BrightColor;
 
 #define NUM_LIGHTS 8
-
-out vec4 FragColor;
 
 in VS_OUT {
     vec3 FragPos;
@@ -68,7 +68,7 @@ void main() {
         for (int i = 0; i < NUM_LIGHTS; i++ ) {
             if (emissionTexture) {
                 // 發現如果該貼圖具有 emission 特性，就不用算光照直接跳出迴圈
-                illumination = final_frag_color.rgb * 1.5f;
+                illumination = final_frag_color.rgb * 3.0f;
                 break;
             }
             if (lights[i].enable) {
@@ -86,6 +86,13 @@ void main() {
     vec4 final_color = CalcFog(vec4(illumination, final_frag_color.a));
 
     FragColor = final_color;
+
+    float brightness = dot(FragColor.rgb, vec3(0.2126, 0.7152, 0.0722));
+    if (brightness > 1.0f) {
+        BrightColor = vec4(FragColor.rgb, 1.0f);
+    } else {
+        BrightColor = vec4(0, 0, 0, 1.0f);
+    }
 }
 
 vec3 CalcLight(Light light, vec3 normal, vec3 viewDir, vec3 color) {

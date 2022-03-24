@@ -16,9 +16,11 @@ void TextureManager::Initialize() {
     TextureManager::CreateTexture2D("earth.jpg", "Earth", true);
     TextureManager::CreateTexture2D("sun.jpg", "Sun", true);
     TextureManager::CreateTexture2D("moon.jpg", "Moon", true);
+    TextureManager::CreateTexture2D("wood.png", "Wooden Floor", true);
 
     // Create Texture for Post Processing
     TextureManager::CreateTexture2D(state.window->width, state.window->height, "PostProcessing");
+    TextureManager::CreateTexture2D(state.window->width, state.window->height, "Bloom");
 }
 
 Texture2D &TextureManager::CreateTexture2D(const std::string &file_name, const std::string &texture_name, bool is_srgb) {
@@ -30,6 +32,8 @@ Texture2D &TextureManager::CreateTexture2D(const std::string &file_name, const s
 Texture2D& TextureManager::CreateTexture2D(const int width, const int height, const std::string& texture_name) {
     Texture2D texture = Texture2D();
     texture.Generate(GL_RGB16F, GL_RGB, width, height, nullptr, false);
+    texture.SetFilterParameters(GL_LINEAR, GL_LINEAR);
+    texture.SetWrapParameters(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
     texture2Ds[texture_name] = texture;
     return texture2Ds[texture_name];
 }
@@ -95,7 +99,7 @@ Texture2D TextureManager::LoadTexture2DFromFile(const std::string &file_path, bo
         }
 
         // Create texture and binding
-        texture.Generate(internal_format, format, width, height, image, false);
+        texture.Generate(internal_format, format, width, height, image, true);
     } else {
         Logger::Message(LogLevel::Error, "Failed to load image at path: " + file_path);
         exit(-42069);

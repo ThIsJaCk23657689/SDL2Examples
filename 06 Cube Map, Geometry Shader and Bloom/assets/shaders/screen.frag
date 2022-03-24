@@ -4,6 +4,7 @@ out vec4 FragColor;
 in vec2 TexCoords;
 
 uniform int screenMode;
+uniform sampler2D bloomTexture;
 uniform sampler2D screenTexture;
 
 uniform bool useGamma;
@@ -45,7 +46,7 @@ vec4 CalcKernel(float kernel[9]) {
 
 void main() {
 
-    vec4 main_color = texture(screenTexture, TexCoords);
+    vec4 main_color = texture(bloomTexture, TexCoords);
 
     switch (screenMode) {
         case 1:

@@ -1,6 +1,6 @@
 #version 330 core
-
-out vec4 FragColor;
+layout (location = 0) out vec4 FragColor;
+layout (location = 1) out vec4 BrightColor;
 
 in VS_OUT {
     vec3 FragPos;
@@ -25,9 +25,15 @@ vec4 CalcFog(vec4 color);
 
 void main() {
     // 計算濃霧
-    vec4 final_color = CalcFog(vec4(clamp(objectColor, 0.0f, 1.0f), 1.0f));
+    vec4 final_color = CalcFog(vec4(objectColor, 1.0f));
 
     FragColor = final_color;
+    float brightness = dot(FragColor.rgb, vec3(0.2126, 0.7152, 0.0722));
+    if (brightness > 1.0f) {
+        BrightColor = vec4(FragColor.rgb, 1.0f);
+    } else {
+        BrightColor = vec4(0, 0, 0, 1.0f);
+    }
 }
 
 vec4 CalcFog(vec4 color) {
