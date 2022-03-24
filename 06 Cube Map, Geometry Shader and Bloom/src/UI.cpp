@@ -321,6 +321,14 @@ void UI::LightningInfoRender() {
                 ImGui::EndTabItem();
             }
 
+            if (ImGui::BeginTabItem("Bloom"))  {
+                ImGui::Checkbox("Enable", &state.world->use_bloom);
+                ImGui::SliderFloat("Intensity", &state.world->bloom_intensity, 0.0f, 2.0f);
+                ImGui::SliderFloat("Threshold", &state.world->bloom_threshold, 0.5f, 5.0f);
+                ImGui::SliderInt("Strength", &state.world->bloom_strength, 0.0f, 50.0f);
+                ImGui::EndTabItem();
+            }
+
             ImGui::EndTabBar();
         }
         ImGui::End();

@@ -17,23 +17,31 @@ struct Fog {
 };
 
 uniform vec3 objectColor;
-
 uniform vec3 viewPos;
+
+uniform float bloomThreshold;
+
 uniform Fog fog;
 
 vec4 CalcFog(vec4 color);
 
 void main() {
-    // 計算濃霧
-    vec4 final_color = CalcFog(vec4(objectColor, 1.0f));
 
-    FragColor = final_color;
-    float brightness = dot(FragColor.rgb, vec3(0.2126, 0.7152, 0.0722));
-    if (brightness > 1.0f) {
-        BrightColor = vec4(FragColor.rgb, 1.0f);
+    // 計算亮度有沒有超過 1.0f，用於泛光特效使用
+    vec4 bright_color = vec4(0.0f);
+    float brightness = dot(objectColor, vec3(0.2126, 0.7152, 0.0722));
+    if (brightness > bloomThreshold) {
+        bright_color = vec4(objectColor, 1.0f);
     } else {
-        BrightColor = vec4(0, 0, 0, 1.0f);
+        bright_color = vec4(0, 0, 0, 1.0f);
     }
+    // 再計算濃霧效果
+    bright_color = CalcFog(vec4(bright_color.rgb, 1.0f));
+    BrightColor = bright_color;
+
+    // 正常模式下，計算濃霧效果
+    vec4 final_color = CalcFog(vec4(objectColor, 1.0f));
+    FragColor = final_color;
 }
 
 vec4 CalcFog(vec4 color) {

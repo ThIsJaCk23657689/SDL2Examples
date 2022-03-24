@@ -3,9 +3,12 @@ out vec4 FragColor;
 
 in vec2 TexCoords;
 
-uniform int screenMode;
-uniform sampler2D bloomTexture;
 uniform sampler2D screenTexture;
+uniform int screenMode;
+
+uniform bool useBloom;
+uniform sampler2D bloomTexture;
+uniform float bloomIntensity;
 
 uniform bool useGamma;
 uniform float gammaValue;
@@ -46,7 +49,12 @@ vec4 CalcKernel(float kernel[9]) {
 
 void main() {
 
-    vec4 main_color = texture(bloomTexture, TexCoords);
+    vec4 main_color = texture(screenTexture, TexCoords);
+
+    if (useBloom) {
+        vec4 bloom_color = texture(bloomTexture, TexCoords);
+        main_color += bloom_color * bloomIntensity;
+    }
 
     switch (screenMode) {
         case 1:

@@ -10,6 +10,7 @@ MasterRenderer::MasterRenderer() {
     lightning_shader = std::make_unique<LightningShader>();
     alpha_shader = std::make_unique<AlphaShader>();
     screen_shader = std::make_unique<ScreenShader>();
+    gaussian_blur_shader = std::make_unique<GaussianBlurShader>();
 
     // 建立 Renderer
     basic_renderer = std::make_unique<BasicRenderer>(basic_shader.get());
@@ -17,6 +18,7 @@ MasterRenderer::MasterRenderer() {
     view_volume_renderer = std::make_unique<ViewVolumeRenderer>(alpha_shader.get());
     axes_renderer = std::make_unique<AxesRenderer>(basic_shader.get());
     screen_renderer = std::make_unique<ScreenRenderer>(screen_shader.get());
+    gaussian_blur_renderer = std::make_unique<GaussianBlurRenderer>(gaussian_blur_shader.get());
 
     // 設定 gl
     glEnable(GL_MULTISAMPLE);
@@ -40,7 +42,7 @@ void MasterRenderer::Initialize() {
     if (state.world->fog_bind_bg_color) {
         glClearColor(state.world->my_fog->color.r, state.world->my_fog->color.g, state.world->my_fog->color.b, 1.0f);
     } else {
-        glClearColor(4 / 255.0f, 4 / 255.0f, 4 / 255.0f, 1.0f);
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     }
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glEnable(GL_DEPTH_TEST);
@@ -93,6 +95,15 @@ void MasterRenderer::Destroy() {
     alpha_shader->Destroy();
 }
 
+void MasterRenderer::GaussianBlur(bool is_horizontal, bool first_iteration) {
+    gaussian_blur_renderer->Prepare(is_horizontal);
+    if (first_iteration) {
+        gaussian_blur_renderer->Render(&TextureManager::GetTexture2D("Bloom"), state.world->my_screen.get());
+    } else {
+        gaussian_blur_renderer->Render(&TextureManager::GetTexture2D("GaussianBlur" + std::to_string(!is_horizontal)), state.world->my_screen.get());
+    }
+}
+
 void MasterRenderer::RenderScreen(const std::unique_ptr<Camera>& camera) {
     // Call By Application，在每一次 main loop 的結尾執行
     glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
@@ -103,5 +114,5 @@ void MasterRenderer::RenderScreen(const std::unique_ptr<Camera>& camera) {
     camera->SetViewPort();
 
     screen_renderer->Prepare();
-    screen_renderer->Render(&TextureManager::GetTexture2D("PostProcessing"), &TextureManager::GetTexture2D("Bloom"), state.world->my_screen.get());
+    screen_renderer->Render(&TextureManager::GetTexture2D("PostProcessing"), &TextureManager::GetTexture2D("GaussianBlur0"), state.world->my_screen.get());
 }

@@ -49,6 +49,8 @@ uniform bool useBlinnPhong;
 uniform bool useTexture;
 uniform bool emissionTexture;
 
+uniform float bloomThreshold;
+
 uniform Light lights[NUM_LIGHTS];
 uniform Fog fog;
 
@@ -68,7 +70,7 @@ void main() {
         for (int i = 0; i < NUM_LIGHTS; i++ ) {
             if (emissionTexture) {
                 // 發現如果該貼圖具有 emission 特性，就不用算光照直接跳出迴圈
-                illumination = final_frag_color.rgb * 3.0f;
+                illumination = final_frag_color.rgb * 10.0f;
                 break;
             }
             if (lights[i].enable) {
@@ -82,17 +84,21 @@ void main() {
         discard;
     }
 
-    // 計算濃霧
-    vec4 final_color = CalcFog(vec4(illumination, final_frag_color.a));
-
-    FragColor = final_color;
-
-    float brightness = dot(FragColor.rgb, vec3(0.2126, 0.7152, 0.0722));
-    if (brightness > 1.0f) {
-        BrightColor = vec4(FragColor.rgb, 1.0f);
+    // 計算亮度有沒有超過 1.0f，用於泛光特效使用
+    vec4 bright_color = vec4(0.0f);
+    float brightness = dot(illumination, vec3(0.2126, 0.7152, 0.0722));
+    if (brightness > bloomThreshold) {
+        bright_color = vec4(illumination, 1.0f);
     } else {
-        BrightColor = vec4(0, 0, 0, 1.0f);
+        bright_color = vec4(0, 0, 0, 1.0f);
     }
+    // 再計算濃霧效果
+    bright_color = CalcFog(vec4(bright_color.rgb, 1.0f));
+    BrightColor = bright_color;
+
+    // 正常模式下，計算濃霧效果
+    vec4 final_color = CalcFog(vec4(illumination, final_frag_color.a));
+    FragColor = final_color;
 }
 
 vec3 CalcLight(Light light, vec3 normal, vec3 viewDir, vec3 color) {

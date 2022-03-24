@@ -9,8 +9,13 @@ ScreenRenderer::ScreenRenderer(ScreenShader* shader) : m_shader(shader) {
 void ScreenRenderer::Prepare() {
     m_shader->Start();
     m_shader->SetInt("screenTexture", 0);
-    m_shader->SetInt("bloomTexture", 1);
     m_shader->SetInt("screenMode", state.world->current_screen_mode);
+
+    m_shader->SetBool("useBloom", state.world->use_bloom);
+    if (state.world->use_bloom) {
+        m_shader->SetInt("bloomTexture", 1);
+        m_shader->SetFloat("bloomIntensity", state.world->bloom_intensity);
+    }
 
     m_shader->SetBool("useGamma", state.world->use_gamma_correction);
     m_shader->SetFloat("gammaValue", state.world->gamma_value);

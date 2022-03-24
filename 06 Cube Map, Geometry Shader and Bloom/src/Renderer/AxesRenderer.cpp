@@ -14,6 +14,7 @@ void AxesRenderer::Prepare(const std::unique_ptr<Camera>& camera) {
     // Load View and Projection Matrix
     m_shader->SetViewAndProj(camera);
     m_shader->SetVec3("viewPos", camera->position);
+    m_shader->SetFloat("bloomThreshold", state.world->bloom_threshold);
 }
 
 void AxesRenderer::Render(float length) {
@@ -49,7 +50,7 @@ void AxesRenderer::DrawAxes(float length) {
     model->Push();
     model->Save(glm::translate(model->Top(), glm::vec3(length / 2.0f, 0.0f, 0.0f)));
     model->Save(glm::scale(model->Top(), glm::vec3(length, length / 20.0f, length / 20.0f)));
-    m_shader->SetVec3("objectColor", glm::vec3(1.0f, 0.0f, 0.0f));
+    m_shader->SetVec3("objectColor", glm::vec3(1.2f, 0.0f, 0.0f));
     m_shader->SetMat4("model", model->Top());
     state.world->my_cube->Draw();
     model->Pop();
@@ -57,7 +58,7 @@ void AxesRenderer::DrawAxes(float length) {
     model->Push();
     model->Save(glm::translate(model->Top(), glm::vec3(0.0f, length / 2.0f, 0.0f)));
     model->Save(glm::scale(model->Top(), glm::vec3(length / 20.0f, length, length / 20.0f)));
-    m_shader->SetVec3("objectColor", glm::vec3(0.0f, 1.0f, 0.0f));
+    m_shader->SetVec3("objectColor", glm::vec3(0.0f, 1.2f, 0.0f));
     m_shader->SetMat4("model", model->Top());
     state.world->my_cube->Draw();
     model->Pop();
@@ -65,7 +66,7 @@ void AxesRenderer::DrawAxes(float length) {
     model->Push();
     model->Save(glm::translate(model->Top(), glm::vec3(0.0f, 0.0f, length / 2.0f)));
     model->Save(glm::scale(model->Top(), glm::vec3(length / 20.0f, length / 20.0f, length)));
-    m_shader->SetVec3("objectColor", glm::vec3(0.0f, 0.0f, 1.0f));
+    m_shader->SetVec3("objectColor", glm::vec3(0.0f, 0.0f, 1.2f));
     m_shader->SetMat4("model", model->Top());
     state.world->my_cube->Draw();
     model->Pop();

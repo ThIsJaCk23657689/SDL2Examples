@@ -21,6 +21,8 @@ void TextureManager::Initialize() {
     // Create Texture for Post Processing
     TextureManager::CreateTexture2D(state.window->width, state.window->height, "PostProcessing");
     TextureManager::CreateTexture2D(state.window->width, state.window->height, "Bloom");
+    TextureManager::CreateTexture2D(state.window->width, state.window->height, "GaussianBlur0");
+    TextureManager::CreateTexture2D(state.window->width, state.window->height, "GaussianBlur1");
 }
 
 Texture2D &TextureManager::CreateTexture2D(const std::string &file_name, const std::string &texture_name, bool is_srgb) {

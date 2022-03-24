@@ -4,26 +4,27 @@
 #include "State.hpp"
 
 Game::Game() {
-    // Create Shader
-    // screen_shader = std::make_unique<Shader>("assets/shaders/screen.vert", "assets/shaders/screen.frag");
-
     // Create Renderer
     master_renderer = std::make_unique<MasterRenderer>();
 
     state.world = std::make_unique<World>();
     state.world->Create();
 
-    // Create Framebuffer and Renderbuffer
+    // Create Framebuffer and Renderbuffer for Post Processing and HDR
     main_renderbuffer = std::make_unique<RenderBuffer>(state.window->width, state.window->height);
     main_framebuffer = std::make_unique<FrameBuffer>();
     main_framebuffer->BindTexture2D(TextureManager::GetTexture2D("PostProcessing"), 0);
     main_framebuffer->BindTexture2D(TextureManager::GetTexture2D("Bloom"), 1);
     main_framebuffer->BindRenderBuffer(main_renderbuffer);
-
-    unsigned int attachments[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
-    glDrawBuffers(2, attachments);
-
+    main_framebuffer->SetDrawBufferAmount(2);
     main_framebuffer->CheckComplete();
+
+    // Create Framebuffer for Gaussian Blur
+    for (int i = 0; i < gaussian_blur_framebuffer.size(); i++) {
+        gaussian_blur_framebuffer[i] = std::make_unique<FrameBuffer>();
+        gaussian_blur_framebuffer[i]->BindTexture2D(TextureManager::GetTexture2D("GaussianBlur" + std::to_string(i)), 0);
+        gaussian_blur_framebuffer[i]->CheckComplete();
+    }
 }
 
 void Game::RendererInit() {
@@ -32,8 +33,24 @@ void Game::RendererInit() {
     master_renderer->Initialize();
 }
 
+void Game::RenderGaussianBlur() {
+    if (state.world->use_bloom) {
+        bool is_horizontal = true, first_iteration = true;
+        for (int i = 0; i < state.world->bloom_strength; i++) {
+            gaussian_blur_framebuffer[is_horizontal]->Bind();
+            master_renderer->GaussianBlur(is_horizontal, first_iteration);
+            is_horizontal = !is_horizontal;
+            if (first_iteration) {
+                first_iteration = false;
+            }
+        }
+    }
+}
+
 void Game::RenderScreen(const std::unique_ptr<Camera>& current_camera) {
-    main_framebuffer->UnBind();
+    // 確保是 off-screen rendering，在預設的 framebuffer 上渲染才會看得見
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
     master_renderer->RenderScreen(current_camera);
 }
 
@@ -64,7 +81,6 @@ void Game::Update(float dt) {
 void Game::Render(const std::unique_ptr<Camera>& current_camera, float dt) {
     // 基本上就是每一偵都會執行此函數，如果說畫面有切割的話，那同一次 Game loop 之中會 repeat 多次。
     master_renderer->Render(current_camera);
-
 }
 
 void Game::Destroy() {
@@ -239,4 +255,11 @@ void Game::UpdateFramebuffer() {
     bloom.Bind();
     bloom.Generate(GL_RGB16F, GL_RGB, state.window->width, state.window->height, nullptr, false);
     bloom.UnBind();
+
+    for (int i = 0; i < 2; i++) {
+        Texture2D gaussian = TextureManager::GetTexture2D("GaussianBlur" + std::to_string(i));
+        gaussian.Bind();
+        gaussian.Generate(GL_RGB16F, GL_RGB, state.window->width, state.window->height, nullptr, false);
+        gaussian.UnBind();
+    }
 }

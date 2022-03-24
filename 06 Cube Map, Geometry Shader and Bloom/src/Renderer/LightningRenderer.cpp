@@ -12,6 +12,7 @@ void LightningRenderer::Prepare(const std::unique_ptr<Camera>& camera) {
     m_shader->SetBool("useTexture", false);
     m_shader->SetBool("emissionTexture", false);
     m_shader->SetInt("diffuse_texture", 0);
+    m_shader->SetFloat("bloomThreshold", state.world->bloom_threshold);
 
     // Load Lights
     m_shader->SetLight(state.world->my_directional_light, 0);

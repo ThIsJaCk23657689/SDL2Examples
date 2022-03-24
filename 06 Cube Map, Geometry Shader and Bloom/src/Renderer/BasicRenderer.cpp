@@ -14,6 +14,7 @@ void BasicRenderer::Prepare(const std::unique_ptr<Camera>& camera) {
     // Load View and Projection Matrix
     m_shader->SetViewAndProj(camera);
     m_shader->SetVec3("viewPos", camera->position);
+    m_shader->SetFloat("bloomThreshold", state.world->bloom_threshold);
 }
 
 void BasicRenderer::Render(const Entity& entity, const Geometry* geometry) {

@@ -10,12 +10,14 @@
 #include "Shader/LightningShader.hpp"
 #include "Shader/AlphaShader.hpp"
 #include "Shader/ScreenShader.hpp"
+#include "Shader/GaussianBlurShader.hpp"
 
 #include "Renderer/BasicRenderer.hpp"
 #include "Renderer/LightningRenderer.hpp"
 #include "Renderer/ViewVolumeRenderer.hpp"
 #include "Renderer/AxesRenderer.hpp"
 #include "Renderer/ScreenRenderer.hpp"
+#include "Renderer/GaussianBlurRenderer.hpp"
 
 #include "World/Entity.hpp"
 
@@ -26,6 +28,7 @@ struct MasterRenderer {
     void Render(const std::unique_ptr<Camera>& camera);
     void Destroy();
 
+    void GaussianBlur(bool is_horizontal, bool first_iteration);
     void RenderScreen(const std::unique_ptr<Camera>& camera);
 
 private:
@@ -34,6 +37,7 @@ private:
     std::unique_ptr<LightningShader> lightning_shader = nullptr;
     std::unique_ptr<AlphaShader> alpha_shader = nullptr;
     std::unique_ptr<ScreenShader> screen_shader = nullptr;
+    std::unique_ptr<GaussianBlurShader> gaussian_blur_shader = nullptr;
 
     // Renderers
     std::unique_ptr<BasicRenderer> basic_renderer = nullptr;
@@ -41,6 +45,7 @@ private:
     std::unique_ptr<ViewVolumeRenderer> view_volume_renderer = nullptr;
     std::unique_ptr<AxesRenderer> axes_renderer = nullptr;
     std::unique_ptr<ScreenRenderer> screen_renderer = nullptr;
+    std::unique_ptr<GaussianBlurRenderer> gaussian_blur_renderer = nullptr;
 };
 
 #endif

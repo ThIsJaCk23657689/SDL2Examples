@@ -3,6 +3,7 @@
 
 #include <glad/glad.h>
 
+#include <vector>
 #include <memory>
 #include <iostream>
 
@@ -11,12 +12,14 @@
 
 struct FrameBuffer {
     unsigned int ID;
+    std::vector<unsigned int> attachments;
 
     FrameBuffer();
     ~FrameBuffer();
     void Bind();
     void UnBind();
-    void BindTexture2D(const Texture2D& texture, int attachment = 0);
+    void SetDrawBufferAmount(int amount);
+    void BindTexture2D(const Texture2D& texture, unsigned int attachment = 0);
     void BindRenderBuffer(const std::unique_ptr<RenderBuffer>& rbo);
     void CheckComplete();
 };

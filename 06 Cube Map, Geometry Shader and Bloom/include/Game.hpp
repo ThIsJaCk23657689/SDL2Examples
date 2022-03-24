@@ -2,8 +2,10 @@
 #define GAME_HPP
 
 #include <SDL.h>
+#include <glad/glad.h>
 
 #include <vector>
+#include <array>
 #include <memory>
 
 #include "Config.hpp"
@@ -19,6 +21,7 @@ struct Game {
     Game();
 
     void RendererInit();
+    void RenderGaussianBlur();
     void RenderScreen(const std::unique_ptr<Camera>& current_camera);
     void Update(float dt);
     void Render(const std::unique_ptr<Camera>& current_camera, float dt);
@@ -47,8 +50,11 @@ private:
     // Renderer (Only this one)
     std::unique_ptr<MasterRenderer> master_renderer = nullptr;
 
-    // Framebuffer and Renderbuffer (For Post Processing Purpose)
+    // Framebuffer
     std::unique_ptr<FrameBuffer> main_framebuffer = nullptr;
+    std::array<std::unique_ptr<FrameBuffer>, 2> gaussian_blur_framebuffer = { nullptr, nullptr };
+
+    // Renderbuffer
     std::unique_ptr<RenderBuffer> main_renderbuffer = nullptr;
 };
 

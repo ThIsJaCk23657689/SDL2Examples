@@ -64,6 +64,7 @@ void World::Create() {
     my_spotlight = std::make_unique<Light>(glm::vec3(0.0f, 5.0f, 5.0f), glm::vec3(0.0f, -0.5f, -1.0f), true);
     my_spotlight->HookCamera(my_camera.get());
 
+    my_directional_light->UpdateColor(glm::vec3(1.5f, 1.5f, 1.5f));
     my_point_lights = {
         std::make_unique<Light>(glm::vec3(33.75f, 8.75f, -37.654f), true),
         std::make_unique<Light>(glm::vec3(-23.75f, 7.5f, 37.654f), true),
@@ -72,15 +73,15 @@ void World::Create() {
         std::make_unique<Light>(glm::vec3(-42.5f, 12.5f, -5.556f), true),
         std::make_unique<Light>(glm::vec3(sun.position), true),
     };
-    my_point_lights[0]->UpdateColor(glm::vec3(5.0f, 5.0f, 5.0f));
+    my_point_lights[0]->UpdateColor(glm::vec3(10.0f, 10.0f, 0.0f));
     my_point_lights[1]->UpdateColor(glm::vec3(10.0f, 0.0f, 0.0f));
     my_point_lights[2]->UpdateColor(glm::vec3(0.0f, 0.0f, 15.0f));
     my_point_lights[3]->UpdateColor(glm::vec3(0.0f, 5.0f, 0.0f));
-    my_point_lights[4]->UpdateColor(glm::vec3(20.0f, 5.0f, 10.0f));
+    my_point_lights[4]->UpdateColor(glm::vec3(20.0f, 0.0f, 20.0f));
     my_point_lights[5]->UpdateColor(glm::vec3(200.0f, 200.0f, 200.0f));
 
     // Fog init
-    my_fog = std::make_unique<Fog>(glm::vec3(4 / 255.0f), 0.008f, 1.5f, 50.0f, 120.0f);
+    my_fog = std::make_unique<Fog>(glm::vec3(0.0f), 0.008f, 1.5f, 50.0f, 120.0f);
     my_fog->mode = FogMode::EXP;
 }
 
