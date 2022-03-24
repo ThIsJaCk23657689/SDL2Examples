@@ -1,5 +1,7 @@
 #include "Renderer/LightningRenderer.hpp"
 
+#include "Texture/TextureManager.hpp"
+
 LightningRenderer::LightningRenderer(LightningShader* shader) : m_shader(shader) {
     
 }
@@ -12,6 +14,8 @@ void LightningRenderer::Prepare(const std::unique_ptr<Camera>& camera) {
     m_shader->SetBool("useTexture", false);
     m_shader->SetBool("emissionTexture", false);
     m_shader->SetInt("diffuse_texture", 0);
+    m_shader->SetInt("skybox", 1);
+
     m_shader->SetFloat("bloomThreshold", state.world->bloom_threshold);
 
     // Load Lights
@@ -32,6 +36,11 @@ void LightningRenderer::Prepare(const std::unique_ptr<Camera>& camera) {
 void LightningRenderer::Render(const Entity& entity, const Geometry* geometry) {
     // Prepare Geometry (Bind VAO)
     geometry->Bind();
+
+    // For Reflection
+    CubeMap skybox = TextureManager::GetCubeMap("SkyBox");
+    skybox.Active(GL_TEXTURE1);
+    skybox.Bind();
 
     // Prepare Texture and Material
     m_shader->SetFloat("shininess", entity.material.shininess);

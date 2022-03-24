@@ -4,15 +4,6 @@
 
 Texture2D::Texture2D() : id(0) {
     glGenTextures(1, &id);
-    glBindTexture(GL_TEXTURE_2D, id);
-}
-
-Texture2D::Texture2D(int screen_width, int screen_height) : id(0) {
-    glGenTextures(1, &id);
-    glBindTexture(GL_TEXTURE_2D, id);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, screen_width, screen_height, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 }
 
 void Texture2D::Bind(GLint texture_idx) const {

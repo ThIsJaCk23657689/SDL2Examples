@@ -47,11 +47,11 @@ void Game::RenderGaussianBlur() {
     }
 }
 
-void Game::RenderScreen(const std::unique_ptr<Camera>& current_camera) {
+void Game::RenderScreen() {
     // 確保是 off-screen rendering，在預設的 framebuffer 上渲染才會看得見
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-    master_renderer->RenderScreen(current_camera);
+    master_renderer->RenderScreen();
 }
 
 void Game::Update(float dt) {

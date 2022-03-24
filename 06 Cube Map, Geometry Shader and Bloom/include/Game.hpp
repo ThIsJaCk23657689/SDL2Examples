@@ -22,7 +22,7 @@ struct Game {
 
     void RendererInit();
     void RenderGaussianBlur();
-    void RenderScreen(const std::unique_ptr<Camera>& current_camera);
+    void RenderScreen();
     void Update(float dt);
     void Render(const std::unique_ptr<Camera>& current_camera, float dt);
     void Destroy();

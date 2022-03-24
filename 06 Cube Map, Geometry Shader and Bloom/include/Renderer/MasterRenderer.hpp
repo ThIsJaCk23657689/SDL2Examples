@@ -11,6 +11,7 @@
 #include "Shader/AlphaShader.hpp"
 #include "Shader/ScreenShader.hpp"
 #include "Shader/GaussianBlurShader.hpp"
+#include "Shader/SkyboxShader.hpp"
 
 #include "Renderer/BasicRenderer.hpp"
 #include "Renderer/LightningRenderer.hpp"
@@ -18,6 +19,7 @@
 #include "Renderer/AxesRenderer.hpp"
 #include "Renderer/ScreenRenderer.hpp"
 #include "Renderer/GaussianBlurRenderer.hpp"
+#include "Renderer/SkyboxRenderer.hpp"
 
 #include "World/Entity.hpp"
 
@@ -29,7 +31,7 @@ struct MasterRenderer {
     void Destroy();
 
     void GaussianBlur(bool is_horizontal, bool first_iteration);
-    void RenderScreen(const std::unique_ptr<Camera>& camera);
+    void RenderScreen();
 
 private:
     // Shaders
@@ -38,6 +40,7 @@ private:
     std::unique_ptr<AlphaShader> alpha_shader = nullptr;
     std::unique_ptr<ScreenShader> screen_shader = nullptr;
     std::unique_ptr<GaussianBlurShader> gaussian_blur_shader = nullptr;
+    std::unique_ptr<SkyboxShader> skybox_shader = nullptr;
 
     // Renderers
     std::unique_ptr<BasicRenderer> basic_renderer = nullptr;
@@ -46,6 +49,7 @@ private:
     std::unique_ptr<AxesRenderer> axes_renderer = nullptr;
     std::unique_ptr<ScreenRenderer> screen_renderer = nullptr;
     std::unique_ptr<GaussianBlurRenderer> gaussian_blur_renderer = nullptr;
+    std::unique_ptr<SkyboxRenderer> skybox_renderer = nullptr;
 };
 
 #endif

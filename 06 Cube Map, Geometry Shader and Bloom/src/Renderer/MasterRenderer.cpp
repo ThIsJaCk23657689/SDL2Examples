@@ -11,6 +11,7 @@ MasterRenderer::MasterRenderer() {
     alpha_shader = std::make_unique<AlphaShader>();
     screen_shader = std::make_unique<ScreenShader>();
     gaussian_blur_shader = std::make_unique<GaussianBlurShader>();
+    skybox_shader = std::make_unique<SkyboxShader>();
 
     // 建立 Renderer
     basic_renderer = std::make_unique<BasicRenderer>(basic_shader.get());
@@ -19,6 +20,7 @@ MasterRenderer::MasterRenderer() {
     axes_renderer = std::make_unique<AxesRenderer>(basic_shader.get());
     screen_renderer = std::make_unique<ScreenRenderer>(screen_shader.get());
     gaussian_blur_renderer = std::make_unique<GaussianBlurRenderer>(gaussian_blur_shader.get());
+    skybox_renderer = std::make_unique<SkyboxRenderer>(skybox_shader.get());
 
     // 設定 gl
     glEnable(GL_MULTISAMPLE);
@@ -87,6 +89,16 @@ void MasterRenderer::Render(const std::unique_ptr<Camera>& camera) {
     // 繪製 View Volume
     view_volume_renderer->Prepare(camera);
     view_volume_renderer->Render(state.world->view_volume.get());
+
+    // 繪製天空盒，注意要最後繪製，而且把深度測試改為 小於且等於 的模式。
+    glDepthFunc(GL_LEQUAL);
+    glDisable(GL_CULL_FACE);
+    skybox_renderer->Prepare(camera);
+    skybox_renderer->Render(&TextureManager::GetCubeMap("SkyBox"), state.world->my_cube.get());
+    glDepthFunc(GL_LESS);
+    if (state.world->culling) {
+        glEnable(GL_CULL_FACE);
+    }
 }
 
 void MasterRenderer::Destroy() {
@@ -104,14 +116,11 @@ void MasterRenderer::GaussianBlur(bool is_horizontal, bool first_iteration) {
     }
 }
 
-void MasterRenderer::RenderScreen(const std::unique_ptr<Camera>& camera) {
+void MasterRenderer::RenderScreen() {
     // Call By Application，在每一次 main loop 的結尾執行
     glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
     glDisable(GL_DEPTH_TEST);
-
-    // Viewport settings
-    camera->SetViewPort();
 
     screen_renderer->Prepare();
     screen_renderer->Render(&TextureManager::GetTexture2D("PostProcessing"), &TextureManager::GetTexture2D("GaussianBlur0"), state.world->my_screen.get());

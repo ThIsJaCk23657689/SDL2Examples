@@ -7,7 +7,6 @@
 
 struct Texture2D {
     Texture2D();
-    Texture2D(int screen_width, int screen_height);
 
     void Bind(GLint texture_idx = GL_TEXTURE0) const;
     void UnBind() const;
@@ -17,8 +16,6 @@ struct Texture2D {
     void SetWrapParameters(GLint wrap_s, GLint wrap_t) const;
     void SetFilterParameters(GLint min_filter, GLint mag_filter) const;
 
-    GLint m_internal_format;
-    GLenum m_format;
     unsigned int id;
 };
 

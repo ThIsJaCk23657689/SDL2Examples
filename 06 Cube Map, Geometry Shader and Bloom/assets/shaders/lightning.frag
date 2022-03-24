@@ -42,6 +42,7 @@ struct Fog {
 uniform float shininess;
 uniform vec3 objectColor;
 uniform sampler2D diffuse_texture;
+uniform samplerCube skybox;
 
 uniform vec3 viewPos;
 uniform bool useLighting;
@@ -60,9 +61,13 @@ vec4 CalcFog(vec4 color);
 void main() {
 
     vec3 norm = normalize(fs_in.Normal);
-    vec3 viewDir = normalize(viewPos - fs_in.Normal);
+    vec3 viewDir = normalize(viewPos - fs_in.FragPos);
 
     vec4 final_frag_color = (useTexture) ? texture(diffuse_texture, fs_in.TexCoord) : vec4(objectColor, 1.0f);
+
+    // 計算反射
+    vec3 R = reflect(-viewDir, norm);
+    final_frag_color += vec4(texture(skybox, R).rgb * 0.5, 0.0f);
 
     // 計算光照
     vec3 illumination = vec3(0.0f);

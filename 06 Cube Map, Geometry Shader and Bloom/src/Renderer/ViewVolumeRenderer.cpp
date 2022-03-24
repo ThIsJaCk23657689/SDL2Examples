@@ -7,6 +7,7 @@ ViewVolumeRenderer::ViewVolumeRenderer(AlphaShader* shader) : m_shader(shader) {
 void ViewVolumeRenderer::Prepare(const std::unique_ptr<Camera>& camera) {
     m_shader->Start();
     m_shader->SetViewAndProj(camera);
+    m_shader->SetFloat("bloomThreshold", state.world->bloom_threshold);
 }
 void ViewVolumeRenderer::Render(const Geometry* geometry) {
     // Prepare Geometry (Bind VAO)
