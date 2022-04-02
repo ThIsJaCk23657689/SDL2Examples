@@ -15,6 +15,7 @@
 
 #include "Renderer/BasicRenderer.hpp"
 #include "Renderer/LightningRenderer.hpp"
+#include "Renderer/NormalMapRenderer.hpp"
 #include "Renderer/ViewVolumeRenderer.hpp"
 #include "Renderer/AxesRenderer.hpp"
 #include "Renderer/ScreenRenderer.hpp"
@@ -37,6 +38,7 @@ private:
     // Shaders
     std::unique_ptr<BasicShader> basic_shader = nullptr;
     std::unique_ptr<LightningShader> lightning_shader = nullptr;
+    std::unique_ptr<NormalMapShader> normal_map_shader = nullptr;
     std::unique_ptr<AlphaShader> alpha_shader = nullptr;
     std::unique_ptr<ScreenShader> screen_shader = nullptr;
     std::unique_ptr<GaussianBlurShader> gaussian_blur_shader = nullptr;
@@ -45,6 +47,7 @@ private:
     // Renderers
     std::unique_ptr<BasicRenderer> basic_renderer = nullptr;
     std::unique_ptr<LightningRenderer> lightning_renderer = nullptr;
+    std::unique_ptr<NormalMapRenderer> normal_map_renderer = nullptr;
     std::unique_ptr<ViewVolumeRenderer> view_volume_renderer = nullptr;
     std::unique_ptr<AxesRenderer> axes_renderer = nullptr;
     std::unique_ptr<ScreenRenderer> screen_renderer = nullptr;

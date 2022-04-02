@@ -2,9 +2,9 @@
 
 // Directional Light (如果初始化 dir，會導致無效，因為現在光的 direction 是取自於 entities 的 front，而其 front 是靠 rotate 角度來計算的)
 Light::Light(glm::vec4 dir, bool enb) :
-    ambient(0.12f),
-    diffuse(0.76f),
-    specular(0.4f),
+    ambient(0.08f),
+    diffuse(0.86f),
+    specular(0.73f),
     color(1.0f),
     constant(1.0f),
     linear(0.0f),
@@ -19,9 +19,9 @@ Light::Light(glm::vec4 dir, bool enb) :
 
 // Point Light
 Light::Light(glm::vec3 pos, bool enb) :
-    ambient(0.12f),
-    diffuse(0.76f),
-    specular(0.4f),
+    ambient(0.08f),
+    diffuse(0.86f),
+    specular(0.73f),
     color(1.0f),
     constant(0.0f),
     linear(0.0f),
@@ -36,9 +36,9 @@ Light::Light(glm::vec3 pos, bool enb) :
 
 // Spotlight (如果初始化 dir，會導致無效，因為現在光的 direction 是取自於 entities 的 front，而其 front 是靠 rotate 角度來計算的)
 Light::Light(glm::vec3 pos, glm::vec3 dir, bool enb) :
-    ambient(0.12f),
-    diffuse(0.76f),
-    specular(0.4f),
+    ambient(0.08f),
+    diffuse(0.86f),
+    specular(0.73f),
     color(1.0f),
     constant(1.0f),
     linear(0.09f),
@@ -69,9 +69,9 @@ void Light::Update(float dt) {
 }
 
 void Light::UpdateColor() {
-    ambient = color * 0.12f;
-    diffuse = color * 0.76f;
-    specular = color * 0.4f;
+    ambient = color * 0.08f;
+    diffuse = color * 0.86f;
+    specular = color * 0.73f;
 
     entity.material.color = color;
 }

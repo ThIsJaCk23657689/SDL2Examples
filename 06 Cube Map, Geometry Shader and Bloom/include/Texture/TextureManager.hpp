@@ -18,7 +18,7 @@ public:
     static void Initialize();
     static void Destroy();
 
-    static Texture2D &CreateTexture2D(const std::string &file_name, const std::string &texture_name, bool is_srgb = false);
+    static Texture2D &CreateTexture2D(const std::string &file_name, const std::string &texture_name, bool is_srgb = false, bool is_flip = true);
     static Texture2D &CreateTexture2D(const int width, const int height, const std::string &texture_name);
     static Texture2D &GetTexture2D(const std::string &texture_name);
 
@@ -28,7 +28,7 @@ public:
 
 private:
     TextureManager() = default;
-    static Texture2D LoadTexture2DFromFile(const std::string &file_path, bool is_srgb);
+    static Texture2D LoadTexture2DFromFile(const std::string &file_path, bool is_srgb, bool is_flip);
     static CubeMap LoadCubeMapFromFile(const std::vector<std::string> &file_path, bool is_srgb);
 };
 

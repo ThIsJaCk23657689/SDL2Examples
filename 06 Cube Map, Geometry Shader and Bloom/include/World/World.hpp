@@ -51,6 +51,7 @@ struct World {
     std::vector<Entity> rick_rolls;
     Entity ground;
     Entity camera;
+    Entity brick;
     std::vector<Entity> awesome_faces;
 
     // Player

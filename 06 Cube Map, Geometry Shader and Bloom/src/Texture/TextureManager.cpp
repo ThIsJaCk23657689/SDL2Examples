@@ -15,15 +15,13 @@ void TextureManager::Initialize() {
     TextureManager::CreateTexture2D("rickroll.png", "RickRoll", true);
     TextureManager::CreateTexture2D("awesomeface.png", "Awesome Face", true);
     TextureManager::CreateTexture2D("earth.jpg", "Earth", true);
+    TextureManager::CreateTexture2D("earth_normal_sea.png", "Earth Normal", false);
     TextureManager::CreateTexture2D("sun.jpg", "Sun", true);
     TextureManager::CreateTexture2D("moon.jpg", "Moon", true);
     TextureManager::CreateTexture2D("wood.png", "Wooden Floor", true);
 
-    // Create Texture for Post Processing
-    TextureManager::CreateTexture2D(state.window->width, state.window->height, "PostProcessing");
-    TextureManager::CreateTexture2D(state.window->width, state.window->height, "Bloom");
-    TextureManager::CreateTexture2D(state.window->width, state.window->height, "GaussianBlur0");
-    TextureManager::CreateTexture2D(state.window->width, state.window->height, "GaussianBlur1");
+    TextureManager::CreateTexture2D("brickwall.jpg", "Brick Wall", true, false);
+    TextureManager::CreateTexture2D("brickwall_normal.jpg", "Brick Wall Normal", false, false);
 
     // Create Cube Map
     std::vector<std::string> sky_box = {
@@ -35,6 +33,12 @@ void TextureManager::Initialize() {
         "assets/textures/night/6.png"
     };
     TextureManager::CreateCubeMap(sky_box, "SkyBox");
+
+    // Create Texture for Post Processing
+    TextureManager::CreateTexture2D(state.window->width, state.window->height, "PostProcessing");
+    TextureManager::CreateTexture2D(state.window->width, state.window->height, "Bloom");
+    TextureManager::CreateTexture2D(state.window->width, state.window->height, "GaussianBlur0");
+    TextureManager::CreateTexture2D(state.window->width, state.window->height, "GaussianBlur1");
 }
 
 void TextureManager::Destroy() {
@@ -47,9 +51,9 @@ void TextureManager::Destroy() {
     }
 }
 
-Texture2D &TextureManager::CreateTexture2D(const std::string &file_name, const std::string &texture_name, bool is_srgb) {
+Texture2D &TextureManager::CreateTexture2D(const std::string &file_name, const std::string &texture_name, bool is_srgb, bool is_flip) {
     std::string file_path = "assets/textures/" + file_name;
-    texture2Ds[texture_name] = LoadTexture2DFromFile(file_path, is_srgb);
+    texture2Ds[texture_name] = LoadTexture2DFromFile(file_path, is_srgb, is_flip);
     return texture2Ds[texture_name];
 }
 
@@ -88,11 +92,11 @@ CubeMap& TextureManager::GetCubeMap(const std::string& texture_name) {
 }
 
 
-Texture2D TextureManager::LoadTexture2DFromFile(const std::string &file_path, bool is_srgb) {
+Texture2D TextureManager::LoadTexture2DFromFile(const std::string &file_path, bool is_srgb, bool is_flip) {
     Texture2D texture;
 
     int width, height, nrChannels;
-    stbi_set_flip_vertically_on_load(true);
+    stbi_set_flip_vertically_on_load(is_flip);
     unsigned char *image = stbi_load(file_path.c_str(), &width, &height, &nrChannels, 0);
 
     if (image) {

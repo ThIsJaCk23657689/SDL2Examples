@@ -21,10 +21,14 @@ void World::Create() {
     sun = Entity(glm::vec3(0.0f, 10.0f, 0.0f), glm::vec3(0.0f), glm::vec3(3.0f), &TextureManager::GetTexture2D("Sun"));
     sun.material.emission_texture = true;
     earth = Entity(glm::vec3(20.0f, 10.0f, 0.0f), glm::vec3(0.0f, 23.5f, 0.0f), glm::vec3(1.0f), &TextureManager::GetTexture2D("Earth"));
+    earth.material.shininess = 256.0f;
     moon = Entity(glm::vec3(25.0f, 10.0f, 0.0f), glm::vec3(0.0f), glm::vec3(0.6f), &TextureManager::GetTexture2D("Moon"));
+    moon.material.shininess = 256.0f;
     ground = Entity(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f), glm::vec3(100.0f), &TextureManager::GetTexture2D("Wooden Floor"));
     camera = Entity(glm::vec3(0.0f, 10.0f, 80.0f), glm::vec3(0.0f), glm::vec3(8.0f, 5.0f, 10.0f), glm::vec3(0.2f));
     camera.movable = true;
+    brick = Entity(glm::vec3(0.0f, 5.0f, -30.0f), glm::vec3(0.0f), glm::vec3(10.0f), &TextureManager::GetTexture2D("Brick Wall"));
+    brick.material.shininess = 512.0f;
     for (int i = 0; i < 50; i++) {
         float x = random_num(rand_generator) * 100.0f - 50.0f;
         float y = random_num(rand_generator) * 50.0f;

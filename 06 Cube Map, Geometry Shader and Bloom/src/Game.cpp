@@ -70,8 +70,8 @@ void Game::Update(float dt) {
     // Update the spotlight
     state.world->my_spotlight->Update(dt);
 
-    state.world->earth.UpdateRotation(glm::vec3(0.0f, 80.0f, 0.0f), dt);
-    state.world->moon.UpdateRotation(glm::vec3(0.0f, 30.0f, 0.0f), dt);
+    state.world->earth.UpdateRotation(glm::vec3(0.0f, 10.0f, 0.0f), dt);
+    state.world->moon.UpdateRotation(glm::vec3(0.0f, 5.0f, 0.0f), dt);
 
     for (auto& rick : state.world->rick_rolls) {
         rick.UpdateRotation(glm::vec3(0.0f, 80.0f, 10.0f), dt);

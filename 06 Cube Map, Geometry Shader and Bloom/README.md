@@ -3,7 +3,7 @@
 本範例程式使用 SDL2 並且使用 OpenGL 3.3 版本，實現近代 OpenGL 開發以及流程，其中包含 Shader 的撰寫以及分拆程式，盡可能的實現物件導向設計的概念。
 
 本程式實作 Cube Map, Normal Map 和 Bloom。
-![](https://i.imgur.com/jY99vRj.png)
+![](https://i.imgur.com/ViKuBuT.jpg)
 
 ## 安裝
 需要使用 vcpkg 安裝以下套件：

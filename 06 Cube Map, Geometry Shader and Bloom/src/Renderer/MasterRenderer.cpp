@@ -8,6 +8,7 @@ MasterRenderer::MasterRenderer() {
     // 建立 Shaders
     basic_shader = std::make_unique<BasicShader>();
     lightning_shader = std::make_unique<LightningShader>();
+    normal_map_shader = std::make_unique<NormalMapShader>();
     alpha_shader = std::make_unique<AlphaShader>();
     screen_shader = std::make_unique<ScreenShader>();
     gaussian_blur_shader = std::make_unique<GaussianBlurShader>();
@@ -16,6 +17,7 @@ MasterRenderer::MasterRenderer() {
     // 建立 Renderer
     basic_renderer = std::make_unique<BasicRenderer>(basic_shader.get());
     lightning_renderer = std::make_unique<LightningRenderer>(lightning_shader.get());
+    normal_map_renderer = std::make_unique<NormalMapRenderer>(normal_map_shader.get());
     view_volume_renderer = std::make_unique<ViewVolumeRenderer>(alpha_shader.get());
     axes_renderer = std::make_unique<AxesRenderer>(basic_shader.get());
     screen_renderer = std::make_unique<ScreenRenderer>(screen_shader.get());
@@ -58,12 +60,16 @@ void MasterRenderer::Render(const std::unique_ptr<Camera>& camera) {
     // 繪製需要光照的物體 (lightning renderer)
     lightning_renderer->Prepare(camera);
     lightning_renderer->Render(state.world->sun, state.world->my_sphere.get());
-    lightning_renderer->Render(state.world->earth, state.world->my_sphere.get());
     lightning_renderer->Render(state.world->moon, state.world->my_sphere.get());
     lightning_renderer->Render(state.world->rick_rolls, state.world->my_cube.get());
     lightning_renderer->Render(state.world->awesome_faces, state.world->billboard.get());
     lightning_renderer->Render(state.world->ground, state.world->my_floor.get());
     lightning_renderer->Render(state.world->camera, state.world->my_cube.get());
+
+    // 繪製使用 Normal Mapping 的物體
+    normal_map_renderer->Prepare(camera);
+    normal_map_renderer->Render(state.world->brick, state.world->my_cube.get(), &TextureManager::GetTexture2D("Brick Wall Normal"));
+    normal_map_renderer->Render(state.world->earth, state.world->my_sphere.get(), &TextureManager::GetTexture2D("Earth Normal"));
 
     // 繪製光球 這邊設計應該可以再更好
     basic_renderer->Prepare(camera);
