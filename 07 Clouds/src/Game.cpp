@@ -84,6 +84,9 @@ void Game::Update(float dt) {
     // Update the spotlight
     state.world->my_spotlight->Update(dt);
 
+    float time = static_cast<float>(SDL_GetTicks()) / 1000.0f;
+    state.world->my_cloud->NoiseOffset.z = std::sin(time / 10) * 20;
+
     // state.world->earth.UpdateRotation(glm::vec3(0.0f, 10.0f, 0.0f), dt);
     // state.world->moon.UpdateRotation(glm::vec3(0.0f, 5.0f, 0.0f), dt);
 

@@ -32,6 +32,15 @@ public:
     int SampleCount = 64;
     float Absorbance = 1.0f;
 
+    glm::vec3 NoiseOffset = glm::vec3(0.0f);
+    float NoiseScale = 1.3f;
+    float DensityThreshold = 0.09f;
+    float DensityMultiplier = 1.15f;
+    float DarknessThreshold = 0.078f;
+    float PhaseParameter1 = 0.8f;
+    float PhaseParameter2 = -0.5f;
+    bool UseAnisotropic = true;
+
 private:
     void GenerateVertices();
     void BufferInitialize();
@@ -53,7 +62,7 @@ private:
 
     // Noise
     glm::vec3 m_TextureSize;
-    std::vector<unsigned int> m_ImageData;
+    std::vector<float> m_ImageData;
     std::shared_ptr<Texture3D> m_PerlinNoiseTexture = nullptr;
 };
 

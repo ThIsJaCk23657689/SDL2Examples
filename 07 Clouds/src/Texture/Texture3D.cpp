@@ -38,10 +38,17 @@ void Texture3D::SetFilterParameters(GLint min_filter, GLint mag_filter) const {
 void Texture3D::Generate(GLint internal_format, GLenum format, int width, int height, int depth, const void* data) {
     // Notice that the data type of the image data, we set GL_FLOAT here for the volume rendering.
     Bind();
-    // glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-    glTexImage3D(GL_TEXTURE_3D, 0, internal_format, width, height, depth, 0, format, GL_UNSIGNED_INT, data);
 
-    SetWrapParameters(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
+    // 只要寬不是 4 的倍數，就不使用 Alignment
+    if (width % 4 != 0) {
+        glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+    } else {
+        glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
+    }
+
+    glTexImage3D(GL_TEXTURE_3D, 0, internal_format, width, height, depth, 0, format, GL_FLOAT, data);
+
+    SetWrapParameters(GL_MIRRORED_REPEAT, GL_MIRRORED_REPEAT, GL_MIRRORED_REPEAT);
     SetFilterParameters(GL_LINEAR, GL_LINEAR);
     UnBind();
 }

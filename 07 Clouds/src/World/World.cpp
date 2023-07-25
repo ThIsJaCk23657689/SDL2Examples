@@ -18,10 +18,10 @@ void World::Create() {
     TextureManager::Initialize();
 
     // Cloud
-    my_cloud = std::make_unique<Cloud>(glm::vec3(0.0f, 10.0f, -40.0f), glm::vec3(20.0f, 20.0f, 20.0f),  glm::vec3(0.78572f, 0.2578f, 0.863f));
+    my_cloud = std::make_unique<Cloud>(glm::vec3(0.0f, 10.0f, -40.0f), glm::vec3(20.0f, 20.0f, 20.0f),  glm::vec3(1.0f, 1.0f, 1.0f));
 
     // Entity Initialize
-    sun = Entity(glm::vec3(25.0f, 25.0f, 25.0f), glm::vec3(0.0f), glm::vec3(3.0f), glm::vec3(1.0f, 1.0f, 1.0f));
+    sun = Entity(glm::vec3(16.0f, 35.0f, -33.0f), glm::vec3(0.0f), glm::vec3(3.0f), glm::vec3(1.0f, 1.0f, 1.0f));
     sun.material.emission_texture = true;
     //earth = Entity(glm::vec3(20.0f, 10.0f, 0.0f), glm::vec3(0.0f, 23.5f, 0.0f), glm::vec3(1.0f), &TextureManager::GetTexture2D("Earth"));
     //earth.material.shininess = 256.0f;

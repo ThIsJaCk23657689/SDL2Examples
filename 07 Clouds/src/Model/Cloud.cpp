@@ -115,15 +115,16 @@ size_t Cloud::GetTexelIndex(size_t x, size_t y, size_t z) {
 }
 
 void Cloud::CreatePerlinNoise() {
-    const siv::PerlinNoise::seed_type seed = 123456u;
+    const siv::PerlinNoise::seed_type seed = 19980226u;
     const siv::PerlinNoise perlin{ seed };
+    double frequency = 4;
+    int32_t octaves = 8;
 
     m_TextureSize = { 128, 128, 128 };
     auto pixelCount = static_cast<size_t>(m_TextureSize.x * m_TextureSize.y * m_TextureSize.z);
-    m_ImageData.clear();
-    m_ImageData.reserve(pixelCount);
 
-    float frequency = 8.0f;
+    m_ImageData.clear();
+
     const double fx = (frequency / m_TextureSize.x);
     const double fy = (frequency / m_TextureSize.y);
     const double fz = (frequency / m_TextureSize.z);
@@ -131,19 +132,34 @@ void Cloud::CreatePerlinNoise() {
     for (size_t z = 0; z < (size_t)m_TextureSize.z; ++z) {
         for (size_t y = 0; y < (size_t)m_TextureSize.y; ++y) {
             for (size_t x = 0; x < (size_t)m_TextureSize.x; ++x) {
-                const double noise = perlin.octave3D_01((float)x * fx, (float)y * fy, (float)z * fz, 8);
-                auto color = static_cast<unsigned int>((noise + 1.0f) * 0.5f * 255);
-                m_ImageData[GetTexelIndex(x, y, z)] = color;
+                const double noise = perlin.octave3D_01(x * fx, y * fy, z * fz, octaves);
+                m_ImageData.push_back(static_cast<float>(noise));
             }
         }
     }
 
-    stbi_write_png("assets/textures/perlin_noise_texture.png", m_TextureSize.x, m_TextureSize.y, 1, m_ImageData.data(), m_TextureSize.x);
+    // Debug
+    std::vector<uint8_t> charImage(pixelCount * 3);
+    for (size_t z = 0; z < (size_t)m_TextureSize.z; ++z) {
+        for (size_t y = 0; y < (size_t)m_TextureSize.y; ++y) {
+            for (size_t x = 0; x < (size_t)m_TextureSize.x; ++x) {
+                size_t OldIndex = static_cast<size_t>(z * m_TextureSize.x * m_TextureSize.y + y * m_TextureSize.x + x);
+                size_t NewIndex = static_cast<size_t>(z * m_TextureSize.x * m_TextureSize.y * 3 + y * m_TextureSize.x * 3 + x * 3);
+                const auto noise = m_ImageData[OldIndex];
+                const uint8_t value = (noise <= 0.0f) ? 0 : (1.0f <= noise) ? 255 : static_cast<uint8_t>(noise * 255.0 + 0.5);
+                charImage[ NewIndex + 0 ] = value;
+                charImage[ NewIndex + 1 ] = value;
+                charImage[ NewIndex + 2 ] = value;
+            }
+        }
+    }
+
+    stbi_write_jpg("assets/textures/perlin_noise_texture.jpg", m_TextureSize.x, m_TextureSize.y, 3, charImage.data(), 100);
 }
 
 void Cloud::GenerateTextureData() {
     m_PerlinNoiseTexture = std::make_shared<Texture3D>();
-    m_PerlinNoiseTexture->Generate(GL_R8, GL_R,
+    m_PerlinNoiseTexture->Generate(GL_R32F, GL_RED,
                                    (int)m_TextureSize.x, (int)m_TextureSize.y, (int)m_TextureSize.z,
                                     reinterpret_cast<const void*>(m_ImageData.data()));
 }

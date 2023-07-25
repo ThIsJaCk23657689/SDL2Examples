@@ -39,6 +39,26 @@ void CloudRenderer::Render(const Cloud* cloud) {
     m_shader->SetInt("g_SampleCount", cloud->SampleCount);
     m_shader->SetFloat("g_Absorbance", cloud->Absorbance);
 
+    m_shader->SetVec3("g_NoiseOffset", cloud->NoiseOffset);
+    m_shader->SetFloat("g_NoiseScale", cloud->NoiseScale);
+    m_shader->SetFloat("g_DensityThreshold", cloud->DensityThreshold);
+    m_shader->SetFloat("g_DensityMultiplier", cloud->DensityMultiplier);
+
+    const auto& light = state.world->my_point_lights[5];
+    m_shader->SetVec3("g_Light.position", light->entity.position);
+    m_shader->SetVec3("g_Light.color", light->diffuse);
+
+    m_shader->SetFloat("g_Light.constant", 1.0f);
+    m_shader->SetFloat("g_Light.linear", 0.35f);
+    m_shader->SetFloat("g_Light.quadratic", 0.44f);
+
+    m_shader->SetBool("g_Light.enable", light->enable);
+    m_shader->SetFloat("g_DarknessThreshold", cloud->DarknessThreshold);
+    m_shader->SetFloat("g_PhaseParameter1", cloud->PhaseParameter1);
+    m_shader->SetFloat("g_PhaseParameter2", cloud->PhaseParameter2);
+    m_shader->SetBool("g_UseAnisotropic", cloud->UseAnisotropic);
+
+
     // Prepare Instance
     const auto& model_matrix = cloud->GetModelMatrix();
     m_shader->SetMat4("model", model_matrix);

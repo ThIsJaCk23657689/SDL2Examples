@@ -467,6 +467,19 @@ void UI::CloudInfoRender() {
     ImGui::Spacing();
     ImGui::SliderInt("SampleCount", &cloud->SampleCount, 16, 64);
     ImGui::SliderFloat("Absorbance", &cloud->Absorbance, 0.001f, 1.0f);
+
+    ImGui::SliderFloat3("Noise Offset", &cloud->NoiseOffset[0], -5.0f, 5.0f);
+    ImGui::SliderFloat("Noise Scale", &cloud->NoiseScale, 0.1f, 10.0f);
+    ImGui::SliderFloat("Density Threshold", &cloud->DensityThreshold, 0.0f, 1.0f);
+    ImGui::SliderFloat("Density Multiplier", &cloud->DensityMultiplier, 0.1f, 10.0f);
+    ImGui::SliderFloat("Darkness Threshold", &cloud->DarknessThreshold, 0.0f, 1.0f);
+
+    ImGui::Checkbox("Use Anisotropic", &cloud->UseAnisotropic);
+    if (cloud->UseAnisotropic) {
+        ImGui::SliderFloat("Phase Func g0", &cloud->PhaseParameter1, -0.9f, 0.9f);
+        ImGui::SliderFloat("Phase Func g1", &cloud->PhaseParameter2, -0.9f, 0.9f);
+    }
+
     ImGui::Spacing();
     ImGui::End();
 }
